@@ -245,7 +245,6 @@
         // ===== 中文/国际域名转换为 IDN ASCII =====
         function toASCII(domain) {
             try {
-                // 利用 URL 自动转换 Punycode
                 return new URL('http://' + domain).hostname;
             } catch (e) {
                 return domain;
@@ -254,15 +253,16 @@
         
         // ===== 获取 URL 中的域名 =====
         function getDomainFromURL() {
-            const pathDomain = window.location.pathname.split('/').filter(Boolean).pop();
-            if (pathDomain) return pathDomain;
-            return new URLSearchParams(window.location.search).get('domain') || '';
+            const pathDomainEncoded = window.location.pathname.split('/').filter(Boolean).pop();
+            if (pathDomainEncoded) return decodeURIComponent(pathDomainEncoded); // 解码
+            const queryDomain = new URLSearchParams(window.location.search).get('domain');
+            return queryDomain ? decodeURIComponent(queryDomain) : '';
         }
         
         // ===== 核心查询函数 =====
         async function query() {
             const inputEl = document.getElementById('domainInput');
-            const inputDomain = inputEl.value.trim().toLowerCase();
+            const inputDomain = inputEl.value.trim();
             const alertEl = document.getElementById('alertMsg');
             const unregEl = document.getElementById('unregisteredView');
             const resultEl = document.getElementById('resultView');
@@ -284,8 +284,8 @@
         
             // 更新 URL，不修改输入框显示
             const currentPath = window.location.pathname.replace(/^\//, '');
-            if (inputDomain !== currentPath) {
-                window.history.pushState(null, '', '/' + inputDomain);
+            if (inputDomain !== decodeURIComponent(currentPath)) {
+                window.history.pushState(null, '', '/' + encodeURIComponent(inputDomain));
             }
         
             document.title = `${inputDomain} 域名查询 - 王先生查询`;
@@ -389,7 +389,7 @@
             const domainFromURL = getDomainFromURL();
             if (domainFromURL && domainFromURL.includes('.')) {
                 const inputEl = document.getElementById('domainInput');
-                inputEl.value = domainFromURL;  // 保持输入框显示原始 URL 域名
+                inputEl.value = domainFromURL;  // 保持输入框显示原始域名
                 query();
             }
         }
