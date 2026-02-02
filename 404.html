@@ -140,9 +140,9 @@
         <div id="alertMsg"></div>
 
         <div id="unregisteredView">
-            <i class="fas fa-rocket"></i>
+            <i id="unregIcon" class="fas fa-rocket"></i>
             <h2 id="unreg-domain-name"></h2>
-            <p>该域名尚未被注册，现在就可以拥有它！</p>
+            <p id="unregText">该域名尚未被注册，现在就可以拥有它！</p>
         </div>
 
         <div id="resultView" class="result-view">
@@ -304,8 +304,18 @@
                     const d = res.data;
         
                     if (d.registered === false) {
-                        document.getElementById('unreg-domain-name').innerText = inputDomain;
-                        unregEl.style.display = 'block';
+                        unregEl.style.display='block';
+                        document.getElementById('unreg-domain-name').innerText=domain;
+        
+                        if(d.reserved===true){
+                            unregIcon.className='fas fa-lock';
+                            unregIcon.style.color='#ef4444';
+                            unregText.innerText='该域名已被保留';
+                        }else{
+                            unregIcon.className='fas fa-rocket';
+                            unregIcon.style.color='#10b981';
+                            unregText.innerText='该域名尚未被注册，现在就可以拥有它！';
+                        }
                         return;
                     }
         
