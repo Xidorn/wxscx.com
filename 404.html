@@ -295,7 +295,7 @@
             const asciiDomain = toASCII(inputDomain);
         
             try {
-                const response = await fetch(`https://api.mrwang.com/whois.php?domain=${encodeURIComponent(asciiDomain)}`);
+                const response = await fetch(`https://api.wangxiansheng.com/whois.php?domain=${encodeURIComponent(asciiDomain)}`);
                 const res = await response.json();
         
                 if (requestId !== currentRequestId) return;
