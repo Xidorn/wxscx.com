@@ -31,6 +31,8 @@
       --danger: #dc2626;
       --danger-soft: rgba(220, 38, 38, 0.08);
       --warning: #d97706;
+      --line: rgba(15, 23, 42, 0.08);
+      --line-soft: rgba(15, 23, 42, 0.05);
       --shadow-lg: 0 30px 80px rgba(15, 23, 42, 0.10);
       --shadow-md: 0 16px 36px rgba(15, 23, 42, 0.06);
       --radius-xl: 30px;
@@ -291,17 +293,17 @@
       background: #ecfdf5;
     }
 
+    .content {
+      padding: 42px 48px 36px;
+    }
+
     .unregistered-view,
     .result-view {
       display: none;
     }
 
-    .content {
-      padding: 40px 48px 36px;
-    }
-
     .empty-state {
-      padding: 10px 0 0;
+      padding: 12px 0 0;
       text-align: center;
     }
 
@@ -335,45 +337,90 @@
     }
 
     .result-view {
-      display: none;
       flex-direction: column;
-      gap: 34px;
+      gap: 22px;
     }
 
-    .stats-grid {
+    .overview-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 24px;
+      gap: 18px;
     }
 
-    .stat-card {
+    .metric-card,
+    .section-card,
+    .source-box {
       position: relative;
-      padding: 0;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid rgba(15, 23, 42, 0.06);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
       overflow: hidden;
     }
 
-    .stat-label {
-      display: block;
+    .metric-card {
+      padding: 22px 22px 20px;
+      min-height: 138px;
+    }
+
+    .metric-card::after {
+      content: "";
+      position: absolute;
+      right: -12px;
+      bottom: -12px;
+      width: 96px;
+      height: 96px;
+      border-radius: 999px;
+      background: rgba(37, 99, 235, 0.05);
+      pointer-events: none;
+    }
+
+    .metric-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 18px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .metric-label {
       font-size: 12px;
       font-weight: 700;
       letter-spacing: 0.08em;
       text-transform: uppercase;
       color: var(--text-light);
-      margin-bottom: 12px;
-      position: relative;
-      z-index: 1;
     }
 
-    .stat-value {
+    .metric-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--primary-soft);
+      color: var(--primary);
+      flex: 0 0 auto;
+    }
+
+    .metric-icon svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .metric-value {
       position: relative;
       z-index: 1;
-      font-size: 28px;
+      font-size: 32px;
+      line-height: 1.16;
       font-weight: 800;
-      line-height: 1.2;
       color: var(--text);
+      letter-spacing: -0.03em;
     }
 
-    .stat-value b {
+    .metric-value b {
       color: var(--primary);
       font-weight: 900;
     }
@@ -399,63 +446,47 @@
       color: #c2410c;
     }
 
-    .section + .section {
-      margin-top: 26px;
+    .section-card {
+      padding: 0;
     }
 
-    .section-header {
-      padding: 0 0 18px;
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--text);
+    .card-header {
       display: flex;
       align-items: center;
       gap: 10px;
+      padding: 18px 22px;
+      border-bottom: 1px solid rgba(15, 23, 42, 0.05);
+      background: rgba(255, 255, 255, 0.55);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--text);
     }
 
-    .section-header svg {
+    .card-header svg {
       width: 18px;
       height: 18px;
       color: var(--primary);
       flex: 0 0 auto;
     }
 
-    .section-body {
-      padding: 0;
+    .card-body {
+      padding: 20px 22px;
     }
 
     .info-row {
       display: none;
-      padding: 22px 0;
-      border-top: 1px solid rgba(15, 23, 42, 0.06);
-    }
-
-    .info-row:first-child {
-      border-top: none;
-      padding-top: 0;
+      padding: 18px 0;
+      border-bottom: 1px solid rgba(15, 23, 42, 0.05);
     }
 
     .info-row:last-child {
+      border-bottom: none;
       padding-bottom: 0;
     }
 
-    .info-title {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      color: var(--text-light);
-      margin-bottom: 14px;
-    }
-
-    .info-title svg {
-      width: 16px;
-      height: 16px;
-      color: var(--primary);
-      flex: 0 0 auto;
+    .info-row:first-child {
+      padding-top: 0;
     }
 
     .vertical-list {
@@ -481,33 +512,29 @@
       font-weight: 500;
     }
 
+    .single-value {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .time-label {
+      color: var(--text-light);
+      font-size: 13px;
+      font-weight: 500;
+      margin-left: 8px;
+    }
+
     .source-box {
       display: none;
-      margin-top: 22px;
-      overflow: hidden;
     }
 
-    .source-title {
-      padding: 0 0 14px;
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      color: var(--text-light);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      text-transform: uppercase;
-    }
-
-    .source-title svg {
-      width: 16px;
-      height: 16px;
-      color: var(--primary);
-      flex: 0 0 auto;
+    .source-shell {
+      padding: 20px 22px;
+      background: rgba(255, 255, 255, 0.35);
     }
 
     .source-content {
-      padding: 0;
       max-height: 420px;
       overflow: auto;
       white-space: pre-wrap;
@@ -552,16 +579,15 @@
       }
 
       .content {
-        padding-top: 32px;
+        padding-top: 34px;
       }
 
-      .stats-grid {
+      .overview-grid {
         grid-template-columns: 1fr;
-        gap: 22px;
       }
 
-      .section + .section {
-        margin-top: 22px;
+      .metric-value {
+        font-size: 30px;
       }
     }
 
@@ -612,6 +638,22 @@
 
       .empty-state h2 {
         font-size: 24px;
+      }
+
+      .metric-value {
+        font-size: 28px;
+      }
+
+      .metric-card,
+      .card-body,
+      .source-shell {
+        padding-left: 18px;
+        padding-right: 18px;
+      }
+
+      .card-header {
+        padding-left: 18px;
+        padding-right: 18px;
       }
     }
   </style>
@@ -704,19 +746,38 @@
           </section>
 
           <section id="resultView" class="result-view">
-            <div class="stats-grid">
-              <div class="stat-card">
-                <span class="stat-label">域名年龄</span>
-                <div class="stat-value" id="res-age">-</div>
+            <div class="overview-grid">
+              <div class="metric-card">
+                <div class="metric-top">
+                  <span class="metric-label">域名年龄</span>
+                  <span class="metric-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.8"></circle>
+                      <path d="M12 8V12L14.5 14.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                  </span>
+                </div>
+                <div class="metric-value" id="res-age">-</div>
               </div>
-              <div class="stat-card">
-                <span class="stat-label">到期倒计时</span>
-                <div class="stat-value" id="res-remaining">-</div>
+
+              <div class="metric-card">
+                <div class="metric-top">
+                  <span class="metric-label">到期倒计时</span>
+                  <span class="metric-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <rect x="5" y="6" width="14" height="13" rx="2" stroke="currentColor" stroke-width="1.8"></rect>
+                      <path d="M8 4V8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
+                      <path d="M16 4V8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
+                      <path d="M5 10H19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
+                    </svg>
+                  </span>
+                </div>
+                <div class="metric-value" id="res-remaining">-</div>
               </div>
             </div>
 
-            <div class="section">
-              <div class="section-header">
+            <div class="section-card">
+              <div class="card-header">
                 <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                   <rect x="4" y="5" width="16" height="15" rx="2" stroke="currentColor" stroke-width="1.8"></rect>
                   <path d="M8 3V7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
@@ -725,59 +786,55 @@
                 </svg>
                 域名信息
               </div>
-
-              <div class="section-body">
+              <div class="card-body">
                 <div id="row-times" class="info-row">
-                  <div class="info-title">
-                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                      <circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.8"></circle>
-                      <path d="M12 8V12L14.5 14.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
-                    </svg>
-                    时间节点（UTC）
-                  </div>
                   <div class="vertical-list" id="list-times"></div>
-                </div>
-
-                <div id="row-registrar" class="info-row">
-                  <div class="info-title">
-                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                      <rect x="4" y="5" width="16" height="14" rx="2" stroke="currentColor" stroke-width="1.8"></rect>
-                      <path d="M8 10H16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
-                      <path d="M8 14H13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
-                    </svg>
-                    注册服务商
-                  </div>
-                  <div class="vertical-list">
-                    <div class="list-item" id="val-registrar"></div>
-                  </div>
-                </div>
-
-                <div id="row-ns" class="info-row">
-                  <div class="info-title">
-                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                      <ellipse cx="12" cy="6.5" rx="6" ry="2.5" stroke="currentColor" stroke-width="1.8"></ellipse>
-                      <path d="M6 6.5V12.5C6 13.9 8.7 15 12 15C15.3 15 18 13.9 18 12.5V6.5" stroke="currentColor" stroke-width="1.8"></path>
-                      <path d="M6 12.5V17.5C6 18.9 8.7 20 12 20C15.3 20 18 18.9 18 17.5V12.5" stroke="currentColor" stroke-width="1.8"></path>
-                    </svg>
-                    DNS 服务器
-                  </div>
-                  <div class="vertical-list" id="list-ns"></div>
-                </div>
-
-                <div id="row-status" class="info-row">
-                  <div class="info-title">
-                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                      <path d="M12 3L18.5 6V11.5C18.5 15.4 15.9 18.9 12 20C8.1 18.9 5.5 15.4 5.5 11.5V6L12 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"></path>
-                    </svg>
-                    域名状态
-                  </div>
-                  <div class="vertical-list" id="list-status"></div>
                 </div>
               </div>
             </div>
 
+            <div id="row-registrar-card" class="section-card" style="display:none;">
+              <div class="card-header">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <rect x="4" y="5" width="16" height="14" rx="2" stroke="currentColor" stroke-width="1.8"></rect>
+                  <path d="M8 10H16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
+                  <path d="M8 14H13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
+                </svg>
+                注册服务商
+              </div>
+              <div class="card-body">
+                <div class="single-value" id="val-registrar"></div>
+              </div>
+            </div>
+
+            <div id="row-ns-card" class="section-card" style="display:none;">
+              <div class="card-header">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <ellipse cx="12" cy="6.5" rx="6" ry="2.5" stroke="currentColor" stroke-width="1.8"></ellipse>
+                  <path d="M6 6.5V12.5C6 13.9 8.7 15 12 15C15.3 15 18 13.9 18 12.5V6.5" stroke="currentColor" stroke-width="1.8"></path>
+                  <path d="M6 12.5V17.5C6 18.9 8.7 20 12 20C15.3 20 18 18.9 18 17.5V12.5" stroke="currentColor" stroke-width="1.8"></path>
+                </svg>
+                DNS 服务器
+              </div>
+              <div class="card-body">
+                <div class="vertical-list" id="list-ns"></div>
+              </div>
+            </div>
+
+            <div id="row-status-card" class="section-card" style="display:none;">
+              <div class="card-header">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M12 3L18.5 6V11.5C18.5 15.4 15.9 18.9 12 20C8.1 18.9 5.5 15.4 5.5 11.5V6L12 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"></path>
+                </svg>
+                域名状态
+              </div>
+              <div class="card-body">
+                <div class="vertical-list" id="list-status"></div>
+              </div>
+            </div>
+
             <div id="rdap-box" class="source-box">
-              <div class="source-title">
+              <div class="card-header">
                 <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                   <rect x="5" y="5" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.8"></rect>
                   <path d="M9 9H15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
@@ -786,11 +843,13 @@
                 </svg>
                 RDAP RAW DATA
               </div>
-              <pre class="source-content" id="res-rdap"></pre>
+              <div class="source-shell">
+                <pre class="source-content" id="res-rdap"></pre>
+              </div>
             </div>
 
             <div id="whois-box" class="source-box">
-              <div class="source-title">
+              <div class="card-header">
                 <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                   <path d="M6 4H14L18 8V20H6V4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"></path>
                   <path d="M14 4V8H18" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"></path>
@@ -799,7 +858,9 @@
                 </svg>
                 WHOIS ORIGINAL RECORD
               </div>
-              <pre class="source-content" id="res-whois"></pre>
+              <div class="source-shell">
+                <pre class="source-content" id="res-whois"></pre>
+              </div>
             </div>
           </section>
         </div>
@@ -866,17 +927,14 @@
       }
 
       function resetSourceBoxes() {
+        document.getElementById("row-times").style.display = "none";
+        document.getElementById("row-registrar-card").style.display = "none";
+        document.getElementById("row-ns-card").style.display = "none";
+        document.getElementById("row-status-card").style.display = "none";
         document.getElementById("rdap-box").style.display = "none";
         document.getElementById("res-rdap").textContent = "";
         document.getElementById("whois-box").style.display = "none";
         document.getElementById("res-whois").textContent = "";
-      }
-
-      function setDisplay(id, val) {
-        const el = document.getElementById(id);
-        const isEmpty = !val || val === "-" || val === "null" || (Array.isArray(val) && val.length === 0);
-        el.style.display = isEmpty ? "none" : "block";
-        return !isEmpty;
       }
 
       function parseDomainTime(str, type) {
@@ -914,11 +972,24 @@
       function normalizeDomain(value) {
         if (!value) return "";
 
-        let result = value.trim();
+        let result = value.trim()
+          .replace(/[。．｡]/g, ".")
+          .replace(/\s+/g, "");
+
         result = result.replace(/^https?:\/\//i, "");
+
+        if (result.includes("/")) {
+          try {
+            result = new URL("http://" + result).hostname;
+          } catch (e) {
+            result = result.split("/")[0];
+          }
+        }
+
         result = result.replace(/^www\./i, "");
-        result = result.replace(/\/.*$/, "");
         result = result.replace(/:\d+$/, "");
+        result = result.replace(/^\.+|\.+$/g, "");
+
         return result;
       }
 
@@ -928,6 +999,38 @@
         } catch (e) {
           return domain.toLowerCase();
         }
+      }
+
+      function isValidAsciiDomain(domain) {
+        if (!domain || domain.length > 253) return false;
+        if (!domain.includes(".")) return false;
+
+        const labels = domain.split(".");
+        if (labels.length < 2) return false;
+
+        return labels.every(function (label) {
+          if (!label || label.length > 63) return false;
+          if (label.startsWith("-") || label.endsWith("-")) return false;
+          return /^[a-z0-9-]+$/i.test(label);
+        });
+      }
+
+      function getValidatedDomain(rawValue) {
+        const normalized = normalizeDomain(rawValue);
+        if (!normalized) {
+          return { ok: false, message: "请输入要查询的域名。" };
+        }
+
+        const asciiDomain = toASCII(normalized);
+        if (!isValidAsciiDomain(asciiDomain)) {
+          return { ok: false, message: "请输入有效的域名。" };
+        }
+
+        return {
+          ok: true,
+          displayDomain: normalized,
+          asciiDomain: asciiDomain
+        };
       }
 
       function getDomainFromURL() {
@@ -959,17 +1062,63 @@
         }
       }
 
+      function formatToChinaTime(value) {
+        if (!value || value === "null" || value === "") return "";
+
+        let str = String(value).trim();
+
+        try {
+          let utcDate;
+
+          if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(str)) {
+            utcDate = new Date(str.replace(" ", "T") + "Z");
+          } else if (/^\d{4}-\d{2}-\d{2}$/.test(str)) {
+            utcDate = new Date(str + "T00:00:00Z");
+          } else if (/^\d{4}-\d{2}-\d{2}T/.test(str) && !/(Z|[+-]\d{2}:\d{2})$/.test(str)) {
+            utcDate = new Date(str + "Z");
+          } else {
+            utcDate = new Date(str);
+          }
+
+          if (isNaN(utcDate.getTime())) {
+            return str;
+          }
+
+          const chinaDate = new Date(utcDate.getTime() + 8 * 60 * 60 * 1000);
+
+          const y = chinaDate.getUTCFullYear();
+          const m = String(chinaDate.getUTCMonth() + 1).padStart(2, "0");
+          const d = String(chinaDate.getUTCDate()).padStart(2, "0");
+          const h = String(chinaDate.getUTCHours()).padStart(2, "0");
+          const i = String(chinaDate.getUTCMinutes()).padStart(2, "0");
+          const s = String(chinaDate.getUTCSeconds()).padStart(2, "0");
+
+          return y + "-" + m + "-" + d + " " + h + ":" + i + ":" + s;
+        } catch (e) {
+          return str;
+        }
+      }
+
       async function query() {
-        const inputDomain = inputEl.value.trim();
         const requestId = ++currentRequestId;
 
         setMessage("", "");
         resetViews();
 
-        if (!inputDomain || !inputDomain.includes(".")) {
-          setMessage("请输入有效的域名。", "error");
+        const validated = getValidatedDomain(inputEl.value);
+
+        if (!validated.ok) {
+          setMessage(validated.message, "error");
           inputEl.focus();
           return;
+        }
+
+        const inputDomain = validated.displayDomain;
+        const asciiDomain = validated.asciiDomain;
+
+        if (inputEl.value.trim() !== inputDomain) {
+          inputEl.value = inputDomain;
+          updateClearButton();
         }
 
         const currentPath = window.location.pathname.replace(/^\//, "");
@@ -978,8 +1127,6 @@
         }
 
         document.title = inputDomain + " 域名查询 - 王先生查询";
-
-        const asciiDomain = toASCII(inputDomain);
         setLoading(true);
 
         try {
@@ -1014,18 +1161,20 @@
             timeFields.forEach(function (f) {
               if (f.val && f.val !== "null" && f.val !== "") {
                 hasValidTime = true;
-                const cleanTime = String(f.val).replace("T", " ").replace("Z", "").substring(0, 19);
+                const chinaTime = formatToChinaTime(f.val);
+
                 timeList.innerHTML +=
                   '<div class="list-item">' +
                     '<span class="item-sub-label">' + f.label + "</span>" +
-                    "<span>" + cleanTime + "</span>" +
+                    '<span>' + chinaTime + '<span class="time-label">UTC+8</span></span>' +
                   "</div>";
               }
             });
-            setDisplay("row-times", hasValidTime);
+            document.getElementById("row-times").style.display = hasValidTime ? "block" : "none";
 
+            const hasRegistrar = !!(d.registrar && d.registrar !== "null");
             document.getElementById("val-registrar").textContent = d.registrar || "";
-            setDisplay("row-registrar", d.registrar);
+            document.getElementById("row-registrar-card").style.display = hasRegistrar ? "block" : "none";
 
             const hasNs = d.nameServers && d.nameServers.length > 0;
             document.getElementById("list-ns").innerHTML = hasNs
@@ -1033,7 +1182,7 @@
                   return '<div class="list-item"><span>' + ns + "</span></div>";
                 }).join("")
               : "";
-            setDisplay("row-ns", hasNs);
+            document.getElementById("row-ns-card").style.display = hasNs ? "block" : "none";
 
             const hasStatus = d.status && d.status.length > 0;
             document.getElementById("list-status").innerHTML = hasStatus
@@ -1041,7 +1190,7 @@
                   return '<div class="list-item"><span>' + s.text + "</span></div>";
                 }).join("")
               : "";
-            setDisplay("row-status", hasStatus);
+            document.getElementById("row-status-card").style.display = hasStatus ? "block" : "none";
 
             if (d.rdapData && d.rdapData !== "" && d.rdapData !== "null") {
               try {
@@ -1074,9 +1223,13 @@
 
       function checkAutoQuery() {
         const domainFromURL = getDomainFromURL();
-        if (domainFromURL && domainFromURL.includes(".")) {
-          inputEl.value = domainFromURL;
-          updateClearButton();
+        if (!domainFromURL) return;
+
+        inputEl.value = domainFromURL;
+        updateClearButton();
+
+        const validated = getValidatedDomain(domainFromURL);
+        if (validated.ok) {
           query();
         }
       }
