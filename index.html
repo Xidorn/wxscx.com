@@ -515,7 +515,7 @@
                 </button>
               </div>
 
-              <button type="submit" class="btn-primary" aria-label="搜索">
+              <button type="submit" class="btn-primary" id="submitBtn" aria-label="搜索">
                 <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                   <circle cx="11" cy="11" r="6.5" stroke="currentColor" stroke-width="2"></circle>
                   <path d="M20 20L16.2 16.2" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
@@ -579,6 +579,8 @@
       const message = document.getElementById("queryMessage");
       const clearInside = document.getElementById("clearInside");
       const year = document.getElementById("year");
+      const submitBtn = document.getElementById("submitBtn");
+      const submitBtnDefaultHtml = submitBtn.innerHTML;
 
       year.textContent = new Date().getFullYear();
 
@@ -601,14 +603,35 @@
         }
       }
 
+      function setSubmitting(isSubmitting) {
+        submitBtn.disabled = isSubmitting;
+        submitBtn.style.opacity = isSubmitting ? "0.88" : "";
+        submitBtn.style.pointerEvents = isSubmitting ? "none" : "";
+        submitBtn.innerHTML = isSubmitting
+          ? '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true" style="animation:spin 1s linear infinite"><path d="M12 4V7" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path><path d="M18.364 5.636L16.243 7.757" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path><path d="M20 12H17" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path><path d="M18.364 18.364L16.243 16.243" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path><path d="M12 20V17" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path><path d="M5.636 18.364L7.757 16.243" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path><path d="M4 12H7" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path><path d="M5.636 5.636L7.757 7.757" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg>'
+          : submitBtnDefaultHtml;
+      }
+
       function normalizeDomain(value) {
         if (!value) return "";
 
-        let result = value.trim();
+        let result = value.trim()
+          .replace(/[。．｡]/g, ".")
+          .replace(/\s+/g, "");
+
         result = result.replace(/^https?:\/\//i, "");
+
+        if (result.includes("/")) {
+          try {
+            result = new URL("http://" + result).hostname;
+          } catch (e) {
+            result = result.split("/")[0];
+          }
+        }
+
         result = result.replace(/^www\./i, "");
-        result = result.replace(/\/.*$/, "");
         result = result.replace(/:\d+$/, "");
+        result = result.replace(/^\.+|\.+$/g, "");
 
         return result;
       }
@@ -621,11 +644,34 @@
         }
       }
 
-      function isValidDomain(domain) {
-        return /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+$/i.test(domain);
+      async function validateDomainByApi(domain) {
+        const url = "https://api.mrwang.com/whois.php?domain=" + encodeURIComponent(domain);
+        const response = await fetch(url, {
+          method: "GET",
+          headers: {
+            "Accept": "application/json"
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error("API_REQUEST_FAILED");
+        }
+
+        const result = await response.json();
+
+        if (result && typeof result === "object" && result.code === 0) {
+          return { ok: true, result: result };
+        }
+
+        return {
+          ok: false,
+          message: (result && typeof result.msg === "string" && result.msg.trim())
+            ? result.msg.trim()
+            : "请输入有效的域名。"
+        };
       }
 
-      function goToQuery() {
+      async function goToQuery() {
         const raw = input.value;
         const normalized = normalizeDomain(raw);
 
@@ -637,13 +683,32 @@
 
         const asciiDomain = toASCII(normalized);
 
-        if (!isValidDomain(asciiDomain)) {
+        if (!asciiDomain) {
           setMessage("请输入有效的域名。", "error");
           input.focus();
           return;
         }
 
-        window.location.href = "/" + encodeURIComponent(asciiDomain);
+        input.value = normalized;
+        updateClearButton();
+        setMessage("", "");
+        setSubmitting(true);
+
+        try {
+          const validation = await validateDomainByApi(asciiDomain);
+
+          if (!validation.ok) {
+            setMessage(validation.message || "请输入有效的域名。", "error");
+            input.focus();
+            return;
+          }
+
+          window.location.href = "/" + encodeURIComponent(asciiDomain);
+        } catch (error) {
+          setMessage("域名验证失败，请稍后重试。", "error");
+        } finally {
+          setSubmitting(false);
+        }
       }
 
       form.addEventListener("submit", function (e) {
@@ -661,6 +726,12 @@
       input.addEventListener("input", function () {
         if (message.textContent) setMessage("");
         updateClearButton();
+      });
+
+      window.addEventListener("DOMContentLoaded", function () {
+        const style = document.createElement("style");
+        style.textContent = "@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}";
+        document.head.appendChild(style);
       });
 
       updateClearButton();
