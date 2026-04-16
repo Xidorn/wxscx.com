@@ -1,416 +1,1119 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    
-    <title>域名查询 - 王先生查询</title>
-    <meta name="description" content="王先生域名查询工具（wxscx.com），提供极速的 Whois 信息查询、RDAP 数据获取、域名年龄计算及到期提醒服务。">
-    <meta name="keywords" content="域名查询, Whois查询, RDAP查询, 域名年龄, 王先生, wxscx.com, 域名状态">
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <style>
-        :root {
-            --primary-color: #2563eb;
-            --accent-color: #7c3aed;
-            --text-dark: #1f2937;
-            --text-light: #6b7280;
-            --bg-white: rgba(255, 255, 255, 0.98);
-            --radius-xl: 1rem;
-            --radius-2xl: 1.5rem;
-            --shadow-xl: 0 20px 40px -10px rgba(0, 0, 0, 0.08);
-            --color-error: #ef4444; 
-            --color-success: #10b981;
-            --color-warning: #d97706;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>域名查询 - 王先生查询</title>
+  <meta name="description" content="王先生查询提供 Whois、RDAP、域名年龄、到期时间、DNS 服务器与域名状态等查询服务。" />
+  <meta name="robots" content="index,follow" />
+  <meta name="format-detection" content="telephone=no,email=no,address=no" />
+  <link rel="canonical" href="https://www.wxscx.com/" />
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(-45deg, #f0f2f5, #e0e7ff, #f5f3ff, #f0f2f5);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
-            min-height: 100vh;
-            padding: 40px 20px;
-            display: flex; flex-direction: column; align-items: center;
-        }
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="域名查询 - 王先生查询" />
+  <meta property="og:description" content="查询 Whois、RDAP、域名年龄、到期时间、DNS 服务器与域名状态。" />
+  <meta property="og:url" content="https://www.wxscx.com/" />
+  <meta property="og:site_name" content="王先生查询" />
 
-        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --card: rgba(255, 255, 255, 0.88);
+      --card-strong: #ffffff;
+      --text: #0f172a;
+      --text-soft: #475569;
+      --text-light: #64748b;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-soft: rgba(37, 99, 235, 0.08);
+      --success: #059669;
+      --success-soft: rgba(5, 150, 105, 0.08);
+      --danger: #dc2626;
+      --danger-soft: rgba(220, 38, 38, 0.08);
+      --warning: #d97706;
+      --shadow-lg: 0 30px 80px rgba(15, 23, 42, 0.10);
+      --shadow-md: 0 16px 36px rgba(15, 23, 42, 0.06);
+      --radius-xl: 30px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --radius-sm: 12px;
+      --max-width: 920px;
+    }
 
-        .container { width: 100%; max-width: 800px; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-        header h1 a {
-            text-decoration: none;
-            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-size: 2.5rem; letter-spacing: -2px; font-weight: 900;
-        }
+    html,
+    body {
+      min-height: 100%;
+    }
 
-        .search-wrapper {
-            background: var(--bg-white); border-radius: 50px; padding: 6px 6px 6px 25px;
-            display: flex; box-shadow: var(--shadow-xl); margin-bottom: 20px;
-            border: 1px solid rgba(255,255,255,0.8); transition: all 0.3s ease;
-        }
-        .search-wrapper:focus-within { transform: translateY(-2px); border-color: var(--primary-color); }
-        .search-wrapper input { flex: 1; border: none; font-size: 1.1rem; outline: none; background: transparent; }
-        .search-wrapper button {
-            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-            color: white; border: none; padding: 12px 30px; border-radius: 40px; font-weight: 600; cursor: pointer;
-            transition: opacity 0.2s;
-        }
-        .search-wrapper button:active { opacity: 0.8; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+        "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 15% 18%, rgba(37, 99, 235, 0.10), transparent 24%),
+        radial-gradient(circle at 85% 12%, rgba(59, 130, 246, 0.10), transparent 18%),
+        radial-gradient(circle at 50% 100%, rgba(37, 99, 235, 0.06), transparent 24%),
+        linear-gradient(180deg, #fbfdff 0%, var(--bg) 100%);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      word-break: break-word;
+    }
 
-        #alertMsg {
-            display: none; text-align: center; padding: 12px; background: #fef2f2;
-            color: var(--color-error); border-radius: 12px; margin-bottom: 20px;
-            font-size: 0.9rem; font-weight: 600; border: 1px solid #fee2e2;
-        }
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
 
-        #unregisteredView {
-            display: none; background: var(--bg-white); padding: 50px 20px; border-radius: var(--radius-2xl);
-            box-shadow: var(--shadow-xl); text-align: center; animation: fadeIn 0.5s ease;
-        }
-        #unregisteredView i { font-size: 4rem; color: var(--color-success); margin-bottom: 20px; }
-        #unregisteredView h2 { font-size: 1.8rem; color: var(--text-dark); margin-bottom: 10px; }
-        #unregisteredView p { color: var(--text-light); font-size: 1.1rem; }
+    button,
+    input {
+      font: inherit;
+    }
 
-        .result-view { display: none; animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .page {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 40px 20px;
+    }
 
-        .hero-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px; }
-        .stat-box { 
-            background: var(--bg-white); padding: 25px; border-radius: var(--radius-xl); 
-            box-shadow: var(--shadow-xl); text-align: center; position: relative; overflow: hidden;
-        }
-        .stat-box i { position: absolute; right: -10px; bottom: -10px; font-size: 5rem; opacity: 0.05; transform: rotate(-15deg); }
-        .stat-box .label { font-size: 0.75rem; color: var(--text-light); text-transform: uppercase; margin-bottom: 10px; display: block; font-weight: 700; letter-spacing: 1px; }
-        .stat-box .value { font-size: 1.4rem; font-weight: 800; color: var(--text-dark); position: relative; z-index: 1; }
-        .stat-box .value b { color: var(--primary-color); font-size: 1.7rem; font-weight: 900; }
-        
-        .status-badge { font-size: 0.8rem; font-weight: 700; padding: 2px 10px; border-radius: 8px; margin-left: 5px; vertical-align: middle; }
-        .badge-recent { color: var(--accent-color); background: #f5f3ff; }
-        .badge-warning { color: #92400e; background: #fef3c7; }
+    .wrap {
+      width: 100%;
+      max-width: var(--max-width);
+    }
 
-        .detail-card { background: var(--bg-white); border-radius: var(--radius-2xl); box-shadow: var(--shadow-xl); overflow: hidden; margin-bottom: 30px; }
-        .info-row { padding: 25px 35px; border-bottom: 1px solid #f1f5f9; display: none; flex-direction: column; gap: 15px; }
-        .info-label { font-size: 0.8rem; color: var(--text-light); font-weight: 800; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 10px; }
-        
-        .ic-time { color: #f59e0b; } 
-        .ic-reg { color: #3b82f6; } 
-        .ic-dns { color: #10b981; } 
-        .ic-lock { color: #ef4444; }
+    .card {
+      background: var(--card);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+    }
 
-        .vertical-list { display: flex; flex-direction: column; gap: 12px; }
-        .list-item { display: flex; align-items: center; gap: 15px; font-size: 1.05rem; color: var(--text-dark); font-weight: 600; }
-        .item-sub-label { font-size: 0.8rem; color: var(--text-light); width: 85px; font-weight: 500; }
+    .hero {
+      position: relative;
+      padding: 56px 48px 18px;
+      text-align: center;
+      background: linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.72) 100%);
+    }
 
-        .source-section { background: var(--bg-white); border-radius: var(--radius-xl); margin-bottom: 25px; border: 1px solid #f1f5f9; box-shadow: var(--shadow-xl); display: none; overflow: hidden; }
-        .source-title { padding: 15px 25px; background: #f8fafc; color: var(--text-light); font-size: 0.75rem; font-weight: 700; display: flex; justify-content: space-between; border-bottom: 1px solid #f1f5f9; align-items: center; }
-        .source-content { padding: 25px; color: #475569; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.7; white-space: pre-wrap; max-height: 400px; overflow-y: auto; }
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 220px;
+      height: 220px;
+      right: -70px;
+      top: -90px;
+      background: radial-gradient(circle, rgba(37, 99, 235, 0.14) 0%, rgba(37, 99, 235, 0) 70%);
+      pointer-events: none;
+    }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        footer { text-align: center; padding: 40px 0; color: var(--text-light); font-size: 0.85rem; }
-        footer a { color: inherit; text-decoration: none; font-weight: 600; }
-        
-        @media (max-width: 600px) { 
-            .hero-stats { gap: 10px; } 
-            .stat-box { padding: 15px 10px; }
-            .stat-box .value { font-size: 1.1rem; }
-            .stat-box .value b { font-size: 1.3rem; }
-            .info-row { padding: 20px; } 
-        }
-    </style>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5671870713337337"
-     crossorigin="anonymous"></script>
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 36px;
+      padding: 0 14px;
+      border-radius: 999px;
+      background: var(--primary-soft);
+      color: var(--primary);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      margin-bottom: 18px;
+      position: relative;
+      z-index: 1;
+    }
+
+    h1 {
+      position: relative;
+      z-index: 1;
+      font-size: clamp(34px, 5vw, 48px);
+      line-height: 1.12;
+      letter-spacing: -0.04em;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    .intro {
+      position: relative;
+      z-index: 1;
+      max-width: 640px;
+      margin: 0 auto;
+      font-size: 16px;
+      color: var(--text-soft);
+    }
+
+    .search-section {
+      padding: 26px 48px 0;
+    }
+
+    .search-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 72px;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .search-box {
+      position: relative;
+      display: flex;
+      align-items: center;
+      min-height: 64px;
+      padding: 0 50px 0 18px;
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      border-radius: 20px;
+      background: var(--card-strong);
+      box-shadow: var(--shadow-md);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    }
+
+    .search-box:focus-within {
+      border-color: rgba(37, 99, 235, 0.28);
+      box-shadow:
+        0 0 0 5px rgba(37, 99, 235, 0.08),
+        0 18px 40px rgba(15, 23, 42, 0.08);
+      transform: translateY(-1px);
+    }
+
+    .search-icon {
+      width: 22px;
+      height: 22px;
+      margin-right: 12px;
+      flex: 0 0 auto;
+      color: var(--text-light);
+    }
+
+    .search-input {
+      flex: 1;
+      min-width: 0;
+      height: 64px;
+      border: none;
+      outline: none;
+      background: transparent;
+      font-size: 17px;
+      color: var(--text);
+    }
+
+    .search-input::placeholder {
+      color: #94a3b8;
+    }
+
+    .clear-inside {
+      position: absolute;
+      top: 50%;
+      right: 14px;
+      transform: translateY(-50%);
+      width: 28px;
+      height: 28px;
+      border: none;
+      border-radius: 999px;
+      background: #eef2f7;
+      color: var(--text-light);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    .clear-inside:hover {
+      background: #e2e8f0;
+      color: var(--text);
+    }
+
+    .clear-inside.show {
+      display: inline-flex;
+    }
+
+    .btn-primary {
+      width: 72px;
+      height: 64px;
+      border: none;
+      border-radius: 20px;
+      background: linear-gradient(135deg, var(--primary), #3b82f6);
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 18px 36px rgba(37, 99, 235, 0.22);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, var(--primary-hover), #2563eb);
+      transform: translateY(-1px);
+      box-shadow: 0 20px 40px rgba(37, 99, 235, 0.26);
+    }
+
+    .btn-primary svg,
+    .search-icon svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .btn-primary.loading {
+      pointer-events: none;
+      opacity: 0.92;
+    }
+
+    .message {
+      display: none;
+      margin-top: 12px;
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text-soft);
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      background: rgba(255,255,255,0.72);
+    }
+
+    .message.show {
+      display: block;
+    }
+
+    .message.error {
+      color: var(--danger);
+      background: #fef2f2;
+    }
+
+    .message.success {
+      color: var(--success);
+      background: #ecfdf5;
+    }
+
+    .unregistered-view,
+    .result-view {
+      display: none;
+    }
+
+    .content {
+      padding: 40px 48px 36px;
+    }
+
+    .empty-state {
+      padding: 10px 0 0;
+      text-align: center;
+    }
+
+    .empty-icon {
+      width: 68px;
+      height: 68px;
+      margin: 0 auto 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      background: var(--success-soft);
+      color: var(--success);
+    }
+
+    .empty-icon svg {
+      width: 30px;
+      height: 30px;
+    }
+
+    .empty-state h2 {
+      font-size: 28px;
+      line-height: 1.25;
+      letter-spacing: -0.03em;
+      margin-bottom: 8px;
+    }
+
+    .empty-state p {
+      color: var(--text-soft);
+      font-size: 15px;
+    }
+
+    .result-view {
+      display: none;
+      flex-direction: column;
+      gap: 34px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 24px;
+    }
+
+    .stat-card {
+      position: relative;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .stat-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-light);
+      margin-bottom: 12px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .stat-value {
+      position: relative;
+      z-index: 1;
+      font-size: 28px;
+      font-weight: 800;
+      line-height: 1.2;
+      color: var(--text);
+    }
+
+    .stat-value b {
+      color: var(--primary);
+      font-weight: 900;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      margin-left: 8px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      vertical-align: middle;
+    }
+
+    .badge-recent {
+      background: #f5f3ff;
+      color: #7c3aed;
+    }
+
+    .badge-warning {
+      background: #fff7ed;
+      color: #c2410c;
+    }
+
+    .section + .section {
+      margin-top: 26px;
+    }
+
+    .section-header {
+      padding: 0 0 18px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-header svg {
+      width: 18px;
+      height: 18px;
+      color: var(--primary);
+      flex: 0 0 auto;
+    }
+
+    .section-body {
+      padding: 0;
+    }
+
+    .info-row {
+      display: none;
+      padding: 22px 0;
+      border-top: 1px solid rgba(15, 23, 42, 0.06);
+    }
+
+    .info-row:first-child {
+      border-top: none;
+      padding-top: 0;
+    }
+
+    .info-row:last-child {
+      padding-bottom: 0;
+    }
+
+    .info-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text-light);
+      margin-bottom: 14px;
+    }
+
+    .info-title svg {
+      width: 16px;
+      height: 16px;
+      color: var(--primary);
+      flex: 0 0 auto;
+    }
+
+    .vertical-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .list-item {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      color: var(--text);
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .item-sub-label {
+      width: 86px;
+      flex: 0 0 auto;
+      font-size: 13px;
+      color: var(--text-light);
+      font-weight: 500;
+    }
+
+    .source-box {
+      display: none;
+      margin-top: 22px;
+      overflow: hidden;
+    }
+
+    .source-title {
+      padding: 0 0 14px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--text-light);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-transform: uppercase;
+    }
+
+    .source-title svg {
+      width: 16px;
+      height: 16px;
+      color: var(--primary);
+      flex: 0 0 auto;
+    }
+
+    .source-content {
+      padding: 0;
+      max-height: 420px;
+      overflow: auto;
+      white-space: pre-wrap;
+      color: #334155;
+      font-size: 13px;
+      line-height: 1.75;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    }
+
+    .footer {
+      padding: 0 48px 36px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-light);
+    }
+
+    .footer a:hover,
+    .brand a:hover {
+      color: var(--primary-hover);
+    }
+
+    @media (max-width: 720px) {
+      .page {
+        padding: 16px;
+      }
+
+      .hero,
+      .search-section,
+      .content,
+      .footer {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+
+      .hero {
+        padding-top: 30px;
+        padding-bottom: 12px;
+      }
+
+      .search-section {
+        padding-top: 22px;
+      }
+
+      .content {
+        padding-top: 32px;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 22px;
+      }
+
+      .section + .section {
+        margin-top: 22px;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .search-row {
+        grid-template-columns: minmax(0, 1fr) 58px;
+        gap: 10px;
+      }
+
+      .search-box,
+      .btn-primary {
+        height: 58px;
+        min-height: 58px;
+        border-radius: 16px;
+      }
+
+      .search-box {
+        padding-right: 46px;
+      }
+
+      .search-input {
+        height: 58px;
+        font-size: 16px;
+      }
+
+      .clear-inside {
+        right: 12px;
+      }
+
+      .btn-primary {
+        width: 58px;
+      }
+
+      .btn-primary svg,
+      .search-icon svg {
+        width: 20px;
+        height: 20px;
+      }
+
+      .list-item {
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .item-sub-label {
+        width: auto;
+      }
+
+      .empty-state h2 {
+        font-size: 24px;
+      }
+    }
+  </style>
+
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "王先生查询",
+      "url": "https://www.wxscx.com/",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://www.wxscx.com/{search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+  </script>
 </head>
 <body>
-
-    <div class="container">
-        <header style="text-align: center; margin-bottom: 40px;">
-            <h1><a href="/">域名查询</a></h1>
-            <p style="color: var(--text-light); font-weight: 500; margin-top: 5px; letter-spacing: 1px;">wxscx.com</p>
+  <main class="page">
+    <div class="wrap">
+      <section class="card" aria-labelledby="page-title">
+        <header class="hero">
+          <div class="brand">
+            <a href="https://www.wangxiansheng.com" target="_blank" rel="noopener noreferrer">王先生</a>
+          </div>
+          <h1 id="page-title">域名查询</h1>
+          <p class="intro">
+            查询 Whois、RDAP、域名年龄、到期时间、DNS 服务器与域名状态。
+          </p>
         </header>
 
-        <div class="search-wrapper">
-            <input type="text" id="domainInput" placeholder="输入域名并回车查询..." spellcheck="false" autofocus>
-            <button onclick="query()" id="queryBtn"><i class="fas fa-bolt"></i> 查询</button>
-        </div>
+        <section class="search-section">
+          <form id="queryForm" novalidate>
+            <div class="search-row">
+              <div class="search-box">
+                <span class="search-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.8"></circle>
+                    <path d="M4 12H20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
+                    <path d="M12 4C14.2 6.2 15.5 9 15.5 12C15.5 15 14.2 17.8 12 20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
+                    <path d="M12 4C9.8 6.2 8.5 9 8.5 12C8.5 15 9.8 17.8 12 20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
+                  </svg>
+                </span>
 
-        <div id="alertMsg"></div>
+                <input
+                  id="domainInput"
+                  class="search-input"
+                  type="text"
+                  inputmode="url"
+                  autocomplete="off"
+                  spellcheck="false"
+                  placeholder="请输入域名"
+                  aria-describedby="queryMessage"
+                  autofocus
+                />
 
-        <div id="unregisteredView">
-            <i id="unregIcon" class="fas fa-rocket"></i>
-            <h2 id="unreg-domain-name"></h2>
-            <p id="unregText">该域名尚未被注册，现在就可以拥有它！</p>
-        </div>
+                <button type="button" class="clear-inside" id="clearInside" aria-label="清空输入">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+                    <path d="M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+                  </svg>
+                </button>
+              </div>
 
-        <div id="resultView" class="result-view">
-            <div class="hero-stats">
-                <div id="box-age" class="stat-box">
-                    <i class="fas fa-seedling"></i>
-                    <span class="label">域名年龄</span>
-                    <div class="value" id="res-age"></div>
+              <button type="submit" class="btn-primary" id="queryBtn" aria-label="搜索">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <circle cx="11" cy="11" r="6.5" stroke="currentColor" stroke-width="2"></circle>
+                  <path d="M20 20L16.2 16.2" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+                </svg>
+              </button>
+            </div>
+
+            <div class="message" id="queryMessage" aria-live="polite"></div>
+          </form>
+        </section>
+
+        <div class="content">
+          <section id="unregisteredView" class="unregistered-view">
+            <div class="empty-state">
+              <div class="empty-icon" id="unregIconWrap">
+                <svg id="unregIcon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M12 3L13.8 8.2L19 10L13.8 11.8L12 17L10.2 11.8L5 10L10.2 8.2L12 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"></path>
+                  <path d="M18 17L18.8 19.2L21 20L18.8 20.8L18 23L17.2 20.8L15 20L17.2 19.2L18 17Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"></path>
+                </svg>
+              </div>
+              <h2 id="unreg-domain-name"></h2>
+              <p id="unregText">该域名尚未被注册，现在就可以拥有它。</p>
+            </div>
+          </section>
+
+          <section id="resultView" class="result-view">
+            <div class="stats-grid">
+              <div class="stat-card">
+                <span class="stat-label">域名年龄</span>
+                <div class="stat-value" id="res-age">-</div>
+              </div>
+              <div class="stat-card">
+                <span class="stat-label">到期倒计时</span>
+                <div class="stat-value" id="res-remaining">-</div>
+              </div>
+            </div>
+
+            <div class="section">
+              <div class="section-header">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <rect x="4" y="5" width="16" height="15" rx="2" stroke="currentColor" stroke-width="1.8"></rect>
+                  <path d="M8 3V7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
+                  <path d="M16 3V7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
+                  <path d="M4 10H20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
+                </svg>
+                域名信息
+              </div>
+
+              <div class="section-body">
+                <div id="row-times" class="info-row">
+                  <div class="info-title">
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.8"></circle>
+                      <path d="M12 8V12L14.5 14.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                    时间节点（UTC）
+                  </div>
+                  <div class="vertical-list" id="list-times"></div>
                 </div>
-                <div id="box-remaining" class="stat-box">
-                    <i class="fas fa-hourglass-half"></i>
-                    <span class="label">到期倒计时</span>
-                    <div class="value" id="res-remaining"></div>
+
+                <div id="row-registrar" class="info-row">
+                  <div class="info-title">
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <rect x="4" y="5" width="16" height="14" rx="2" stroke="currentColor" stroke-width="1.8"></rect>
+                      <path d="M8 10H16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
+                      <path d="M8 14H13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
+                    </svg>
+                    注册服务商
+                  </div>
+                  <div class="vertical-list">
+                    <div class="list-item" id="val-registrar"></div>
+                  </div>
                 </div>
+
+                <div id="row-ns" class="info-row">
+                  <div class="info-title">
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <ellipse cx="12" cy="6.5" rx="6" ry="2.5" stroke="currentColor" stroke-width="1.8"></ellipse>
+                      <path d="M6 6.5V12.5C6 13.9 8.7 15 12 15C15.3 15 18 13.9 18 12.5V6.5" stroke="currentColor" stroke-width="1.8"></path>
+                      <path d="M6 12.5V17.5C6 18.9 8.7 20 12 20C15.3 20 18 18.9 18 17.5V12.5" stroke="currentColor" stroke-width="1.8"></path>
+                    </svg>
+                    DNS 服务器
+                  </div>
+                  <div class="vertical-list" id="list-ns"></div>
+                </div>
+
+                <div id="row-status" class="info-row">
+                  <div class="info-title">
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <path d="M12 3L18.5 6V11.5C18.5 15.4 15.9 18.9 12 20C8.1 18.9 5.5 15.4 5.5 11.5V6L12 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"></path>
+                    </svg>
+                    域名状态
+                  </div>
+                  <div class="vertical-list" id="list-status"></div>
+                </div>
+              </div>
             </div>
 
-            <div class="detail-card">
-                <div id="row-times" class="info-row"><span class="info-label ic-time"><i class="fas fa-calendar-alt"></i> 时间节点 (UTC)</span><div class="vertical-list" id="list-times"></div></div>
-                <div id="row-registrar" class="info-row"><span class="info-label ic-reg"><i class="fas fa-id-card"></i> 注册服务商</span><div class="list-item" id="val-registrar"></div></div>
-                <div id="row-ns" class="info-row"><span class="info-label ic-dns"><i class="fas fa-server"></i> DNS 服务器</span><div class="vertical-list" id="list-ns"></div></div>
-                <div id="row-status" class="info-row"><span class="info-label ic-lock"><i class="fas fa-shield-halved"></i> 域名状态</span><div class="vertical-list" id="list-status"></div></div>
+            <div id="rdap-box" class="source-box">
+              <div class="source-title">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <rect x="5" y="5" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.8"></rect>
+                  <path d="M9 9H15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
+                  <path d="M9 12H15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
+                  <path d="M9 15H13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
+                </svg>
+                RDAP RAW DATA
+              </div>
+              <pre class="source-content" id="res-rdap"></pre>
             </div>
 
-            <div id="rdap-box" class="source-section">
-                <div class="source-title"><span><i class="fas fa-microchip" style="color:#4338ca"></i> RDAP RAW DATA</span></div>
-                <pre class="source-content" id="res-rdap"></pre>
+            <div id="whois-box" class="source-box">
+              <div class="source-title">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M6 4H14L18 8V20H6V4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"></path>
+                  <path d="M14 4V8H18" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"></path>
+                  <path d="M9 12H15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
+                  <path d="M9 15H15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
+                </svg>
+                WHOIS ORIGINAL RECORD
+              </div>
+              <pre class="source-content" id="res-whois"></pre>
             </div>
-            <div id="whois-box" class="source-section">
-                <div class="source-title"><span><i class="fas fa-fingerprint" style="color:#475569"></i> WHOIS ORIGINAL RECORD</span></div>
-                <pre class="source-content" id="res-whois"></pre>
-            </div>
+          </section>
         </div>
 
-        <footer>
-            <div>©<span id="year"></span> <a href="https://www.wangxiansheng.com">王先生</a> 版权所有</div>
+        <footer class="footer">
+          © <span id="year"></span>
+          <a href="https://www.wangxiansheng.com" target="_blank" rel="noopener noreferrer">王先生</a>
+          版权所有
         </footer>
+      </section>
     </div>
+  </main>
 
-    <script>
-        let currentRequestId = 0;
-        
-        // 设置年份
-        document.getElementById('year').textContent = new Date().getFullYear();
-        
-        // ===== 辅助函数：解析域名年龄和剩余天数 =====
-        function parseDomainTime(str, type) {
-            if (!str || str === "null" || str === "") return "-";
-        
-            let formatted = str.toString()
-                .replace(/(\d+)Y/g, '<b>$1</b>年')
-                .replace(/(\d+)Mo/g, '<b>$1</b>月')
-                .replace(/(\d+)D/g, '<b>$1</b>天')
-                .trim();
-        
-            const hasY = str.includes('Y');
-            const hasMo = str.includes('Mo');
-            const dMatch = str.match(/(\d+)D/);
-            const days = dMatch ? parseInt(dMatch[1]) : 0;
-        
-            if (type === 'age' && !hasY && !hasMo && days < 7) {
-                return formatted + ' <span class="status-badge badge-recent">最近注册</span>';
-            }
-        
-            if (type === 'remaining') {
-                const isExpired = str.includes('-') || (str.trim() === '0D');
-                if (isExpired) {
-                    let cleanValue = formatted.replace(/-/g, '');
-                    return `<span style="color:var(--color-warning); font-weight:700;">已过期 ${cleanValue}</span>`;
-                }
-                if (!hasY && !hasMo && days < 7) {
-                    return formatted + ' <span class="status-badge badge-warning">即将到期</span>';
-                }
-            }
-        
-            return formatted;
+  <script>
+    (function () {
+      let currentRequestId = 0;
+
+      const inputEl = document.getElementById("domainInput");
+      const formEl = document.getElementById("queryForm");
+      const messageEl = document.getElementById("queryMessage");
+      const clearBtnEl = document.getElementById("clearInside");
+      const queryBtnEl = document.getElementById("queryBtn");
+      const yearEl = document.getElementById("year");
+
+      const unregisteredViewEl = document.getElementById("unregisteredView");
+      const resultViewEl = document.getElementById("resultView");
+      const unregDomainNameEl = document.getElementById("unreg-domain-name");
+      const unregTextEl = document.getElementById("unregText");
+      const unregIconWrapEl = document.getElementById("unregIconWrap");
+      const unregIconEl = document.getElementById("unregIcon");
+
+      yearEl.textContent = new Date().getFullYear();
+
+      function setMessage(text, type) {
+        if (!text) {
+          messageEl.textContent = "";
+          messageEl.className = "message";
+          return;
         }
-        
-        // ===== 显示/隐藏 DOM =====
-        function setDisplay(id, val, isFlex = false) {
-            const el = document.getElementById(id);
-            const isEmpty =
-                !val ||
-                val === '-' ||
-                val === 'null' ||
-                (Array.isArray(val) && val.length === 0);
-        
-            el.style.display = isEmpty ? 'none' : (isFlex ? 'flex' : 'block');
-            return !isEmpty;
+
+        messageEl.textContent = text;
+        messageEl.className = "message show" + (type ? " " + type : "");
+      }
+
+      function updateClearButton() {
+        if (inputEl.value.trim()) {
+          clearBtnEl.classList.add("show");
+        } else {
+          clearBtnEl.classList.remove("show");
         }
-        
-        // ===== 清空 RDAP/WHOIS 显示 =====
-        function resetSourceBoxes() {
-            document.getElementById('rdap-box').style.display = 'none';
-            document.getElementById('res-rdap').innerText = '';
-        
-            document.getElementById('whois-box').style.display = 'none';
-            document.getElementById('res-whois').innerText = '';
+      }
+
+      function setLoading(isLoading) {
+        queryBtnEl.classList.toggle("loading", isLoading);
+        queryBtnEl.innerHTML = isLoading
+          ? '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true" style="animation:spin 1s linear infinite"><path d="M12 4V7" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path><path d="M18.364 5.636L16.243 7.757" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path><path d="M20 12H17" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path><path d="M18.364 18.364L16.243 16.243" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path><path d="M12 20V17" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path><path d="M5.636 18.364L7.757 16.243" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path><path d="M4 12H7" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path><path d="M5.636 5.636L7.757 7.757" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg>'
+          : '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="6.5" stroke="currentColor" stroke-width="2"></circle><path d="M20 20L16.2 16.2" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg>';
+      }
+
+      function resetViews() {
+        unregisteredViewEl.style.display = "none";
+        resultViewEl.style.display = "none";
+        resetSourceBoxes();
+      }
+
+      function resetSourceBoxes() {
+        document.getElementById("rdap-box").style.display = "none";
+        document.getElementById("res-rdap").textContent = "";
+        document.getElementById("whois-box").style.display = "none";
+        document.getElementById("res-whois").textContent = "";
+      }
+
+      function setDisplay(id, val) {
+        const el = document.getElementById(id);
+        const isEmpty = !val || val === "-" || val === "null" || (Array.isArray(val) && val.length === 0);
+        el.style.display = isEmpty ? "none" : "block";
+        return !isEmpty;
+      }
+
+      function parseDomainTime(str, type) {
+        if (!str || str === "null" || str === "") return "-";
+
+        let formatted = String(str)
+          .replace(/(\d+)Y/g, '<b>$1</b>年')
+          .replace(/(\d+)Mo/g, '<b>$1</b>月')
+          .replace(/(\d+)D/g, '<b>$1</b>天')
+          .trim();
+
+        const hasY = String(str).includes("Y");
+        const hasMo = String(str).includes("Mo");
+        const dMatch = String(str).match(/(\d+)D/);
+        const days = dMatch ? parseInt(dMatch[1], 10) : 0;
+
+        if (type === "age" && !hasY && !hasMo && days < 7) {
+          return formatted + ' <span class="status-badge badge-recent">最近注册</span>';
         }
-        
-        // ===== 中文/国际域名转换为 IDN ASCII =====
-        function toASCII(domain) {
-            try {
-                return new URL('http://' + domain).hostname;
-            } catch (e) {
-                return domain;
+
+        if (type === "remaining") {
+          const isExpired = String(str).includes("-") || String(str).trim() === "0D";
+          if (isExpired) {
+            const cleanValue = formatted.replace(/-/g, "");
+            return '<span style="color:var(--warning);font-weight:700;">已过期 ' + cleanValue + "</span>";
+          }
+          if (!hasY && !hasMo && days < 7) {
+            return formatted + ' <span class="status-badge badge-warning">即将到期</span>';
+          }
+        }
+
+        return formatted;
+      }
+
+      function normalizeDomain(value) {
+        if (!value) return "";
+
+        let result = value.trim();
+        result = result.replace(/^https?:\/\//i, "");
+        result = result.replace(/^www\./i, "");
+        result = result.replace(/\/.*$/, "");
+        result = result.replace(/:\d+$/, "");
+        return result;
+      }
+
+      function toASCII(domain) {
+        try {
+          return new URL("http://" + domain).hostname.toLowerCase();
+        } catch (e) {
+          return domain.toLowerCase();
+        }
+      }
+
+      function getDomainFromURL() {
+        const pathDomainEncoded = window.location.pathname.split("/").filter(Boolean).pop();
+        if (pathDomainEncoded) return decodeURIComponent(pathDomainEncoded);
+
+        const queryDomain = new URLSearchParams(window.location.search).get("domain");
+        return queryDomain ? decodeURIComponent(queryDomain) : "";
+      }
+
+      function setUnregisteredState(domain, reserved) {
+        unregisteredViewEl.style.display = "block";
+        unregDomainNameEl.textContent = domain;
+
+        if (reserved) {
+          unregIconWrapEl.style.background = "var(--danger-soft)";
+          unregIconWrapEl.style.color = "var(--danger)";
+          unregIconEl.innerHTML =
+            '<rect x="6.5" y="10" width="11" height="9" rx="2" stroke="currentColor" stroke-width="1.8"></rect>' +
+            '<path d="M9 10V8C9 6.3 10.3 5 12 5C13.7 5 15 6.3 15 8V10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>';
+          unregTextEl.textContent = "该域名已被保留。";
+        } else {
+          unregIconWrapEl.style.background = "var(--success-soft)";
+          unregIconWrapEl.style.color = "var(--success)";
+          unregIconEl.innerHTML =
+            '<path d="M12 3L13.8 8.2L19 10L13.8 11.8L12 17L10.2 11.8L5 10L10.2 8.2L12 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"></path>' +
+            '<path d="M18 17L18.8 19.2L21 20L18.8 20.8L18 23L17.2 20.8L15 20L17.2 19.2L18 17Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"></path>';
+          unregTextEl.textContent = "该域名尚未被注册，现在就可以拥有它。";
+        }
+      }
+
+      async function query() {
+        const inputDomain = inputEl.value.trim();
+        const requestId = ++currentRequestId;
+
+        setMessage("", "");
+        resetViews();
+
+        if (!inputDomain || !inputDomain.includes(".")) {
+          setMessage("请输入有效的域名。", "error");
+          inputEl.focus();
+          return;
+        }
+
+        const currentPath = window.location.pathname.replace(/^\//, "");
+        if (inputDomain !== decodeURIComponent(currentPath || "")) {
+          window.history.pushState(null, "", "/" + encodeURIComponent(inputDomain));
+        }
+
+        document.title = inputDomain + " 域名查询 - 王先生查询";
+
+        const asciiDomain = toASCII(inputDomain);
+        setLoading(true);
+
+        try {
+          const response = await fetch("https://api.mrwang.com/whois.php?domain=" + encodeURIComponent(asciiDomain));
+          const res = await response.json();
+
+          if (requestId !== currentRequestId) return;
+
+          if (res.code === 0 && res.data) {
+            const d = res.data;
+
+            if (d.registered === false) {
+              setUnregisteredState(inputDomain, d.reserved === true);
+              return;
             }
-        }
-        
-        // ===== 获取 URL 中的域名 =====
-        function getDomainFromURL() {
-            const pathDomainEncoded = window.location.pathname.split('/').filter(Boolean).pop();
-            if (pathDomainEncoded) return decodeURIComponent(pathDomainEncoded); // 解码
-            const queryDomain = new URLSearchParams(window.location.search).get('domain');
-            return queryDomain ? decodeURIComponent(queryDomain) : '';
-        }
-        
-        // ===== 核心查询函数 =====
-        async function query() {
-            const inputEl = document.getElementById('domainInput');
-            const inputDomain = inputEl.value.trim();
-            const alertEl = document.getElementById('alertMsg');
-            const unregEl = document.getElementById('unregisteredView');
-            const resultEl = document.getElementById('resultView');
-            const btn = document.getElementById('queryBtn');
-        
-            const requestId = ++currentRequestId;
-        
-            // 清理界面
-            alertEl.style.display = 'none';
-            unregEl.style.display = 'none';
-            resultEl.style.display = 'none';
-            resetSourceBoxes();
-        
-            if (!inputDomain || !inputDomain.includes('.')) {
-                alertEl.innerText = '请输入有效的域名';
-                alertEl.style.display = 'block';
-                return;
+
+            resultViewEl.style.display = "flex";
+
+            document.getElementById("res-age").innerHTML = parseDomainTime(d.age, "age");
+            document.getElementById("res-remaining").innerHTML = parseDomainTime(d.remaining, "remaining");
+
+            const timeList = document.getElementById("list-times");
+            timeList.innerHTML = "";
+
+            const timeFields = [
+              { label: "注册日期", val: d.creationDateISO8601 || d.creationDate },
+              { label: "到期日期", val: d.expirationDateISO8601 || d.expirationDate },
+              { label: "更新日期", val: d.updatedDateISO8601 || d.updatedDate }
+            ];
+
+            let hasValidTime = false;
+            timeFields.forEach(function (f) {
+              if (f.val && f.val !== "null" && f.val !== "") {
+                hasValidTime = true;
+                const cleanTime = String(f.val).replace("T", " ").replace("Z", "").substring(0, 19);
+                timeList.innerHTML +=
+                  '<div class="list-item">' +
+                    '<span class="item-sub-label">' + f.label + "</span>" +
+                    "<span>" + cleanTime + "</span>" +
+                  "</div>";
+              }
+            });
+            setDisplay("row-times", hasValidTime);
+
+            document.getElementById("val-registrar").textContent = d.registrar || "";
+            setDisplay("row-registrar", d.registrar);
+
+            const hasNs = d.nameServers && d.nameServers.length > 0;
+            document.getElementById("list-ns").innerHTML = hasNs
+              ? d.nameServers.map(function (ns) {
+                  return '<div class="list-item"><span>' + ns + "</span></div>";
+                }).join("")
+              : "";
+            setDisplay("row-ns", hasNs);
+
+            const hasStatus = d.status && d.status.length > 0;
+            document.getElementById("list-status").innerHTML = hasStatus
+              ? d.status.map(function (s) {
+                  return '<div class="list-item"><span>' + s.text + "</span></div>";
+                }).join("")
+              : "";
+            setDisplay("row-status", hasStatus);
+
+            if (d.rdapData && d.rdapData !== "" && d.rdapData !== "null") {
+              try {
+                const rawRdap = typeof d.rdapData === "string" ? JSON.parse(d.rdapData) : d.rdapData;
+                document.getElementById("res-rdap").textContent = JSON.stringify(rawRdap, null, 2);
+                document.getElementById("rdap-box").style.display = "block";
+              } catch (e) {
+                document.getElementById("res-rdap").textContent = String(d.rdapData);
+                document.getElementById("rdap-box").style.display = "block";
+              }
             }
-        
-            // 更新 URL，不修改输入框显示
-            const currentPath = window.location.pathname.replace(/^\//, '');
-            if (inputDomain !== decodeURIComponent(currentPath)) {
-                window.history.pushState(null, '', '/' + encodeURIComponent(inputDomain));
+
+            if (d.whoisData && d.whoisData !== "null") {
+              document.getElementById("res-whois").textContent = d.whoisData;
+              document.getElementById("whois-box").style.display = "block";
             }
-        
-            document.title = `${inputDomain} 域名查询 - 王先生查询`;
-            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> 查询中';
-        
-            // 转为 IDN ASCII 用于 API 请求
-            const asciiDomain = toASCII(inputDomain);
-        
-            try {
-                const response = await fetch(`https://api.mrwang.com/whois.php?domain=${encodeURIComponent(asciiDomain)}`);
-                const res = await response.json();
-        
-                if (requestId !== currentRequestId) return;
-        
-                if (res.code === 0 && res.data) {
-                    const d = res.data;
-        
-                    if (d.registered === false) {
-                        unregEl.style.display='block';
-                        document.getElementById('unreg-domain-name').innerText=inputDomain;
-        
-                        if(d.reserved===true){
-                            unregIcon.className='fas fa-lock';
-                            unregIcon.style.color='#ef4444';
-                            unregText.innerText='该域名已被保留';
-                        }else{
-                            unregIcon.className='fas fa-rocket';
-                            unregIcon.style.color='#10b981';
-                            unregText.innerText='该域名尚未被注册，现在就可以拥有它！';
-                        }
-                        return;
-                    }
-        
-                    resultEl.style.display = 'block';
-        
-                    document.getElementById('res-age').innerHTML = parseDomainTime(d.age, 'age');
-                    document.getElementById('res-remaining').innerHTML = parseDomainTime(d.remaining, 'remaining');
-        
-                    // 时间节点
-                    const timeList = document.getElementById('list-times');
-                    timeList.innerHTML = '';
-                    const timeFields = [
-                        { label: '注册日期', val: d.creationDateISO8601 || d.creationDate },
-                        { label: '到期日期', val: d.expirationDateISO8601 || d.expirationDate },
-                        { label: '更新日期', val: d.updatedDateISO8601 || d.updatedDate }
-                    ];
-        
-                    let hasValidTime = false;
-                    timeFields.forEach(f => {
-                        if (f.val && f.val !== "null" && f.val !== "") {
-                            hasValidTime = true;
-                            const cleanTime = f.val.replace('T', ' ').replace('Z', '').substring(0, 19);
-                            timeList.innerHTML += `
-                                <div class="list-item">
-                                    <span class="item-sub-label">${f.label}</span>
-                                    <span>${cleanTime}</span>
-                                </div>`;
-                        }
-                    });
-                    setDisplay('row-times', hasValidTime, true);
-        
-                    // 注册商
-                    document.getElementById('val-registrar').innerText = d.registrar || '';
-                    setDisplay('row-registrar', d.registrar, true);
-        
-                    // DNS
-                    const hasNs = d.nameServers && d.nameServers.length > 0;
-                    document.getElementById('list-ns').innerHTML = hasNs
-                        ? d.nameServers.map(ns => `<div class="list-item">${ns}</div>`).join('')
-                        : '';
-                    setDisplay('row-ns', hasNs, true);
-        
-                    // 状态
-                    const hasStatus = d.status && d.status.length > 0;
-                    document.getElementById('list-status').innerHTML = hasStatus
-                        ? d.status.map(s => `<div class="list-item">${s.text}</div>`).join('')
-                        : '';
-                    setDisplay('row-status', hasStatus, true);
-        
-                    // RDAP
-                    if (d.rdapData && d.rdapData !== "" && d.rdapData !== "null") {
-                        const rawRdap = typeof d.rdapData === 'string' ? JSON.parse(d.rdapData) : d.rdapData;
-                        document.getElementById('res-rdap').innerText = JSON.stringify(rawRdap, null, 2);
-                        document.getElementById('rdap-box').style.display = 'block';
-                    }
-        
-                    // WHOIS
-                    if (setDisplay('whois-box', d.whoisData)) {
-                        document.getElementById('res-whois').innerText = d.whoisData;
-                    }
-        
-                } else {
-                    alertEl.innerText = res.msg || '查询失败';
-                    alertEl.style.display = 'block';
-                }
-        
-            } catch (err) {
-                if (requestId === currentRequestId) {
-                    alertEl.innerText = '获取数据失败，请重试';
-                    alertEl.style.display = 'block';
-                }
-            } finally {
-                if (requestId === currentRequestId) {
-                    btn.innerHTML = '<i class="fas fa-bolt"></i> 查询';
-                }
-            }
+          } else {
+            setMessage(res.msg || "查询失败。", "error");
+          }
+        } catch (err) {
+          if (requestId === currentRequestId) {
+            setMessage("获取数据失败，请重试。", "error");
+          }
+        } finally {
+          if (requestId === currentRequestId) {
+            setLoading(false);
+          }
         }
-        
-        // ===== 页面自动查询 =====
-        function checkAutoQuery() {
-            const domainFromURL = getDomainFromURL();
-            if (domainFromURL && domainFromURL.includes('.')) {
-                const inputEl = document.getElementById('domainInput');
-                inputEl.value = domainFromURL;  // 保持输入框显示原始域名
-                query();
-            }
+      }
+
+      function checkAutoQuery() {
+        const domainFromURL = getDomainFromURL();
+        if (domainFromURL && domainFromURL.includes(".")) {
+          inputEl.value = domainFromURL;
+          updateClearButton();
+          query();
         }
-        
-        // 回车查询
-        document.getElementById('domainInput').addEventListener('keydown', e => {
-            if (e.key === 'Enter') query();
-        });
-        
-        // 页面加载自动查询
-        window.addEventListener('DOMContentLoaded', checkAutoQuery);
-    </script>
+      }
+
+      formEl.addEventListener("submit", function (e) {
+        e.preventDefault();
+        query();
+      });
+
+      inputEl.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          query();
+        }
+      });
+
+      inputEl.addEventListener("input", function () {
+        if (messageEl.textContent) setMessage("", "");
+        updateClearButton();
+      });
+
+      clearBtnEl.addEventListener("click", function () {
+        inputEl.value = "";
+        setMessage("", "");
+        resetViews();
+        updateClearButton();
+        inputEl.focus();
+      });
+
+      window.addEventListener("DOMContentLoaded", function () {
+        const style = document.createElement("style");
+        style.textContent = "@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}";
+        document.head.appendChild(style);
+        updateClearButton();
+        checkAutoQuery();
+      });
+    })();
+  </script>
 </body>
 </html>
