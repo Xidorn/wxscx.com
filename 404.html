@@ -145,6 +145,15 @@
       margin-bottom: 12px;
     }
 
+    h1 a {
+      display: inline-block;
+      transition: color 0.2s ease, opacity 0.2s ease;
+    }
+
+    h1 a:hover {
+      color: var(--primary);
+    }
+
     .intro {
       position: relative;
       z-index: 1;
@@ -558,7 +567,7 @@
 
     @media (max-width: 720px) {
       .page {
-        padding: 16px;
+        padding: 0;
       }
 
       .hero,
@@ -582,12 +591,42 @@
         padding-top: 34px;
       }
 
-      .overview-grid {
-        grid-template-columns: 1fr;
+      .metric-card {
+        min-height: 118px;
+        padding: 18px 16px 16px;
+      }
+
+      .metric-top {
+        margin-bottom: 12px;
+        gap: 10px;
+      }
+
+      .metric-label {
+        font-size: 11px;
+        letter-spacing: 0.05em;
+      }
+
+      .metric-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+      }
+
+      .metric-icon svg {
+        width: 17px;
+        height: 17px;
       }
 
       .metric-value {
-        font-size: 30px;
+        font-size: 22px;
+        line-height: 1.22;
+        word-break: break-all;
+      }
+
+      .status-badge {
+        margin-left: 6px;
+        padding: 2px 8px;
+        font-size: 11px;
       }
     }
 
@@ -627,6 +666,50 @@
         height: 20px;
       }
 
+      .overview-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .metric-card {
+        min-height: 104px;
+        padding: 14px 12px 14px;
+      }
+
+      .metric-top {
+        margin-bottom: 10px;
+        gap: 8px;
+      }
+
+      .metric-label {
+        font-size: 10px;
+        line-height: 1.35;
+      }
+
+      .metric-icon {
+        width: 30px;
+        height: 30px;
+        border-radius: 9px;
+      }
+
+      .metric-icon svg {
+        width: 15px;
+        height: 15px;
+      }
+
+      .metric-value {
+        font-size: 18px;
+        line-height: 1.25;
+      }
+
+      .status-badge {
+        display: inline-flex;
+        margin-left: 4px;
+        margin-top: 4px;
+        padding: 2px 6px;
+        font-size: 10px;
+      }
+
       .list-item {
         flex-direction: column;
         gap: 4px;
@@ -640,11 +723,6 @@
         font-size: 24px;
       }
 
-      .metric-value {
-        font-size: 28px;
-      }
-
-      .metric-card,
       .card-body,
       .source-shell {
         padding-left: 18px;
@@ -680,7 +758,9 @@
           <div class="brand">
             <a href="https://www.wangxiansheng.com" target="_blank" rel="noopener noreferrer">王先生</a>
           </div>
-          <h1 id="page-title">域名查询</h1>
+          <h1 id="page-title">
+            <a href="/" aria-label="返回首页">域名查询</a>
+          </h1>
           <p class="intro">
             查询 Whois、RDAP、域名年龄、到期时间、DNS 服务器与域名状态。
           </p>
