@@ -954,399 +954,478 @@
     </div>
   </main>
 
-  <script>
-    (function () {
-      let currentRequestId = 0;
+<script>
+  (function () {
+    let currentRequestId = 0;
 
-      const inputEl = document.getElementById("domainInput");
-      const formEl = document.getElementById("queryForm");
-      const messageEl = document.getElementById("queryMessage");
-      const clearBtnEl = document.getElementById("clearInside");
-      const queryBtnEl = document.getElementById("queryBtn");
-      const yearEl = document.getElementById("year");
+    const inputEl = document.getElementById("domainInput");
+    const formEl = document.getElementById("queryForm");
+    const messageEl = document.getElementById("queryMessage");
+    const clearBtnEl = document.getElementById("clearInside");
+    const queryBtnEl = document.getElementById("queryBtn");
+    const yearEl = document.getElementById("year");
 
-      const unregisteredViewEl = document.getElementById("unregisteredView");
-      const resultViewEl = document.getElementById("resultView");
-      const unregDomainNameEl = document.getElementById("unreg-domain-name");
-      const unregTextEl = document.getElementById("unregText");
-      const unregIconWrapEl = document.getElementById("unregIconWrap");
-      const unregIconEl = document.getElementById("unregIcon");
+    const unregisteredViewEl = document.getElementById("unregisteredView");
+    const resultViewEl = document.getElementById("resultView");
+    const unregDomainNameEl = document.getElementById("unreg-domain-name");
+    const unregTextEl = document.getElementById("unregText");
+    const unregIconWrapEl = document.getElementById("unregIconWrap");
+    const unregIconEl = document.getElementById("unregIcon");
 
-      yearEl.textContent = new Date().getFullYear();
+    yearEl.textContent = new Date().getFullYear();
 
-      function setMessage(text, type) {
-        if (!text) {
-          messageEl.textContent = "";
-          messageEl.className = "message";
-          return;
+    function setMessage(text, type) {
+      if (!text) {
+        messageEl.textContent = "";
+        messageEl.className = "message";
+        return;
+      }
+
+      messageEl.textContent = text;
+      messageEl.className = "message show" + (type ? " " + type : "");
+    }
+
+    function updateClearButton() {
+      if (inputEl.value.trim()) {
+        clearBtnEl.classList.add("show");
+      } else {
+        clearBtnEl.classList.remove("show");
+      }
+    }
+
+    function setLoading(isLoading) {
+      queryBtnEl.classList.toggle("loading", isLoading);
+      queryBtnEl.innerHTML = isLoading
+        ? '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true" style="animation:spin 1s linear infinite"><path d="M12 4V7" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path><path d="M18.364 5.636L16.243 7.757" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path><path d="M20 12H17" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path><path d="M18.364 18.364L16.243 16.243" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path><path d="M12 20V17" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path><path d="M5.636 18.364L7.757 16.243" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path><path d="M4 12H7" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path><path d="M5.636 5.636L7.757 7.757" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg>'
+        : '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="6.5" stroke="currentColor" stroke-width="2"></circle><path d="M20 20L16.2 16.2" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg>';
+    }
+
+    function resetViews() {
+      unregisteredViewEl.style.display = "none";
+      resultViewEl.style.display = "none";
+      resetSourceBoxes();
+    }
+
+    function resetSourceBoxes() {
+      document.getElementById("row-times").style.display = "none";
+      document.getElementById("row-registrar-card").style.display = "none";
+      document.getElementById("row-ns-card").style.display = "none";
+      document.getElementById("row-status-card").style.display = "none";
+      document.getElementById("rdap-box").style.display = "none";
+      document.getElementById("res-rdap").textContent = "";
+      document.getElementById("whois-box").style.display = "none";
+      document.getElementById("res-whois").textContent = "";
+    }
+
+    function parseDomainTime(str, type) {
+      if (!str || str === "null" || str === "") return "-";
+
+      const raw = String(str).trim();
+      const isExpired = raw.startsWith("-") || raw === "0D";
+
+      const normalized = raw.replace(/^-/, "");
+      let formatted = normalized
+        .replace(/(\d+)Y/g, '<b>$1</b>年')
+        .replace(/(\d+)Mo/g, '<b>$1</b>月')
+        .replace(/(\d+)D/g, '<b>$1</b>天')
+        .trim();
+
+      const hasY = normalized.includes("Y");
+      const hasMo = normalized.includes("Mo");
+      const dMatch = normalized.match(/(\d+)D/);
+      const days = dMatch ? parseInt(dMatch[1], 10) : 0;
+
+      if (type === "age" && !hasY && !hasMo && days < 7) {
+        return formatted + ' <span class="status-badge badge-recent">最近注册</span>';
+      }
+
+      if (type === "remaining") {
+        if (isExpired) {
+          return '<span style="color:var(--warning);font-weight:700;">已过期 ' + formatted + "</span>";
         }
-
-        messageEl.textContent = text;
-        messageEl.className = "message show" + (type ? " " + type : "");
-      }
-
-      function updateClearButton() {
-        if (inputEl.value.trim()) {
-          clearBtnEl.classList.add("show");
-        } else {
-          clearBtnEl.classList.remove("show");
+        if (!hasY && !hasMo && days < 7) {
+          return formatted + ' <span class="status-badge badge-warning">即将到期</span>';
         }
       }
 
-      function setLoading(isLoading) {
-        queryBtnEl.classList.toggle("loading", isLoading);
-        queryBtnEl.innerHTML = isLoading
-          ? '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true" style="animation:spin 1s linear infinite"><path d="M12 4V7" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path><path d="M18.364 5.636L16.243 7.757" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path><path d="M20 12H17" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path><path d="M18.364 18.364L16.243 16.243" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path><path d="M12 20V17" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path><path d="M5.636 18.364L7.757 16.243" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path><path d="M4 12H7" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path><path d="M5.636 5.636L7.757 7.757" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg>'
-          : '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="6.5" stroke="currentColor" stroke-width="2"></circle><path d="M20 20L16.2 16.2" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg>';
-      }
+      return formatted || "-";
+    }
 
-      function resetViews() {
-        unregisteredViewEl.style.display = "none";
-        resultViewEl.style.display = "none";
-        resetSourceBoxes();
-      }
+    function normalizeDomain(value) {
+      if (!value) return "";
 
-      function resetSourceBoxes() {
-        document.getElementById("row-times").style.display = "none";
-        document.getElementById("row-registrar-card").style.display = "none";
-        document.getElementById("row-ns-card").style.display = "none";
-        document.getElementById("row-status-card").style.display = "none";
-        document.getElementById("rdap-box").style.display = "none";
-        document.getElementById("res-rdap").textContent = "";
-        document.getElementById("whois-box").style.display = "none";
-        document.getElementById("res-whois").textContent = "";
-      }
+      let result = value.trim()
+        .replace(/[。．｡]/g, ".")
+        .replace(/\s+/g, "");
 
-      function parseDomainTime(str, type) {
-        if (!str || str === "null" || str === "") return "-";
+      result = result.replace(/^https?:\/\//i, "");
 
-        let formatted = String(str)
-          .replace(/(\d+)Y/g, '<b>$1</b>年')
-          .replace(/(\d+)Mo/g, '<b>$1</b>月')
-          .replace(/(\d+)D/g, '<b>$1</b>天')
-          .trim();
-
-        const hasY = String(str).includes("Y");
-        const hasMo = String(str).includes("Mo");
-        const dMatch = String(str).match(/(\d+)D/);
-        const days = dMatch ? parseInt(dMatch[1], 10) : 0;
-
-        if (type === "age" && !hasY && !hasMo && days < 7) {
-          return formatted + ' <span class="status-badge badge-recent">最近注册</span>';
-        }
-
-        if (type === "remaining") {
-          const isExpired = String(str).includes("-") || String(str).trim() === "0D";
-          if (isExpired) {
-            const cleanValue = formatted.replace(/-/g, "");
-            return '<span style="color:var(--warning);font-weight:700;">已过期 ' + cleanValue + "</span>";
-          }
-          if (!hasY && !hasMo && days < 7) {
-            return formatted + ' <span class="status-badge badge-warning">即将到期</span>';
-          }
-        }
-
-        return formatted;
-      }
-
-      function normalizeDomain(value) {
-        if (!value) return "";
-
-        let result = value.trim()
-          .replace(/[。．｡]/g, ".")
-          .replace(/\s+/g, "");
-
-        result = result.replace(/^https?:\/\//i, "");
-
-        if (result.includes("/")) {
-          try {
-            result = new URL("http://" + result).hostname;
-          } catch (e) {
-            result = result.split("/")[0];
-          }
-        }
-
-        result = result.replace(/^www\./i, "");
-        result = result.replace(/:\d+$/, "");
-        result = result.replace(/^\.+|\.+$/g, "");
-
-        return result;
-      }
-
-      function toASCII(domain) {
+      if (result.includes("/")) {
         try {
-          return new URL("http://" + domain).hostname.toLowerCase();
+          result = new URL("http://" + result).hostname;
         } catch (e) {
-          return domain.toLowerCase();
+          result = result.split("/")[0];
         }
       }
 
-      function isValidAsciiDomain(domain) {
-        if (!domain || domain.length > 253) return false;
-        if (!domain.includes(".")) return false;
+      result = result.replace(/^www\./i, "");
+      result = result.replace(/:\d+$/, "");
+      result = result.replace(/^\.+|\.+$/g, "");
 
-        const labels = domain.split(".");
-        if (labels.length < 2) return false;
+      return result;
+    }
 
-        return labels.every(function (label) {
-          if (!label || label.length > 63) return false;
-          if (label.startsWith("-") || label.endsWith("-")) return false;
-          return /^[a-z0-9-]+$/i.test(label);
-        });
+    function toASCII(domain) {
+      try {
+        return new URL("http://" + domain).hostname.toLowerCase();
+      } catch (e) {
+        return domain.toLowerCase();
+      }
+    }
+
+    function isValidAsciiDomain(domain) {
+      if (!domain || domain.length > 253) return false;
+      if (!domain.includes(".")) return false;
+
+      const labels = domain.split(".");
+      if (labels.length < 2) return false;
+
+      return labels.every(function (label) {
+        if (!label || label.length > 63) return false;
+        if (label.startsWith("-") || label.endsWith("-")) return false;
+        return /^[a-z0-9-]+$/i.test(label);
+      });
+    }
+
+    function getValidatedDomain(rawValue) {
+      const normalized = normalizeDomain(rawValue);
+      if (!normalized) {
+        return { ok: false, message: "请输入要查询的域名。" };
       }
 
-      function getValidatedDomain(rawValue) {
-        const normalized = normalizeDomain(rawValue);
-        if (!normalized) {
-          return { ok: false, message: "请输入要查询的域名。" };
+      const asciiDomain = toASCII(normalized);
+      if (!isValidAsciiDomain(asciiDomain)) {
+        return { ok: false, message: "请输入有效的域名。" };
+      }
+
+      return {
+        ok: true,
+        displayDomain: normalized,
+        asciiDomain: asciiDomain
+      };
+    }
+
+    function getDomainFromURL() {
+      const pathDomainEncoded = window.location.pathname.split("/").filter(Boolean).pop();
+      if (pathDomainEncoded) return decodeURIComponent(pathDomainEncoded);
+
+      const queryDomain = new URLSearchParams(window.location.search).get("domain");
+      return queryDomain ? decodeURIComponent(queryDomain) : "";
+    }
+
+    function setUnregisteredState(domain, reserved) {
+      unregisteredViewEl.style.display = "block";
+      unregDomainNameEl.textContent = domain;
+
+      if (reserved) {
+        unregIconWrapEl.style.background = "var(--danger-soft)";
+        unregIconWrapEl.style.color = "var(--danger)";
+        unregIconEl.innerHTML =
+          '<rect x="6.5" y="10" width="11" height="9" rx="2" stroke="currentColor" stroke-width="1.8"></rect>' +
+          '<path d="M9 10V8C9 6.3 10.3 5 12 5C13.7 5 15 6.3 15 8V10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>';
+        unregTextEl.textContent = "该域名已被保留。";
+      } else {
+        unregIconWrapEl.style.background = "var(--success-soft)";
+        unregIconWrapEl.style.color = "var(--success)";
+        unregIconEl.innerHTML =
+          '<path d="M12 3L13.8 8.2L19 10L13.8 11.8L12 17L10.2 11.8L5 10L10.2 8.2L12 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"></path>' +
+          '<path d="M18 17L18.8 19.2L21 20L18.8 20.8L18 23L17.2 20.8L15 20L17.2 19.2L18 17Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"></path>';
+        unregTextEl.textContent = "该域名尚未被注册，现在就可以拥有它。";
+      }
+    }
+
+    function formatToChinaTime(value) {
+      if (!value || value === "null" || value === "") return "";
+
+      const str = String(value).trim();
+
+      try {
+        if (/^\d{4}-\d{2}-\d{2}$/.test(str)) {
+          return str + " 00:00:00";
         }
 
-        const asciiDomain = toASCII(normalized);
-        if (!isValidAsciiDomain(asciiDomain)) {
-          return { ok: false, message: "请输入有效的域名。" };
-        }
-
-        return {
-          ok: true,
-          displayDomain: normalized,
-          asciiDomain: asciiDomain
-        };
-      }
-
-      function getDomainFromURL() {
-        const pathDomainEncoded = window.location.pathname.split("/").filter(Boolean).pop();
-        if (pathDomainEncoded) return decodeURIComponent(pathDomainEncoded);
-
-        const queryDomain = new URLSearchParams(window.location.search).get("domain");
-        return queryDomain ? decodeURIComponent(queryDomain) : "";
-      }
-
-      function setUnregisteredState(domain, reserved) {
-        unregisteredViewEl.style.display = "block";
-        unregDomainNameEl.textContent = domain;
-
-        if (reserved) {
-          unregIconWrapEl.style.background = "var(--danger-soft)";
-          unregIconWrapEl.style.color = "var(--danger)";
-          unregIconEl.innerHTML =
-            '<rect x="6.5" y="10" width="11" height="9" rx="2" stroke="currentColor" stroke-width="1.8"></rect>' +
-            '<path d="M9 10V8C9 6.3 10.3 5 12 5C13.7 5 15 6.3 15 8V10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>';
-          unregTextEl.textContent = "该域名已被保留。";
-        } else {
-          unregIconWrapEl.style.background = "var(--success-soft)";
-          unregIconWrapEl.style.color = "var(--success)";
-          unregIconEl.innerHTML =
-            '<path d="M12 3L13.8 8.2L19 10L13.8 11.8L12 17L10.2 11.8L5 10L10.2 8.2L12 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"></path>' +
-            '<path d="M18 17L18.8 19.2L21 20L18.8 20.8L18 23L17.2 20.8L15 20L17.2 19.2L18 17Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"></path>';
-          unregTextEl.textContent = "该域名尚未被注册，现在就可以拥有它。";
-        }
-      }
-
-      function formatToChinaTime(value) {
-        if (!value || value === "null" || value === "") return "";
-
-        let str = String(value).trim();
-
-        try {
-          let utcDate;
-
-          if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(str)) {
-            utcDate = new Date(str.replace(" ", "T") + "Z");
-          } else if (/^\d{4}-\d{2}-\d{2}$/.test(str)) {
-            utcDate = new Date(str + "T00:00:00Z");
-          } else if (/^\d{4}-\d{2}-\d{2}T/.test(str) && !/(Z|[+-]\d{2}:\d{2})$/.test(str)) {
-            utcDate = new Date(str + "Z");
-          } else {
-            utcDate = new Date(str);
-          }
-
-          if (isNaN(utcDate.getTime())) {
-            return str;
-          }
-
-          const chinaDate = new Date(utcDate.getTime() + 8 * 60 * 60 * 1000);
-
-          const y = chinaDate.getUTCFullYear();
-          const m = String(chinaDate.getUTCMonth() + 1).padStart(2, "0");
-          const d = String(chinaDate.getUTCDate()).padStart(2, "0");
-          const h = String(chinaDate.getUTCHours()).padStart(2, "0");
-          const i = String(chinaDate.getUTCMinutes()).padStart(2, "0");
-          const s = String(chinaDate.getUTCSeconds()).padStart(2, "0");
-
-          return y + "-" + m + "-" + d + " " + h + ":" + i + ":" + s;
-        } catch (e) {
+        if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(str)) {
           return str;
         }
+
+        let dateObj;
+        if (/(Z|[+-]\d{2}:\d{2})$/.test(str)) {
+          dateObj = new Date(str);
+        } else if (/^\d{4}-\d{2}-\d{2}T/.test(str)) {
+          dateObj = new Date(str + "Z");
+        } else {
+          dateObj = new Date(str);
+        }
+
+        if (isNaN(dateObj.getTime())) {
+          return str;
+        }
+
+        const chinaDate = new Date(dateObj.getTime() + 8 * 60 * 60 * 1000);
+        const y = chinaDate.getUTCFullYear();
+        const m = String(chinaDate.getUTCMonth() + 1).padStart(2, "0");
+        const d = String(chinaDate.getUTCDate()).padStart(2, "0");
+        const h = String(chinaDate.getUTCHours()).padStart(2, "0");
+        const i = String(chinaDate.getUTCMinutes()).padStart(2, "0");
+        const s = String(chinaDate.getUTCSeconds()).padStart(2, "0");
+
+        return y + "-" + m + "-" + d + " " + h + ":" + i + ":" + s;
+      } catch (e) {
+        return str;
+      }
+    }
+
+    function normalizeWhoisData(raw) {
+      const data = raw || {};
+
+      return {
+        unknown: data.unknown === true,
+        reserved: data.reserved === true,
+        registered: data.registered === true,
+
+        domain: data.domain || "",
+        registrar: data.registrar || "",
+        registrarURL: data.registrarURL || "",
+        registrarIANAId: data.registrarIANAId || "",
+        registrarWHOISServer: data.registrarWHOISServer || "",
+        registrarRDAPServer: data.registrarRDAPServer || "",
+
+        creationDate: data.creationDate || "",
+        creationDateISO8601: data.creationDateISO8601 || "",
+        expirationDate: data.expirationDate || "",
+        expirationDateISO8601: data.expirationDateISO8601 || "",
+        updatedDate: data.updatedDate || "",
+        updatedDateISO8601: data.updatedDateISO8601 || "",
+
+        whoisData: data.whoisData || "",
+        rdapData: data.rdapData || "",
+
+        status: Array.isArray(data.status) ? data.status : [],
+        nameServers: Array.isArray(data.nameServers) ? data.nameServers : [],
+
+        age: data.createdAgo || data.age || "",
+        remaining: data.expiresIn || data.remaining || "",
+        updatedAgo: data.updatedAgo || "",
+
+        gracePeriod: data.gracePeriod === true,
+        redemptionPeriod: data.redemptionPeriod === true,
+        pendingDelete: data.pendingDelete === true
+      };
+    }
+
+    function buildStatusList(d) {
+      const list = Array.isArray(d.status) ? d.status.slice() : [];
+
+      if (d.gracePeriod) {
+        list.push({ text: "gracePeriod" });
+      }
+      if (d.redemptionPeriod) {
+        list.push({ text: "redemptionPeriod" });
+      }
+      if (d.pendingDelete) {
+        list.push({ text: "pendingDelete" });
       }
 
-      async function query() {
-        const requestId = ++currentRequestId;
+      return list;
+    }
 
-        setMessage("", "");
-        resetViews();
+    async function query() {
+      const requestId = ++currentRequestId;
 
-        const validated = getValidatedDomain(inputEl.value);
+      setMessage("", "");
+      resetViews();
 
-        if (!validated.ok) {
-          setMessage(validated.message, "error");
-          inputEl.focus();
-          return;
-        }
+      const validated = getValidatedDomain(inputEl.value);
 
-        const inputDomain = validated.displayDomain;
-        const asciiDomain = validated.asciiDomain;
-
-        if (inputEl.value.trim() !== inputDomain) {
-          inputEl.value = inputDomain;
-          updateClearButton();
-        }
-
-        const currentPath = window.location.pathname.replace(/^\//, "");
-        if (inputDomain !== decodeURIComponent(currentPath || "")) {
-          window.history.pushState(null, "", "/" + encodeURIComponent(inputDomain));
-        }
-
-        document.title = inputDomain + " 域名查询 - 王先生查询";
-        setLoading(true);
-
-        try {
-          const response = await fetch("https://api.mrwang.com/whois.php?domain=" + encodeURIComponent(asciiDomain));
-          const res = await response.json();
-
-          if (requestId !== currentRequestId) return;
-
-          if (res.code === 0 && res.data) {
-            const d = res.data;
-
-            if (d.registered === false) {
-              setUnregisteredState(inputDomain, d.reserved === true);
-              return;
-            }
-
-            resultViewEl.style.display = "flex";
-
-            document.getElementById("res-age").innerHTML = parseDomainTime(d.age, "age");
-            document.getElementById("res-remaining").innerHTML = parseDomainTime(d.remaining, "remaining");
-
-            const timeList = document.getElementById("list-times");
-            timeList.innerHTML = "";
-
-            const timeFields = [
-              { label: "注册日期", val: d.creationDateISO8601 || d.creationDate },
-              { label: "到期日期", val: d.expirationDateISO8601 || d.expirationDate },
-              { label: "更新日期", val: d.updatedDateISO8601 || d.updatedDate }
-            ];
-
-            let hasValidTime = false;
-            timeFields.forEach(function (f) {
-              if (f.val && f.val !== "null" && f.val !== "") {
-                hasValidTime = true;
-                const chinaTime = formatToChinaTime(f.val);
-
-                timeList.innerHTML +=
-                  '<div class="list-item">' +
-                    '<span class="item-sub-label">' + f.label + "</span>" +
-                    '<span>' + chinaTime + '<span class="time-label">UTC+8</span></span>' +
-                  "</div>";
-              }
-            });
-            document.getElementById("row-times").style.display = hasValidTime ? "block" : "none";
-
-            const hasRegistrar = !!(d.registrar && d.registrar !== "null");
-            document.getElementById("val-registrar").textContent = d.registrar || "";
-            document.getElementById("row-registrar-card").style.display = hasRegistrar ? "block" : "none";
-
-            const hasNs = d.nameServers && d.nameServers.length > 0;
-            document.getElementById("list-ns").innerHTML = hasNs
-              ? d.nameServers.map(function (ns) {
-                  return '<div class="list-item"><span>' + ns + "</span></div>";
-                }).join("")
-              : "";
-            document.getElementById("row-ns-card").style.display = hasNs ? "block" : "none";
-
-            const hasStatus = d.status && d.status.length > 0;
-            document.getElementById("list-status").innerHTML = hasStatus
-              ? d.status.map(function (s) {
-                  return '<div class="list-item"><span>' + s.text + "</span></div>";
-                }).join("")
-              : "";
-            document.getElementById("row-status-card").style.display = hasStatus ? "block" : "none";
-
-            if (d.rdapData && d.rdapData !== "" && d.rdapData !== "null") {
-              try {
-                const rawRdap = typeof d.rdapData === "string" ? JSON.parse(d.rdapData) : d.rdapData;
-                document.getElementById("res-rdap").textContent = JSON.stringify(rawRdap, null, 2);
-                document.getElementById("rdap-box").style.display = "block";
-              } catch (e) {
-                document.getElementById("res-rdap").textContent = String(d.rdapData);
-                document.getElementById("rdap-box").style.display = "block";
-              }
-            }
-
-            if (d.whoisData && d.whoisData !== "null") {
-              document.getElementById("res-whois").textContent = d.whoisData;
-              document.getElementById("whois-box").style.display = "block";
-            }
-          } else {
-            setMessage(res.msg || "查询失败。", "error");
-          }
-        } catch (err) {
-          if (requestId === currentRequestId) {
-            setMessage("获取数据失败，请重试。", "error");
-          }
-        } finally {
-          if (requestId === currentRequestId) {
-            setLoading(false);
-          }
-        }
+      if (!validated.ok) {
+        setMessage(validated.message, "error");
+        inputEl.focus();
+        return;
       }
 
-      function checkAutoQuery() {
-        const domainFromURL = getDomainFromURL();
-        if (!domainFromURL) return;
+      const inputDomain = validated.displayDomain;
+      const asciiDomain = validated.asciiDomain;
 
-        inputEl.value = domainFromURL;
+      if (inputEl.value.trim() !== inputDomain) {
+        inputEl.value = inputDomain;
         updateClearButton();
-
-        const validated = getValidatedDomain(domainFromURL);
-        if (validated.ok) {
-          query();
-        }
       }
 
-      formEl.addEventListener("submit", function (e) {
+      const currentPath = window.location.pathname.replace(/^\//, "");
+      if (inputDomain !== decodeURIComponent(currentPath || "")) {
+        window.history.pushState(null, "", "/" + encodeURIComponent(inputDomain));
+      }
+
+      document.title = inputDomain + " 域名查询 - 王先生查询";
+      setLoading(true);
+
+      try {
+        const response = await fetch("https://api.mrwang.com/whois.php?domain=" + encodeURIComponent(asciiDomain), {
+          method: "GET",
+          headers: {
+            "Accept": "application/json"
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error("HTTP " + response.status);
+        }
+
+        const res = await response.json();
+
+        if (requestId !== currentRequestId) return;
+
+        if (res.code === 0 && res.data) {
+          const d = normalizeWhoisData(res.data);
+          const resultDomain = d.domain || inputDomain;
+
+          document.title = resultDomain + " 域名查询 - 王先生查询";
+
+          if (d.unknown) {
+            setMessage("该域名暂时无法识别或暂不支持查询。", "error");
+            return;
+          }
+
+          if (!d.registered) {
+            setUnregisteredState(resultDomain, d.reserved);
+            return;
+          }
+
+          resultViewEl.style.display = "flex";
+
+          document.getElementById("res-age").innerHTML = parseDomainTime(d.age, "age");
+          document.getElementById("res-remaining").innerHTML = parseDomainTime(d.remaining, "remaining");
+
+          const timeList = document.getElementById("list-times");
+          timeList.innerHTML = "";
+
+          const timeFields = [
+            { label: "注册日期", val: d.creationDateISO8601 || d.creationDate },
+            { label: "到期日期", val: d.expirationDateISO8601 || d.expirationDate },
+            { label: "更新日期", val: d.updatedDateISO8601 || d.updatedDate }
+          ];
+
+          let hasValidTime = false;
+          timeFields.forEach(function (f) {
+            if (f.val && f.val !== "null" && f.val !== "") {
+              hasValidTime = true;
+              const chinaTime = formatToChinaTime(f.val);
+
+              timeList.innerHTML +=
+                '<div class="list-item">' +
+                  '<span class="item-sub-label">' + f.label + "</span>" +
+                  '<span>' + chinaTime + '<span class="time-label">UTC+8</span></span>' +
+                "</div>";
+            }
+          });
+          document.getElementById("row-times").style.display = hasValidTime ? "block" : "none";
+
+          const hasRegistrar = !!(d.registrar && d.registrar !== "null");
+          document.getElementById("val-registrar").textContent = d.registrar || "";
+          document.getElementById("row-registrar-card").style.display = hasRegistrar ? "block" : "none";
+
+          const hasNs = d.nameServers && d.nameServers.length > 0;
+          document.getElementById("list-ns").innerHTML = hasNs
+            ? d.nameServers.map(function (ns) {
+                return '<div class="list-item"><span>' + ns + "</span></div>";
+              }).join("")
+            : "";
+          document.getElementById("row-ns-card").style.display = hasNs ? "block" : "none";
+
+          const mergedStatus = buildStatusList(d);
+          const hasStatus = mergedStatus && mergedStatus.length > 0;
+          document.getElementById("list-status").innerHTML = hasStatus
+            ? mergedStatus.map(function (s) {
+                return '<div class="list-item"><span>' + (s.text || s) + "</span></div>";
+              }).join("")
+            : "";
+          document.getElementById("row-status-card").style.display = hasStatus ? "block" : "none";
+
+          if (d.rdapData && d.rdapData !== "" && d.rdapData !== "null") {
+            try {
+              const rawRdap = typeof d.rdapData === "string" ? JSON.parse(d.rdapData) : d.rdapData;
+              document.getElementById("res-rdap").textContent = JSON.stringify(rawRdap, null, 2);
+              document.getElementById("rdap-box").style.display = "block";
+            } catch (e) {
+              document.getElementById("res-rdap").textContent = String(d.rdapData);
+              document.getElementById("rdap-box").style.display = "block";
+            }
+          }
+
+          if (d.whoisData && d.whoisData !== "null") {
+            document.getElementById("res-whois").textContent = d.whoisData;
+            document.getElementById("whois-box").style.display = "block";
+          }
+        } else {
+          setMessage((res && res.msg) ? res.msg : "查询失败。", "error");
+        }
+      } catch (err) {
+        if (requestId === currentRequestId) {
+          setMessage("获取数据失败，请重试。", "error");
+        }
+      } finally {
+        if (requestId === currentRequestId) {
+          setLoading(false);
+        }
+      }
+    }
+
+    function checkAutoQuery() {
+      const domainFromURL = getDomainFromURL();
+      if (!domainFromURL) return;
+
+      inputEl.value = domainFromURL;
+      updateClearButton();
+
+      const validated = getValidatedDomain(domainFromURL);
+      if (validated.ok) {
+        query();
+      }
+    }
+
+    formEl.addEventListener("submit", function (e) {
+      e.preventDefault();
+      query();
+    });
+
+    inputEl.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") {
         e.preventDefault();
         query();
-      });
+      }
+    });
 
-      inputEl.addEventListener("keydown", function (e) {
-        if (e.key === "Enter") {
-          e.preventDefault();
-          query();
-        }
-      });
+    inputEl.addEventListener("input", function () {
+      if (messageEl.textContent) setMessage("", "");
+      updateClearButton();
+    });
 
-      inputEl.addEventListener("input", function () {
-        if (messageEl.textContent) setMessage("", "");
-        updateClearButton();
-      });
+    clearBtnEl.addEventListener("click", function () {
+      inputEl.value = "";
+      setMessage("", "");
+      resetViews();
+      updateClearButton();
+      inputEl.focus();
+    });
 
-      clearBtnEl.addEventListener("click", function () {
-        inputEl.value = "";
-        setMessage("", "");
-        resetViews();
-        updateClearButton();
-        inputEl.focus();
-      });
-
-      window.addEventListener("DOMContentLoaded", function () {
-        const style = document.createElement("style");
-        style.textContent = "@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}";
-        document.head.appendChild(style);
-        updateClearButton();
-        checkAutoQuery();
-      });
-    })();
-  </script>
+    window.addEventListener("DOMContentLoaded", function () {
+      const style = document.createElement("style");
+      style.textContent = "@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}";
+      document.head.appendChild(style);
+      updateClearButton();
+      checkAutoQuery();
+    });
+  })();
+</script>
 </body>
 </html>
