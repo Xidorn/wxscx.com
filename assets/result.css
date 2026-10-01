@@ -121,3 +121,51 @@ html[dir="rtl"] .history-link{direction:ltr;text-align:start;unicode-bidi:isolat
 html[dir="rtl"] .lookup,html[dir="rtl"] .quick{direction:ltr}
 html[dir="rtl"] .lang{direction:ltr}
 html[dir="rtl"] .key{text-align:start}
+
+/* V27: resilient single-column details and one-tap sharing. */
+.domain-line{display:flex;align-items:center;gap:10px;min-width:0}
+.domain{min-width:0;overflow-wrap:anywhere;word-break:break-word}
+.meta-line{display:flex;align-items:center;flex-shrink:0;gap:8px}
+.share-link{appearance:none;border:1px solid var(--line,rgba(128,128,128,.22));border-radius:9px;background:transparent;color:inherit;display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;cursor:pointer;opacity:.75}
+.share-link:hover,.share-link:focus-visible{opacity:1;outline-offset:3px}
+.dns-item,.value,.item-title{overflow-wrap:anywhere}
+.domain,.dns-item,.metric-value{direction:ltr;unicode-bidi:isolate}
+@media(max-width:440px){.domain-line{gap:7px}.share-link{width:29px;height:29px;flex:none}.metric-value{font-size:clamp(.73rem,3vw,.95rem);letter-spacing:-.025em}}
+
+/* V27: expiry status is integrated into the Expires In metric; no standalone notice. */
+.metric.expiry-15{--expiry-color:#a46a12;--expiry-wash:rgba(188,137,44,.075)}
+.metric.expiry-7{--expiry-color:#bc711d;--expiry-wash:rgba(202,123,35,.10)}
+.metric.expiry-3{--expiry-color:#c34b33;--expiry-wash:rgba(205,80,52,.11)}
+.metric.expiry-1{--expiry-color:#bb293b;--expiry-wash:rgba(207,45,64,.13)}
+.metric.expiry-past{--expiry-color:#a62b4c;--expiry-wash:rgba(167,42,75,.10)}
+.metric[class*="expiry-"]{background:var(--expiry-wash)}
+.metric[class*="expiry-"] .metric-value{color:var(--expiry-color)}
+html[data-theme="graphite"] .metric.expiry-15,html[data-theme="forest"] .metric.expiry-15{--expiry-color:#f5cd7b}
+html[data-theme="graphite"] .metric.expiry-7,html[data-theme="forest"] .metric.expiry-7{--expiry-color:#ffc17a}
+html[data-theme="graphite"] .metric.expiry-3,html[data-theme="forest"] .metric.expiry-3{--expiry-color:#ff9b7e}
+html[data-theme="graphite"] .metric.expiry-1,html[data-theme="forest"] .metric.expiry-1{--expiry-color:#ff798c}
+html[data-theme="graphite"] .metric.expiry-past,html[data-theme="forest"] .metric.expiry-past{--expiry-color:#ff8ba0}
+
+/* V28: new domain age tier highlights, independent from expiry warning. */
+.metric.age-15{--age-color:#277f76;--age-wash:rgba(43,143,127,.075)}
+.metric.age-7{--age-color:#207b99;--age-wash:rgba(40,135,177,.10)}
+.metric.age-3{--age-color:#4e66b4;--age-wash:rgba(82,105,188,.11)}
+.metric.age-1{--age-color:#7851ab;--age-wash:rgba(125,87,174,.13)}
+.metric[class*="age-"]{background:var(--age-wash)}
+.metric[class*="age-"] .metric-value{color:var(--age-color)}
+html[data-theme="graphite"] .metric.age-15,html[data-theme="forest"] .metric.age-15{--age-color:#78d9c4}
+html[data-theme="graphite"] .metric.age-7,html[data-theme="forest"] .metric.age-7{--age-color:#82d5f4}
+html[data-theme="graphite"] .metric.age-3,html[data-theme="forest"] .metric.age-3{--age-color:#a6b6ff}
+html[data-theme="graphite"] .metric.age-1,html[data-theme="forest"] .metric.age-1{--age-color:#d0a4ff}
+
+/* V29: subtle action tools, consistent with compact one-column details. */
+.favorites-panel{margin-top:7px}.favorites-panel summary{cursor:pointer;color:var(--mute);font-size:12px;padding:8px 3px;list-style:none}.favorites-panel summary::-webkit-details-marker{display:none}
+.favorites-panel summary::before{content:'☆ ';color:var(--accent)}.favorites-list{margin-top:5px;padding:9px 12px;border:1px solid var(--line);border-radius:9px;background:var(--sheet)}
+.meta-line{flex-wrap:wrap}.export-action{border:1px solid var(--line);border-radius:7px;background:var(--inner);color:var(--mute);height:32px;padding:0 10px;font-size:10px;font-weight:750;cursor:pointer}
+.export-action:hover,.export-action:focus-visible{color:var(--accent);border-color:var(--accent)}.share-link.is-saved{color:var(--accent);opacity:1;background:var(--wash)}
+.share-link.is-saved svg{fill:currentColor;fill-opacity:.18}.source-line{border-top:1px solid var(--line);padding:13px 44px;display:flex;gap:10px 24px;flex-wrap:wrap;font-size:11px;color:var(--mute)}
+.source-line b{font-weight:600;color:var(--text);direction:ltr;unicode-bidi:isolate}
+@media(max-width:750px){.source-line{padding:13px 22px}.export-action{padding:0 8px}}
+@media(max-width:400px){.domain-line{align-items:center}.domain-line .domain{font-size:clamp(21px,6vw,32px)}.meta-line{gap:5px}.export-action{height:29px;padding:0 7px}.source-line{padding:11px 15px}}
+
+.export-bar{display:flex;justify-content:flex-end;gap:8px;padding:12px 0 0}.export-action{min-width:55px}.export-bar+.raw details{border:0}

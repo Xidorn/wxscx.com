@@ -12,14 +12,14 @@ const HISTORY_COOKIE='mrwang_whois_history';
 const HISTORY_KEY='mrwang_whois_history_v2';
 const HISTORY_TTL=365*24*60*60*1000;
 function htxt(k){return (HISTORY_TEXT[lang]||HISTORY_TEXT.en)[k]}
-function validHistoryDomain(d){return typeof d==='string'&&d.length<=253&&/^[a-z0-9.-]+$/i.test(d)&&d.includes('.')&&!d.startsWith('.')&&!d.endsWith('.')}
+function validHistoryDomain(d){return typeof d==='string'&&validDomain(d)}
 function persistHistory(entries){try{localStorage.setItem(HISTORY_KEY,JSON.stringify({version:2,entries:entries.slice(0,10)}))}catch(e){}}
 function readHistoryEntries(){
  const now=Date.now();let raw=null;
  try{raw=localStorage.getItem(HISTORY_KEY)}catch(e){}
  if(raw===null){
   let old=[];try{const part=document.cookie.split('; ').find(c=>c.startsWith(HISTORY_COOKIE+'='));if(part){const parsed=JSON.parse(decodeURIComponent(part.slice(HISTORY_COOKIE.length+1)));if(Array.isArray(parsed))old=parsed}}catch(e){}
-  const entries=[...new Set(old.map(x=>String(x).toLowerCase()).filter(validHistoryDomain))].slice(0,10).map(domain=>({domain,savedAt:now}));
+  const entries=[...new Set(old.map(cleanDomain).filter(validHistoryDomain))].slice(0,10).map(domain=>({domain,savedAt:now}));
   persistHistory(entries);
   document.cookie=HISTORY_COOKIE+'=; Max-Age=0; Path=/; SameSite=Lax'+(location.protocol==='https:'?'; Secure':'');
   return entries;
@@ -71,3 +71,41 @@ HISTORY_TEXT["hi"]={"history": "हाल की खोजें", "clear": "स
 
 THEME_NAMES["id"]=["Tema", "Grafit", "Awan", "Linen", "Lumut", "Samudra", "Plum", "Monokrom"];
 HISTORY_TEXT["id"]={"history": "Pencarian terbaru", "clear": "Hapus semua", "remove": "Hapus", "empty": "Belum ada riwayat", "saved": "Disimpan lokal selama satu tahun", "clearInput": "Kosongkan input", "searchIcon": "Cari domain"};
+
+
+THEME_NAMES['zh-Hant']=['外觀','石墨深色','雲白','亞麻暖色','苔綠','海洋藍','鳶尾紫','極簡黑白'];
+HISTORY_TEXT['zh-Hant']={history:'查詢紀錄',clear:'清除全部',remove:'刪除',empty:'暫無查詢紀錄',saved:'本機儲存，有效期一年',clearInput:'清除輸入',searchIcon:'搜尋網域'};
+/* Single domain normalization shared by homepage and results. URL API converts IDN to Punycode. */
+function cleanDomain(value){
+ let raw=String(value??'').trim();if(!raw||raw.includes('@')||/[\\\s]/u.test(raw))return '';
+ try{
+  const url=new URL(/^[a-z][a-z0-9+.-]*:\/\//i.test(raw)?raw:('https://'+raw.replace(/^\/\//,'')));
+  if(!['http:','https:'].includes(url.protocol)||url.username||url.password||url.port)return '';
+  let host=url.hostname.toLowerCase().replace(/\.$/,'').replace(/^www\./,'');
+  if(!host||host.length>253||host.includes('..')||host.includes(':')||!host.includes('.'))return '';
+  const labels=host.split('.');
+  if(labels.length<2||labels.some(x=>!x||x.length>63||!(/^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/i.test(x))))return '';
+  if(!/[a-z]/i.test(labels.at(-1))||/^\d+$/.test(labels.at(-1)))return '';
+  return host;
+ }catch{return ''}
+}
+function validDomain(input){return !!cleanDomain(input)&&cleanDomain(input)===input}
+function searchUrl(domain){return '/'+encodeURIComponent(domain)}
+
+
+/* V29: explicit, durable local bookmarks; no automatic expiration. */
+const FAVORITES_KEY='mrwang_whois_favorites_v1';
+function getFavorites(){try{const a=JSON.parse(localStorage.getItem(FAVORITES_KEY)||'[]');return Array.isArray(a)?[...new Set(a.filter(validHistoryDomain))].slice(0,30):[]}catch{return []}}
+function setFavorites(a){const domains=[...new Set(a.map(cleanDomain).filter(validHistoryDomain))].slice(0,30);try{localStorage.setItem(FAVORITES_KEY,JSON.stringify(domains))}catch{}return domains}
+function toggleFavorite(domain){const d=cleanDomain(domain),a=getFavorites();if(!validHistoryDomain(d))return false;const exists=a.includes(d);setFavorites(exists?a.filter(v=>v!==d):[d,...a]);return !exists}
+
+const EXTRA_TEXT={"en":["Save domain","Remove from saved","Export TXT","Export JSON","Query time","Data source","Saved domains","No saved domains","Remove","Local to this browser","Saved","Removed"],"zh":["收藏域名","取消收藏","导出 TXT","导出 JSON","查询时间","数据来源","我的收藏","暂无收藏域名","删除","仅保存在当前浏览器","已收藏","已取消收藏"],"zh-Hant":["收藏網域","取消收藏","匯出 TXT","匯出 JSON","查詢時間","資料來源","我的收藏","暫無收藏網域","刪除","僅儲存在目前瀏覽器","已收藏","已取消收藏"],"de":["Domain speichern","Aus Favoriten entfernen","TXT exportieren","JSON exportieren","Abfragezeit","Datenquelle","Gespeicherte Domains","Keine gespeicherten Domains","Entfernen","Nur in diesem Browser","Gespeichert","Entfernt"],"fr":["Enregistrer le domaine","Retirer des favoris","Exporter TXT","Exporter JSON","Heure de recherche","Source des données","Domaines favoris","Aucun domaine favori","Supprimer","Stocké dans ce navigateur","Enregistré","Supprimé"],"ja":["ドメインを保存","お気に入りから削除","TXTを書き出す","JSONを書き出す","照会時刻","データ取得元","保存したドメイン","保存したドメインはありません","削除","このブラウザー内のみ","保存しました","削除しました"],"es":["Guardar dominio","Quitar favorito","Exportar TXT","Exportar JSON","Hora de consulta","Fuente de datos","Dominios guardados","Sin dominios guardados","Eliminar","Solo en este navegador","Guardado","Eliminado"],"pt":["Salvar domínio","Remover favorito","Exportar TXT","Exportar JSON","Hora da consulta","Fonte dos dados","Domínios salvos","Nenhum domínio salvo","Remover","Somente neste navegador","Salvo","Removido"],"it":["Salva dominio","Rimuovi dai preferiti","Esporta TXT","Esporta JSON","Ora della ricerca","Fonte dei dati","Domini salvati","Nessun dominio salvato","Rimuovi","Solo in questo browser","Salvato","Rimosso"],"ko":["도메인 저장","즐겨찾기 해제","TXT 내보내기","JSON 내보내기","조회 시각","데이터 출처","저장한 도메인","저장한 도메인 없음","삭제","이 브라우저에만 저장","저장됨","삭제됨"],"ru":["Сохранить домен","Удалить из избранного","Экспорт TXT","Экспорт JSON","Время запроса","Источник данных","Избранные домены","Нет избранных доменов","Удалить","Только в этом браузере","Сохранено","Удалено"],"ar":["حفظ النطاق","إزالة من المحفوظات","تصدير TXT","تصدير JSON","وقت الاستعلام","مصدر البيانات","النطاقات المحفوظة","لا توجد نطاقات محفوظة","إزالة","محفوظ في هذا المتصفح فقط","تم الحفظ","تمت الإزالة"],"hi":["डोमेन सहेजें","सहेजा हुआ हटाएँ","TXT निर्यात","JSON निर्यात","खोज का समय","डेटा स्रोत","सहेजे गए डोमेन","कोई सहेजा डोमेन नहीं","हटाएँ","सिर्फ इस ब्राउज़र में","सहेजा गया","हटाया गया"],"id":["Simpan domain","Hapus dari favorit","Ekspor TXT","Ekspor JSON","Waktu pencarian","Sumber data","Domain tersimpan","Belum ada domain tersimpan","Hapus","Hanya di peramban ini","Tersimpan","Dihapus"]};
+function xt(n){return (EXTRA_TEXT[lang]||EXTRA_TEXT.en)[n]}
+
+function renderFavorites(){const panel=document.getElementById('favoritesPanel');if(!panel)return;
+ const domains=getFavorites(),title=document.getElementById('favoritesSummary'),list=document.getElementById('favoritesList');
+ title.textContent=xt(6)+' ('+domains.length+')';list.replaceChildren();
+ if(!domains.length){const empty=document.createElement('div');empty.className='history-empty';empty.textContent=xt(7);list.append(empty);return}
+ domains.forEach(d=>{const row=document.createElement('div');row.className='history-row';const a=document.createElement('a');a.className='history-link';a.href=searchUrl(d);a.textContent=d;
+ const remove=document.createElement('button');remove.type='button';remove.className='history-remove';remove.textContent='×';remove.setAttribute('aria-label',xt(8)+' '+d);remove.addEventListener('click',()=>{setFavorites(getFavorites().filter(x=>x!==d));renderFavorites()});row.append(a,remove);list.append(row)});
+}

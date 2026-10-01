@@ -48,3 +48,7 @@ html[dir="rtl"] .history-link{direction:ltr;text-align:start;unicode-bidi:isolat
 html[dir="rtl"] .lookup,html[dir="rtl"] .quick{direction:ltr}
 html[dir="rtl"] .lang{direction:ltr}
 html[dir="rtl"] .key{text-align:start}
+
+/* V29: subtle action tools, consistent with compact one-column details. */
+.favorites-panel{margin-top:7px}.favorites-panel summary{cursor:pointer;color:var(--mute);font-size:12px;padding:8px 3px;list-style:none}.favorites-panel summary::-webkit-details-marker{display:none}
+.favorites-panel summary::before{content:'☆ ';color:var(--accent)}.favorites-list{margin-top:5px;padding:9px 12px;border:1px solid var(--line);border-radius:9px;background:var(--sheet)}
