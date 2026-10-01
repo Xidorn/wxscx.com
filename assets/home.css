@@ -72,3 +72,18 @@ html[dir="rtl"] .key{text-align:start}
 .personal-panels .history-remove:focus-visible,.personal-panels summary:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
 @media(max-width:580px){.personal-panels{grid-template-columns:minmax(0,1fr);gap:9px;margin-top:11px}.personal-panels>details>summary{min-height:38px;padding:8px 12px!important}.personal-panels .history-box,.personal-panels .favorites-list{max-height:200px}}
 @media(prefers-reduced-motion:reduce){.personal-panels>details>summary::after{transition:none}}
+
+/* V34: keep a minimal, evenly spaced mobile search screen. */
+@media(max-width:650px){
+ .page{min-width:0;}
+ .hero{width:100%;min-width:0;padding-inline:clamp(14px,4vw,22px)!important;}
+ .hero-inner{width:min(100%,880px)!important;min-width:0;margin-inline:auto;}
+ .hero h1{overflow-wrap:break-word;}
+ .hero .lookup{box-sizing:border-box;max-width:100%;min-width:0;}
+ .hero .lookup input{min-width:0;flex:1;font-size:16px;}
+}
+
+/* V35 brand alignment */
+.brand-mark{font-size:12px!important;font-weight:850;letter-spacing:-.095em;padding-inline-end:2px;}
+.brand [data-brand-title]{letter-spacing:0;font-size:12px;font-weight:680;}
+@media(max-width:410px){.brand [data-brand-title]{font-size:10px!important;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}}

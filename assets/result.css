@@ -216,3 +216,64 @@ html[data-theme="graphite"] .metric.age-1,html[data-theme="forest"] .metric.age-
 @media(max-width:750px){.price-widget{margin-inline-start:0}.price-trigger{min-height:34px;padding:6px 9px;gap:6px}.price-value{font-size:13px}.price-caption{font-size:10px}.price-details{padding:12px}.price-table{min-width:420px}}
 @media(max-width:420px){.domain-line{gap:8px}.price-widget{flex:0 0 auto;margin-inline-start:0}.price-trigger{min-height:32px}.price-caption{font-size:10px}.price-value{font-size:12px}}
 @media(prefers-reduced-motion:reduce){.price-caret,.price-trigger{transition:none}}
+
+/* V34: align the WHOIS identity/price and keep key metrics three-abreast on phones. */
+@media(max-width:650px){
+ .wrap,.search-strip,#content,#loading,#error {min-width:0;max-width:100%;}
+ .domain-line {display:flex!important;align-items:center!important;gap:8px 10px;min-width:0;}
+ .domain-line>.domain {font-size:clamp(22px,6.1vw,33px);min-width:0;max-width:100%;overflow-wrap:anywhere;line-height:1.15;}
+ .domain-line>.meta-line {gap:5px;flex:0 0 auto;min-width:0;}
+ .price-widget {margin-inline-start:0!important;max-width:100%;min-width:0;flex:0 1 auto;}
+ .price-trigger {max-width:100%;min-width:0;}
+ .price-caption,.price-value {white-space:nowrap;}
+ .metrics {grid-template-columns:repeat(3,minmax(0,1fr))!important;}
+ .metric {min-width:0;padding:12px 8px!important;}
+ .metric-value{font-size:clamp(11px,3.25vw,16px)!important;overflow-wrap:anywhere;}
+ .price-details{max-width:100%;overflow:hidden;}
+ .price-table-wrap{-webkit-overflow-scrolling:touch;}
+ .record-group .row{min-width:0;}
+ .record-group .value,.dns-item{overflow-wrap:anywhere;}
+}
+@media(max-width:375px){
+ .domain-head {padding-inline:clamp(12px,4vw,18px)!important;}
+ .domain-line .price-widget {flex-basis:100%;max-width:max-content;}
+ .metric {padding:10px 6px!important;}
+ .metric-label{font-size:10px;}
+ .metric-value{font-size:clamp(10px,3.05vw,12px)!important;}
+}
+
+/* V35 brand alignment */
+.brand-mark{font-size:12px!important;font-weight:850;letter-spacing:-.095em;padding-inline-end:2px;}
+.brand [data-brand-title]{letter-spacing:0;font-size:12px;font-weight:680;}
+@media(max-width:410px){.brand [data-brand-title]{font-size:10px!important;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}}
+
+/* V35: one lightweight three-operation quote rail. No nested color cards. */
+.domain-line{display:flex;align-items:center;flex-wrap:wrap;column-gap:12px;row-gap:12px}
+.domain-line>.domain{flex:0 1 auto;min-width:0}
+.domain-line>.meta-line{flex:0 0 auto}
+.domain-line>.price-widget{margin-inline-start:auto;flex:0 1 auto;min-width:250px;max-width:100%}
+.price-rail{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-block-end:1px solid var(--line)}
+.price-kind{appearance:none;position:relative;background:transparent!important;border:0!important;border-radius:0!important;min-width:0;padding:5px 11px 9px;text-align:start;color:var(--text);cursor:pointer;display:flex;flex-direction:column;gap:6px;box-shadow:none!important}
+.price-kind+.price-kind{border-inline-start:1px solid var(--line)!important}
+.price-kind-label{font-size:10px;color:var(--mute);font-weight:600;white-space:nowrap}
+.price-kind-value{font-size:clamp(12px,1.25vw,17px);font-weight:760;letter-spacing:-.035em;white-space:nowrap;font-variant-numeric:tabular-nums}
+.price-kind:not(:disabled):hover .price-kind-value,.price-kind.is-active .price-kind-value{color:var(--accent)}
+.price-kind.is-active:after{content:'';height:2px;background:var(--accent);position:absolute;inset-inline:10px;bottom:-1px}
+.price-kind:disabled{opacity:.4;cursor:default}
+.price-details{margin-top:19px!important;border:0!important;border-block-start:1px solid var(--line)!important;border-radius:0!important;background:transparent!important;padding:17px 0 0!important;box-shadow:none!important}
+.quote-header,.quote-head,.quote-row,.quote-footer{display:flex;justify-content:space-between;align-items:center;gap:14px}
+.quote-header strong{font-size:13px}.quote-header small{color:var(--mute);font-size:11px}
+.quote-note{font-size:11px;color:var(--mute);line-height:1.6;margin:10px 0 20px;max-width:660px}
+.quote-column{width:100%;max-width:100%}.quote-head{border-block-end:1px solid var(--line);padding:0 0 8px;font-size:10px;color:var(--mute)}
+.quote-row{padding:12px 0;border-block-end:1px solid var(--line);min-width:0}
+.quote-name{min-width:0;font-size:12px;overflow-wrap:anywhere}.quote-name a{font-weight:650;color:var(--text);text-decoration:none}.quote-name a:hover{color:var(--accent);text-decoration:underline}
+.quote-data{min-width:0;width:min(48%,310px);display:flex;align-items:center;justify-content:flex-end;gap:16px}.quote-data strong{min-width:85px;text-align:end;font-size:13px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.quote-bar{height:3px;flex:1 1 auto;min-width:12px;background:var(--line);overflow:hidden}.quote-bar i{display:block;background:var(--accent);height:100%;width:var(--quote-fill)}
+.quote-footer{padding-top:12px;font-size:10px;color:var(--mute);flex-wrap:wrap}.quote-footer a{color:var(--accent)}
+@media(max-width:760px){.domain-line>.price-widget{flex-basis:100%;width:100%;min-width:0;margin-inline-start:0}.price-rail{width:100%}.price-kind{padding:10px 8px}.price-kind-value{font-size:clamp(11px,3.5vw,16px)}.quote-data{width:min(53%,220px);gap:8px}.quote-data strong{min-width:75px;font-size:12px}}
+@media(max-width:360px){.price-kind{padding-inline:5px}.price-kind-label{font-size:9px}.price-kind-value{font-size:11px}.quote-bar{display:none}}
+
+/* V35 remove visual nesting: one continuous record surface. */
+.metrics{background:transparent!important;border-inline:0!important;border-radius:0!important;box-shadow:none!important;border-block:1px solid var(--line)!important;}
+.metric{background:transparent!important;}
+@media(max-width:650px){.metrics{border-inline:0!important;margin-inline:15px!important}.metric+.metric{border-block-start:0!important;border-inline-start:1px solid var(--line)!important}.metric{padding-inline:6px!important}}

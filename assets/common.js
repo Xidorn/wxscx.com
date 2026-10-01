@@ -140,3 +140,7 @@ function translateLanguageGroups(select,code){
  const names=LANGUAGE_GROUPS[code]||LANGUAGE_GROUPS.en;if(!select)return;select.setAttribute('aria-label',names[0]);select.title=names[0];select.querySelectorAll('optgroup[data-group]').forEach(g=>g.label=names[Number(g.dataset.group)+1]||'');
  const box=select.closest('.picker');if(box){box.title=names[0]}
 }
+
+/* Brand follows the selected interface language. */
+const BRAND_TITLES={"en": "Domain Lookup", "zh": "域名查询", "zh-Hant": "網域查詢", "ja": "ドメイン検索", "ko": "도메인 조회", "de": "Domain-Abfrage", "fr": "Recherche de domaine", "es": "Consulta de dominios", "pt": "Consulta de domínios", "it": "Ricerca domini", "ru": "Поиск доменов", "ar": "البحث عن النطاقات", "hi": "डोमेन खोज", "id": "Pencarian Domain"};
+function renderBrand(code){document.querySelectorAll("[data-brand-title]").forEach(el=>{el.textContent=BRAND_TITLES[code]||BRAND_TITLES.en});}
