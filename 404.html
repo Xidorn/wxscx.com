@@ -7,8 +7,53 @@
 @media(max-width:860px){.top-inner{grid-template-columns:auto 1fr auto;gap:12px}.brand span:last-child{display:none}.content-grid{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,1fr)}.metric:nth-child(3){border-left:0;border-top:1px solid var(--line)}.metric:nth-child(4){border-top:1px solid var(--line)}}
 @media(max-width:600px){.top-inner{width:calc(100% - 22px);grid-template-columns:1fr auto}.quick{grid-column:1/-1;grid-row:2;height:40px}.top-inner{height:auto;padding:10px 0}.wrap{width:calc(100% - 22px);padding:22px 0 54px}.domain-head{padding:24px 18px 20px}.domain-head:after{display:none}.domain{font-size:38px}.metrics{grid-template-columns:1fr 1fr}.metric{padding:16px;min-height:98px}.metric-value{font-size:17px}.content-grid{gap:12px;margin-top:12px}.main-ledger,.side-ledger{gap:12px}.row{grid-template-columns:1fr;gap:5px;padding:11px 0}.section-head{padding:0 14px}.rows{padding:0 14px}.dns-list,.items{padding-left:14px;padding-right:14px}.foot{flex-direction:column}}
 
+
+/* V10 — cohesive, accessible themes and uninterrupted reading layout */
+:root,html[data-theme="graphite"]{color-scheme:dark;--bg:#101318;--surface:#181d24;--surface2:#1d242c;--text:#f1f2f4;--secondary:#a1abb5;--stroke:#333c45;--accent:#b4cfff;--accent-ink:#14202f;--ambient:rgba(139,170,211,.085)}
+html[data-theme="paper"]{color-scheme:light;--bg:#f5f6f4;--surface:#fff;--surface2:#f7f8f7;--text:#20272c;--secondary:#637179;--stroke:#dce1df;--accent:#365e91;--accent-ink:#fff;--ambient:rgba(88,112,128,.045)}
+html[data-theme="sand"]{color-scheme:light;--bg:#f5f1e9;--surface:#fffdfa;--surface2:#f4eee4;--text:#302e2a;--secondary:#766f63;--stroke:#e0d7ca;--accent:#a35a37;--accent-ink:#fff;--ambient:rgba(160,111,62,.055)}
+html[data-theme="forest"]{color-scheme:dark;--bg:#111a18;--surface:#192521;--surface2:#202e29;--text:#edf4ed;--secondary:#a3b5a9;--stroke:#354840;--accent:#b8d49a;--accent-ink:#142019;--ambient:rgba(144,176,119,.065)}
+html,body{background:var(--bg)!important;color:var(--text)!important}
+body:before{background:radial-gradient(ellipse at 80% 0%,var(--ambient),transparent 60%)!important;opacity:1!important}
+body:after{opacity:.16!important;background-image:linear-gradient(var(--stroke) 1px,transparent 1px),linear-gradient(90deg,var(--stroke) 1px,transparent 1px)!important;background-size:64px 64px!important}
+.topbar{background:var(--surface)!important;border-bottom:1px solid var(--stroke)!important;box-shadow:none!important}
+.brand,.domain,.section-title,h1{color:var(--text)!important;text-shadow:none!important}
+.brand-mark{background:var(--accent)!important;color:var(--accent-ink)!important;border:0!important;box-shadow:none!important}
+.lang{display:flex;align-items:center;gap:9px}
+.lang select,.theme-select{appearance:auto;background:var(--surface2)!important;color:var(--text)!important;border:1px solid var(--stroke)!important;border-radius:9px;padding:9px 11px!important;font-size:12px;max-width:132px;cursor:pointer}
+.quick,.lookup{background:var(--surface)!important;border:1px solid var(--stroke)!important;box-shadow:none!important}
+.quick input,.lookup input{color:var(--text)!important}
+.quick input::placeholder,.lookup input::placeholder{color:var(--secondary)!important}
+.quick button,.lookup button{background:var(--accent)!important;color:var(--accent-ink)!important;box-shadow:none!important}
+.loading,.error,.domain-head,.metrics,.section,.raw details{background:var(--surface)!important;border:1px solid var(--stroke)!important;box-shadow:none!important}
+.domain-head:before,.domain-head:after,.section:before,.metric:after{display:none!important}
+.domain-head{border-radius:18px 18px 0 0!important;padding:36px 38px!important}
+.metrics{border-top:0!important;border-radius:0 0 18px 18px!important;grid-template-columns:repeat(auto-fit,minmax(175px,1fr))!important}
+.metric{min-height:104px!important}.metric+.metric{border-left:1px solid var(--stroke)!important}
+.metric-label,.key,.dns-label,.section-kicker,.registrar-quick,.metric-note{color:var(--secondary)!important}
+.metric-value,.value,.item-title,.dns-item,.life,.raw summary{color:var(--text)!important}
+.badge{background:var(--surface2)!important;border-color:var(--stroke)!important;box-shadow:none!important}
+.badge.registered{color:var(--accent)!important}.badge.available{color:#2c9971!important}.badge.reserved{color:#bc8548!important}
+.notice{background:var(--surface2)!important;border:1px solid var(--stroke)!important;border-left:3px solid var(--accent)!important;color:var(--secondary)!important}
+.content-grid{display:flex!important;flex-direction:column!important;gap:0!important;max-width:1020px;margin:25px auto 0!important}
+.main-ledger,.side-ledger{display:contents!important}
+.section{width:100%;margin:0 0 14px;border-radius:14px!important;overflow:hidden}
+.section-head{height:auto!important;min-height:61px!important;background:transparent!important;padding:18px 28px!important;border-bottom:1px solid var(--stroke)!important}
+.section-title{font-size:13px!important;text-transform:none!important;letter-spacing:0!important}
+.section-kicker{font-size:10px!important}
+.rows{padding:5px 28px!important}.row{grid-template-columns:minmax(150px,26%) minmax(0,1fr)!important;gap:24px!important;padding:16px 0!important;border-color:var(--stroke)!important}
+.key{font-size:12px!important;text-transform:none!important;letter-spacing:0!important}.value{font-size:13px!important;line-height:1.65!important}.value a,.item a{color:var(--accent)!important}
+.dns-list{padding:16px 28px!important}.dns-item{font-size:13px!important;border-bottom:1px solid var(--stroke)!important;padding:11px 0!important}
+.items{padding:6px 28px 12px!important}.item{border-color:var(--stroke)!important;justify-content:flex-start!important}.item-sub{color:var(--secondary)!important}
+.life{padding:14px 28px!important;border-color:var(--stroke)!important}
+.raw{max-width:1020px;margin:14px auto 0!important}.raw details{border-radius:12px!important}.raw summary{padding:18px 25px!important}
+.raw summary:after{color:var(--accent)!important}.raw-tools{background:var(--surface2)!important;border-color:var(--stroke)!important}.copy{background:var(--surface)!important;color:var(--text)!important;border-color:var(--stroke)!important}
+.code{background:var(--surface2)!important;color:var(--text)!important}.foot{color:var(--secondary)!important}
+@media(max-width:640px){.top-inner{grid-template-columns:1fr auto!important;gap:10px!important}.top-inner .brand{grid-column:1!important;grid-row:1!important}.top-inner .lang{grid-column:2!important;grid-row:1!important}.top-inner .quick{grid-column:1/-1!important;grid-row:2!important}.lang select,.theme-select{max-width:96px;padding:8px 5px!important;font-size:11px!important}.domain-head{padding:27px 20px!important}.metrics{grid-template-columns:1fr 1fr!important}.metric{padding:16px!important;min-height:93px!important}.metric:nth-child(odd){border-left:0!important}.metric:nth-child(n+3){border-top:1px solid var(--stroke)!important}.section-head{padding:16px 18px!important}.rows{padding:4px 18px!important}.row{grid-template-columns:1fr!important;gap:5px!important;padding:12px 0!important}.dns-list,.items{padding-left:18px!important;padding-right:18px!important}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
 </style></head><body>
-<header class="topbar"><div class="top-inner"><a class="brand" href="/"><span class="brand-mark">W</span><span>WHOIS.MRWANG</span></a><form id="searchForm" class="quick"><input id="domainInput" placeholder="example.com" autocomplete="off" autocapitalize="none" spellcheck="false"><button data-i18n="search">Search</button></form><div class="lang"><select id="langSelect" aria-label="Language"></select></div></div></header>
+<header class="topbar"><div class="top-inner"><a class="brand" href="/"><span class="brand-mark">W</span><span>WHOIS.MRWANG</span></a><form id="searchForm" class="quick"><input id="domainInput" placeholder="example.com" autocomplete="off" autocapitalize="none" spellcheck="false"><button data-i18n="search">Search</button></form><div class="lang"><select id="themeSelect" class="theme-select" aria-label="Display theme"><option value="graphite">Graphite</option><option value="paper">Paper</option><option value="sand">Sand</option><option value="forest">Forest</option></select><select id="langSelect" aria-label="Language"></select></div></div></header>
 <main class="wrap"><div id="loading" class="loading"><span class="spinner"></span><span data-i18n="loading">Looking up domain information…</span></div><div id="error" class="error" hidden></div><div id="content" hidden>
 <section class="domain-head"><div class="domain-line"><div><h1 id="domainTitle" class="domain"></h1><div class="meta-line"><div id="stateBadge" class="badge"><span></span></div><div id="registrarQuick" class="registrar-quick"></div></div></div></div><div id="stateNotice" class="notice" hidden></div></section>
 <div id="metrics" class="metrics" hidden></div>
@@ -47,4 +92,7 @@ const lifes=[];if(d.gracePeriod)lifes.push(t('grace'));if(d.redemptionPeriod)lif
 const whois=d.whoisData||'',rdap=prettyRdap(d.rdapData||'');document.getElementById('whoisText').textContent=whois;document.getElementById('whoisRaw').hidden=!whois;document.getElementById('rdapText').textContent=rdap;document.getElementById('rdapRaw').hidden=!rdap}
 async function copyText(btn,text){try{await navigator.clipboard.writeText(text);const old=btn.textContent;btn.textContent=t('copied');setTimeout(()=>btn.textContent=old,1000)}catch{}}document.querySelectorAll('[data-rawcopy]').forEach(btn=>btn.onclick=e=>{e.preventDefault();e.stopPropagation();copyText(btn,btn.dataset.rawcopy==='rdap'?document.getElementById('rdapText').textContent:document.getElementById('whoisText').textContent)});
 async function load(){applyLang();if(!domain||!validDomain(domain)){document.getElementById('loading').hidden=true;const e=document.getElementById('error');e.hidden=false;e.textContent=t('invalid');return}try{const r=await fetch(API+encodeURIComponent(domain),{headers:{Accept:'application/json'}});if(!r.ok)throw new Error(`HTTP ${r.status}`);const j=await r.json();if(!j||j.code!==0||!j.data)throw new Error(j?.msg||'Query failed');document.getElementById('loading').hidden=true;document.getElementById('content').hidden=false;render(j.data)}catch(err){document.getElementById('loading').hidden=true;const e=document.getElementById('error');e.hidden=false;e.textContent=`${t('failed')} ${err?.message||''}`}}document.getElementById('year').textContent=new Date().getFullYear();load();
+
+/* Theme selection persists across homepage and all domain paths */
+(function(){const allowed=['graphite','paper','sand','forest'];let picked='graphite';try{picked=localStorage.getItem('whoisTheme')||'graphite'}catch(e){}if(!allowed.includes(picked))picked='graphite';const element=document.getElementById('themeSelect');function setTheme(theme){document.documentElement.dataset.theme=theme;element.value=theme;try{localStorage.setItem('whoisTheme',theme)}catch(e){}const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.content={graphite:'#101318',paper:'#f5f6f4',sand:'#f5f1e9',forest:'#111a18'}[theme]}element.addEventListener('change',()=>setTheme(element.value));setTheme(picked)})();
 </script></body></html>
