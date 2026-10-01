@@ -277,3 +277,55 @@ html[data-theme="graphite"] .metric.age-1,html[data-theme="forest"] .metric.age-
 .metrics{background:transparent!important;border-inline:0!important;border-radius:0!important;box-shadow:none!important;border-block:1px solid var(--line)!important;}
 .metric{background:transparent!important;}
 @media(max-width:650px){.metrics{border-inline:0!important;margin-inline:15px!important}.metric+.metric{border-block-start:0!important;border-inline-start:1px solid var(--line)!important}.metric{padding-inline:6px!important}}
+
+/* V36 — unified domain identity and pricing, no redundant status badge. */
+.domain-line{display:grid!important;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:14px 24px;min-width:0;}
+.domain-line>.domain-identity{display:flex;align-items:center;gap:10px;min-width:0;max-width:100%;}
+.domain-identity>.domain{flex:0 1 auto;min-width:0;max-width:100%;margin:0;overflow-wrap:anywhere;word-break:break-word;}
+.domain-identity>.meta-line{display:flex;align-items:center;flex:0 0 auto;gap:7px;min-height:34px;margin:0;padding:0;}
+.domain-line>.price-widget{grid-column:2;grid-row:1;margin:0!important;min-width:250px;max-width:100%;width:auto;align-self:center;}
+.domain-line>.price-widget[hidden]{display:none!important;}
+.domain-identity .share-link{width:32px;height:32px;flex:0 0 32px;background:transparent;}
+@media(max-width:760px){
+ .domain-line{grid-template-columns:minmax(0,1fr)!important;gap:12px;}
+ .domain-line>.domain-identity{grid-column:1;grid-row:1;gap:8px;}
+ .domain-line>.price-widget{grid-column:1;grid-row:2;width:100%;min-width:0;max-width:100%;justify-self:stretch;}
+ .domain-identity .share-link{width:30px;height:30px;flex-basis:30px;}
+ .price-rail{border-top:1px solid var(--line);}
+}
+@media(max-width:380px){
+ .domain-identity>.domain{font-size:clamp(19px,5.8vw,26px);}
+ .domain-identity>.meta-line{gap:4px;}
+ .domain-identity .share-link{width:28px;height:28px;flex-basis:28px;}
+}
+html[dir="rtl"] .domain-identity>.domain{direction:ltr;unicode-bidi:isolate;}
+
+/* V38 · subtle 15-day expiry runway, within the existing metric. */
+.metric{position:relative;}
+.expiry-progress{height:3px;margin-top:12px;background:var(--line);overflow:hidden;border-radius:99px;width:100%;}
+.expiry-progress span{height:100%;display:block;background:var(--expiry-color,var(--accent));border-radius:99px;transition:width .22s ease;min-width:2px;}
+@media(max-width:650px){.expiry-progress{margin-top:9px;height:3px;}}
+@media(prefers-reduced-motion:reduce){.expiry-progress span{transition:none;}}
+/* V38 · price overview remains desktop-only; small-screen entry opens a bottom sheet. */
+.mobile-price-toggle{display:none;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--text);align-items:center;gap:7px;padding:8px 10px;font:650 12px/1.2 inherit;cursor:pointer;}
+.mobile-price-toggle[hidden],.mobile-price-backdrop[hidden]{display:none!important;}
+.mobile-price-backdrop{position:fixed;inset:0;background:rgba(10,15,22,.55);z-index:1000;display:flex;align-items:flex-end;justify-content:center;}
+.mobile-price-sheet{background:var(--panel,var(--inner));color:var(--text);width:min(100%,670px);max-height:90dvh;overflow-y:auto;overscroll-behavior:contain;border:1px solid var(--line);border-radius:18px 18px 0 0;padding:18px clamp(16px,4vw,26px) max(20px,env(safe-area-inset-bottom));box-shadow:0 -16px 50px rgba(0,0,0,.14);}
+.mobile-price-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-bottom:13px;border-bottom:1px solid var(--line)}
+.mobile-price-head strong{font-size:14px}.mobile-price-close{width:34px;height:34px;background:transparent;border:1px solid var(--line);border-radius:8px;color:var(--text);cursor:pointer;font-size:23px;line-height:1}
+.mobile-price-rail{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-bottom:1px solid var(--line);margin-top:8px}
+.mobile-price-rail button{display:flex;flex-direction:column;gap:5px;align-items:flex-start;text-align:start;padding:13px 6px;border:0;background:transparent;color:var(--text);min-width:0;cursor:pointer;font:inherit}
+.mobile-price-rail button+button{border-inline-start:1px solid var(--line)}
+.mobile-price-rail button strong{font-size:clamp(11px,3.4vw,16px);font-variant-numeric:tabular-nums;white-space:nowrap}
+.mobile-price-rail button small{color:var(--mute);font-size:10px}
+.mobile-price-rail button.is-active{color:var(--accent)}
+.mobile-price-rail button:disabled{opacity:.45;cursor:default}
+.mobile-price-details{padding-top:12px}.mobile-price-details .quote-data{width:min(56%,260px)}
+@media(max-width:760px){.domain-line>.price-widget,.domain-head>.price-details{display:none!important}.mobile-price-toggle:not([hidden]){display:inline-flex;}.domain-head .mobile-price-toggle{margin-top:9px;}}
+@media(min-width:761px){.mobile-price-backdrop{display:none!important}}
+@media(max-width:350px){.mobile-price-rail button strong{font-size:10px}.mobile-price-details .quote-bar{display:none}}
+
+/* V39: status text itself carries the official EPP reference link. */
+.item-title .status-direct-link{color:inherit;text-decoration:none;text-underline-offset:3px;text-decoration-thickness:1px;transition:color .15s ease}
+.item-title .status-direct-link:hover,.item-title .status-direct-link:focus-visible{color:var(--accent);text-decoration:underline}
+.item-title .status-direct-link:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:2px}

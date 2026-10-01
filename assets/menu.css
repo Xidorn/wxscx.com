@@ -79,3 +79,9 @@ html[dir=rtl] .lang .picker{direction:ltr}
   .topbar .library-toggle,.topbar .picker{flex-basis:34px!important;width:34px!important;min-width:34px!important;max-width:34px!important;height:34px!important;}
   .topbar .brand-mark{flex-basis:26px!important;width:26px!important;height:26px!important;}
 }
+
+/* V37 dynamic unobtrusive local data count. */
+.library-toggle{position:relative}
+.library-count{position:absolute;inset-block-start:-6px;inset-inline-end:-6px;min-width:17px;height:17px;padding:0 4px;border-radius:10px;display:grid;place-items:center;background:var(--accent);color:var(--sheet);font-size:10px;line-height:1;font-weight:750;font-variant-numeric:tabular-nums;box-shadow:0 0 0 2px var(--sheet);pointer-events:none}
+.library-count[hidden]{display:none!important}
+@media(max-width:650px){.library-count{inset-block-start:-5px;inset-inline-end:-5px}}

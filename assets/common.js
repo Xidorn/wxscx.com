@@ -38,10 +38,10 @@ function readHistory(){return readHistoryEntries().map(item=>item.domain)}
 function writeHistory(items){
  const previous=new Map(readHistoryEntries().map(x=>[x.domain,x.savedAt]));
  const entries=[...new Set(items.filter(validHistoryDomain))].slice(0,10).map(domain=>({domain,savedAt:previous.get(domain)||Date.now()}));
- persistHistory(entries);renderHistory();
+ persistHistory(entries);renderHistory();notifyLocalLibraryChange();
 }
 function rememberDomain(v){const d=cleanDomain(v);if(!validHistoryDomain(d))return;
- persistHistory([{domain:d,savedAt:Date.now()},...readHistoryEntries().filter(x=>x.domain!==d)].slice(0,10));renderHistory()
+ persistHistory([{domain:d,savedAt:Date.now()},...readHistoryEntries().filter(x=>x.domain!==d)].slice(0,10));renderHistory();notifyLocalLibraryChange()
 }
 function initThemePicker(){
  const element=document.getElementById('themeSelect');if(!element)return;
@@ -96,7 +96,7 @@ function searchUrl(domain){return '/'+encodeURIComponent(domain)}
 /* V29: explicit, durable local bookmarks; no automatic expiration. */
 const FAVORITES_KEY='mrwang_whois_favorites_v1';
 function getFavorites(){try{const a=JSON.parse(localStorage.getItem(FAVORITES_KEY)||'[]');return Array.isArray(a)?[...new Set(a.filter(validHistoryDomain))].slice(0,30):[]}catch{return []}}
-function setFavorites(a){const domains=[...new Set(a.map(cleanDomain).filter(validHistoryDomain))].slice(0,30);try{localStorage.setItem(FAVORITES_KEY,JSON.stringify(domains))}catch{}return domains}
+function setFavorites(a){const domains=[...new Set(a.map(cleanDomain).filter(validHistoryDomain))].slice(0,30);try{localStorage.setItem(FAVORITES_KEY,JSON.stringify(domains))}catch{}notifyLocalLibraryChange();return domains}
 function toggleFavorite(domain){const d=cleanDomain(domain),a=getFavorites();if(!validHistoryDomain(d))return false;const exists=a.includes(d);setFavorites(exists?a.filter(v=>v!==d):[d,...a]);return !exists}
 
 const EXTRA_TEXT={"en":["Save domain","Remove from saved","Export TXT","Export JSON","Query time","Data source","Saved domains","No saved domains","Remove","Local to this browser","Saved","Removed"],"zh":["收藏域名","取消收藏","导出 TXT","导出 JSON","查询时间","数据来源","我的收藏","暂无收藏域名","删除","仅保存在当前浏览器","已收藏","已取消收藏"],"zh-Hant":["收藏網域","取消收藏","匯出 TXT","匯出 JSON","查詢時間","資料來源","我的收藏","暫無收藏網域","刪除","僅儲存在目前瀏覽器","已收藏","已取消收藏"],"de":["Domain speichern","Aus Favoriten entfernen","TXT exportieren","JSON exportieren","Abfragezeit","Datenquelle","Gespeicherte Domains","Keine gespeicherten Domains","Entfernen","Nur in diesem Browser","Gespeichert","Entfernt"],"fr":["Enregistrer le domaine","Retirer des favoris","Exporter TXT","Exporter JSON","Heure de recherche","Source des données","Domaines favoris","Aucun domaine favori","Supprimer","Stocké dans ce navigateur","Enregistré","Supprimé"],"ja":["ドメインを保存","お気に入りから削除","TXTを書き出す","JSONを書き出す","照会時刻","データ取得元","保存したドメイン","保存したドメインはありません","削除","このブラウザー内のみ","保存しました","削除しました"],"es":["Guardar dominio","Quitar favorito","Exportar TXT","Exportar JSON","Hora de consulta","Fuente de datos","Dominios guardados","Sin dominios guardados","Eliminar","Solo en este navegador","Guardado","Eliminado"],"pt":["Salvar domínio","Remover favorito","Exportar TXT","Exportar JSON","Hora da consulta","Fonte dos dados","Domínios salvos","Nenhum domínio salvo","Remover","Somente neste navegador","Salvo","Removido"],"it":["Salva dominio","Rimuovi dai preferiti","Esporta TXT","Esporta JSON","Ora della ricerca","Fonte dei dati","Domini salvati","Nessun dominio salvato","Rimuovi","Solo in questo browser","Salvato","Rimosso"],"ko":["도메인 저장","즐겨찾기 해제","TXT 내보내기","JSON 내보내기","조회 시각","데이터 출처","저장한 도메인","저장한 도메인 없음","삭제","이 브라우저에만 저장","저장됨","삭제됨"],"ru":["Сохранить домен","Удалить из избранного","Экспорт TXT","Экспорт JSON","Время запроса","Источник данных","Избранные домены","Нет избранных доменов","Удалить","Только в этом браузере","Сохранено","Удалено"],"ar":["حفظ النطاق","إزالة من المحفوظات","تصدير TXT","تصدير JSON","وقت الاستعلام","مصدر البيانات","النطاقات المحفوظة","لا توجد نطاقات محفوظة","إزالة","محفوظ في هذا المتصفح فقط","تم الحفظ","تمت الإزالة"],"hi":["डोमेन सहेजें","सहेजा हुआ हटाएँ","TXT निर्यात","JSON निर्यात","खोज का समय","डेटा स्रोत","सहेजे गए डोमेन","कोई सहेजा डोमेन नहीं","हटाएँ","सिर्फ इस ब्राउज़र में","सहेजा गया","हटाया गया"],"id":["Simpan domain","Hapus dari favorit","Ekspor TXT","Ekspor JSON","Waktu pencarian","Sumber data","Domain tersimpan","Belum ada domain tersimpan","Hapus","Hanya di peramban ini","Tersimpan","Dihapus"]};
@@ -144,3 +144,21 @@ function translateLanguageGroups(select,code){
 /* Brand follows the selected interface language. */
 const BRAND_TITLES={"en": "Domain Lookup", "zh": "域名查询", "zh-Hant": "網域查詢", "ja": "ドメイン検索", "ko": "도메인 조회", "de": "Domain-Abfrage", "fr": "Recherche de domaine", "es": "Consulta de dominios", "pt": "Consulta de domínios", "it": "Ricerca domini", "ru": "Поиск доменов", "ar": "البحث عن النطاقات", "hi": "डोमेन खोज", "id": "Pencarian Domain"};
 function renderBrand(code){document.querySelectorAll("[data-brand-title]").forEach(el=>{el.textContent=BRAND_TITLES[code]||BRAND_TITLES.en});}
+
+/* V37: live menu totals; same-page updates plus cross-tab localStorage sync. */
+function updateLibraryCounts(){
+ const badge=document.getElementById('libraryCount');if(!badge)return;
+ const history=readHistory().length,favorites=getFavorites().length,total=history+favorites;
+ badge.hidden=total===0;badge.textContent=total>99?'99+':String(total);
+ const button=document.getElementById('libraryToggle');if(button)button.dataset.total=String(total);
+}
+function notifyLocalLibraryChange(){if(typeof queueMicrotask==='function')queueMicrotask(updateLibraryCounts);else updateLibraryCounts()}
+window.addEventListener('storage',event=>{
+ if(event.key===HISTORY_KEY||event.key===FAVORITES_KEY||event.key===null){
+  if(typeof renderHistory==='function')renderHistory();
+  if(typeof renderFavorites==='function')renderFavorites();
+  updateLibraryCounts();
+  if(typeof updateResultTools==='function'&&typeof currentData!=='undefined'&&currentData)updateResultTools();
+ }
+});
+document.addEventListener('DOMContentLoaded',updateLibraryCounts);

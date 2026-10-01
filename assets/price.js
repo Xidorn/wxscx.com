@@ -21,6 +21,7 @@ const LC={en:'USD',zh:'CNY','zh-Hant':'USD',ja:'JPY',ko:'USD',de:'EUR',fr:'EUR',
 const LO={en:'en-US',zh:'zh-CN','zh-Hant':'zh-TW',ja:'ja-JP',ko:'ko-KR',de:'de-DE',fr:'fr-FR',es:'es-ES',pt:'pt-PT',it:'it-IT',ru:'ru-RU',ar:'ar',hi:'hi-IN',id:'id-ID'};
 const operations=['register','renew','transfer'];
 const widget=document.getElementById('priceWidget'), detail=document.getElementById('priceDetails');
+const mobileToggle=document.getElementById('mobilePriceToggle'),mobileLabel=document.getElementById('mobilePriceLabel'),mobileDialog=document.getElementById('mobilePriceDialog'),mobileClose=document.getElementById('mobilePriceClose'),mobileTitle=document.getElementById('mobilePriceTitle'),mobileRail=document.getElementById('mobilePriceRail'),mobileDetails=document.getElementById('mobilePriceDetails');
 if(!widget||!detail)return;
 const buttons=operations.map(op=>widget.querySelector(`[data-price-kind="${op}"]`));
 let domain='',suffix='',records={register:[],renew:[],transfer:[]},rates={CNY:1},opened=null,requestId=0;
@@ -35,13 +36,38 @@ function convert(row,op,currency){const original=finite(row?.[op]),cny=finite(ro
 function format(v,cur){if(v===null)return '—';try{return new Intl.NumberFormat(LO[lang]||'en-US',{style:'currency',currency:cur,maximumFractionDigits:cur==='JPY'?0:2}).format(v)}catch{return cur+' '+v.toFixed(2)}}
 function sorted(op,cur){return (records[op]||[]).map(row=>({row,value:convert(row,op,cur)})).filter(x=>x.value!==null).sort((a,b)=>a.value-b.value)}
 function setCollapsed(){detail.hidden=true;opened=null;buttons.forEach(b=>{b.classList.remove('is-active');b.setAttribute('aria-expanded','false')})}
-function paint(){const cur=preferredCurrency();let any=false;buttons.forEach((b,i)=>{const op=operations[i],list=sorted(op,cur),v=list.length?list[0].value:null;b.querySelector('.price-kind-label').textContent=tt(i);b.querySelector('.price-kind-value').textContent=format(v,cur);b.disabled=!list.length;b.title=tt(i)+' · '+format(v,cur);b.setAttribute('aria-label',tt(i)+' '+format(v,cur)+' · '+tt(9));b.classList.toggle('is-active',opened===op);b.setAttribute('aria-expanded',String(opened===op));if(list.length)any=true});widget.hidden=!any;if(!any){setCollapsed();return}if(!opened){detail.hidden=true;return}const list=sorted(opened,cur);if(!list.length){setCollapsed();return}detail.hidden=false;
+function paint(){const cur=preferredCurrency();let any=false;buttons.forEach((b,i)=>{const op=operations[i],list=sorted(op,cur),v=list.length?list[0].value:null;b.querySelector('.price-kind-label').textContent=tt(i);b.querySelector('.price-kind-value').textContent=format(v,cur);b.disabled=!list.length;b.title=tt(i)+' · '+format(v,cur);b.setAttribute('aria-label',tt(i)+' '+format(v,cur)+' · '+tt(9));b.classList.toggle('is-active',opened===op);b.setAttribute('aria-expanded',String(opened===op));if(list.length)any=true});widget.hidden=!any;if(mobileToggle)mobileToggle.hidden=!any;if(mobileLabel)mobileLabel.textContent=tt(9);if(mobileTitle)mobileTitle.textContent=tt(3)+(suffix?' · .'+suffix:'');if(!any){closeMobile();setCollapsed();return}if(!opened){detail.hidden=true;syncMobile();return}const list=sorted(opened,cur);if(!list.length){setCollapsed();return}detail.hidden=false;
  const show=list.slice(0,8),max=Math.max(...show.map(x=>x.value),1),min=Math.min(...show.map(x=>x.value));
  let table=show.map(({row,value})=>{const name=esc(row.registrarname||row.registrar||'—'),url=validURL(row.registrarweb),w=Math.max(5,100*min/Math.max(value,0.01));const price=format(value,cur);return `<div class="quote-row"><span class="quote-name">${url?`<a href="${esc(url)}" target="_blank" rel="noopener noreferrer nofollow">${name}</a>`:name}</span><div class="quote-data"><span class="quote-bar" style="--quote-fill:${Math.max(8,w).toFixed(2)}%" aria-hidden="true"><i></i></span><strong dir="ltr">${esc(price)}</strong></div></div>`}).join('');
  const updated=show.map(v=>v.row.updatedtime).filter(Boolean).sort().at(-1)||'—';const source=API+'/api/v1?domain='+encodeURIComponent(suffix)+'&order='+opened;
  detail.innerHTML=`<div class="quote-header"><strong>${esc(tt(3))} <span dir="ltr">.${esc(suffix)}</span> · ${esc(tt(operations.indexOf(opened)))}</strong><small>${esc(cur)}</small></div><p class="quote-note">${esc(tt(5))}</p><div class="quote-column"><div class="quote-head"><span>${esc(tt(4))}</span><span>${esc(tt(operations.indexOf(opened)))}</span></div>${table}</div><div class="quote-footer"><span>${esc(tt(7))}: ${esc(updated)} (UTC+8)</span><a href="${esc(source)}" rel="noopener noreferrer nofollow" target="_blank">${esc(tt(6))}</a></div>`;
+ syncMobile();
 }
-async function update(name){const next=String(name||'').toLowerCase().replace(/\.$/,'');if(domain===next){paint();return}domain=next;const id=++requestId;suffix='';records={register:[],renew:[],transfer:[]};setCollapsed();widget.hidden=true;detail.replaceChildren();const parts=next.split('.');if(parts.length<2)return;
+let previousFocus=null;
+function closeMobile(){if(!mobileDialog||mobileDialog.hidden)return;mobileDialog.hidden=true;document.body.style.removeProperty('overflow');if(previousFocus?.isConnected)previousFocus.focus();previousFocus=null}
+function syncMobile(){
+ if(!mobileRail)return;
+ const cur=preferredCurrency();
+ mobileRail.replaceChildren();
+ for(let i=0;i<operations.length;i++){
+  const op=operations[i], list=sorted(op,cur),b=document.createElement('button');b.type='button';b.disabled=!list.length;b.className=opened===op?'is-active':'';
+  const caption=document.createElement('small'),price=document.createElement('strong');caption.textContent=tt(i);price.textContent=format(list.length?list[0].value:null,cur);
+  price.dir='ltr';b.append(caption,price);b.addEventListener('click',()=>{opened=op;paint()});mobileRail.append(b);
+ }
+ if(mobileDetails)mobileDetails.innerHTML=opened?detail.innerHTML:'';
+}
+if(mobileToggle&&mobileDialog){
+ mobileToggle.addEventListener('click',()=>{
+  if(mobileToggle.hidden)return;
+  previousFocus=document.activeElement;mobileDialog.hidden=false;document.body.style.overflow='hidden';
+  if(!opened||!sorted(opened,preferredCurrency()).length)opened=operations.find(op=>sorted(op,preferredCurrency()).length)||null;
+  paint();mobileClose?.focus();
+ });
+ mobileClose?.addEventListener('click',closeMobile);
+ mobileDialog.addEventListener('click',e=>{if(e.target===mobileDialog)closeMobile()});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!mobileDialog.hidden){e.preventDefault();closeMobile()}});
+}
+async function update(name){const next=String(name||'').toLowerCase().replace(/\.$/,'');if(domain===next){paint();return}domain=next;const id=++requestId;suffix='';records={register:[],renew:[],transfer:[]};setCollapsed();closeMobile();widget.hidden=true;if(mobileToggle)mobileToggle.hidden=true;detail.replaceChildren();const parts=next.split('.');if(parts.length<2)return;
  const compound=new Set(['co.uk','org.uk','me.uk','ac.uk','gov.uk','com.cn','net.cn','org.cn','gov.cn','com.au','net.au','org.au','edu.au','co.jp','ne.jp','or.jp','com.br','com.mx','com.tr','co.kr','or.kr','co.in','com.sg','com.hk','com.tw','com.my','co.nz','com.ar','com.pl','co.za','com.ua','com.sa']);
  const last2=parts.slice(-2).join('.');const extensionName=parts.length>=3&&compound.has(last2)?last2:parts.at(-1);
  const abort=new AbortController(),timer=setTimeout(()=>abort.abort(),9000);
