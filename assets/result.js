@@ -165,11 +165,39 @@ document.getElementById('whoisRaw')?.addEventListener('toggle',e=>{if(e.currentT
 async function copyText(btn,text){try{await navigator.clipboard.writeText(text);const old=btn.textContent;btn.textContent=t('copied');setTimeout(()=>btn.textContent=old,1000)}catch{}}document.querySelectorAll('[data-rawcopy]').forEach(btn=>btn.onclick=e=>{e.preventDefault();e.stopPropagation();copyText(btn,btn.dataset.rawcopy==='rdap'?document.getElementById('rdapText').textContent:document.getElementById('whoisText').textContent)});
 let requestController=null;let queryCompletedAt=null;let rawWhoisText='';let rawRdapText='';
 let priceModuleRequested=false;
-function loadPriceModule(){if(priceModuleRequested||document.querySelector('script[data-price-module]'))return;priceModuleRequested=true;const run=()=>{const s=document.createElement('script');s.src='/assets/price.js?v=53';s.defer=true;s.dataset.priceModule='1';document.body.append(s)};if('requestIdleCallback'in window)requestIdleCallback(run,{timeout:1200});else setTimeout(run,120)}
+function loadPriceModule(){if(priceModuleRequested||document.querySelector('script[data-price-module]'))return;priceModuleRequested=true;const run=()=>{const s=document.createElement('script');s.src='/assets/price.js?v=54';s.defer=true;s.dataset.priceModule='1';document.body.append(s)};if('requestIdleCallback'in window)requestIdleCallback(run,{timeout:1200});else setTimeout(run,120)}
 function renderError(message,canRetry=true){
  const loading=document.getElementById('loading'),error=document.getElementById('error');loading.hidden=true;error.hidden=false;error.replaceChildren();
  const p=document.createElement('p');p.textContent=message;error.append(p);
  if(canRetry){const retry=document.createElement('button');retry.type='button';retry.className='retry-button';retry.textContent=feedback('retry');retry.addEventListener('click',load);error.append(retry)}
+}
+function apiPayload(json){
+ if(json&&json.code===0&&json.data&&typeof json.data==='object')return json.data;
+ if(json&&json.code===undefined&&typeof json==='object'&&(json.domain||json.registered!==undefined||json.unknown!==undefined||json.whoisData!==undefined||json.rdapData!==undefined))return json;
+ throw new Error((json&&json.msg)||'API');
+}
+async function querySource(name,signal){
+ const url=API+encodeURIComponent(domain)+'&json=1&'+name+'=1';
+ const response=await fetch(url,{headers:{Accept:'application/json'},signal,cache:'no-store'});
+ if(!response.ok)throw new Error('HTTP '+response.status);
+ const text=await response.text();
+ let json;try{json=JSON.parse(text)}catch{throw new Error('Invalid JSON response')}
+ return apiPayload(json);
+}
+function meaningful(v){return v!==undefined&&v!==null&&v!==''&&(!Array.isArray(v)||v.length>0)}
+function mergeLookupData(a,b){
+ if(!a)return b;if(!b)return a;
+ const whois=a.whoisData? a : (b.whoisData?b:null);
+ const rdap=a.rdapData? a : (b.rdapData?b:null);
+ const base={...(whois||a)};
+ const extra=rdap||b;
+ for(const [k,v] of Object.entries(extra)){if(meaningful(v))base[k]=v}
+ if(whois?.whoisData)base.whoisData=whois.whoisData;
+ if(rdap?.rdapData)base.rdapData=rdap.rdapData;
+ // RDAP registration state is authoritative only when RDAP itself is not unknown.
+ if(rdap&&rdap.unknown!==true){base.registered=rdap.registered;base.reserved=!!rdap.reserved;base.unknown=!!rdap.unknown}
+ else if(whois){base.registered=whois.registered;base.reserved=!!whois.reserved;base.unknown=!!whois.unknown}
+ return base;
 }
 async function load(){
  const loading=document.getElementById('loading'),error=document.getElementById('error'),content=document.getElementById('content');
@@ -179,30 +207,30 @@ async function load(){
  error.hidden=true;error.replaceChildren();content.hidden=true;loading.hidden=false;
  if(!domain||!validDomain(domain)){renderError(t('invalid'),false);return}
  const controller=new AbortController();requestController=controller;
- const timeout=setTimeout(()=>controller.abort(),12000);
- let payload;
+ const timeout=setTimeout(()=>controller.abort(),15000);
+ const whoisPromise=querySource('whois',controller.signal);
+ const rdapPromise=querySource('rdap',controller.signal);
+ let first;
  try{
-   await new Promise(resolve=>requestAnimationFrame(()=>resolve()));
-   const response=await fetch(API+encodeURIComponent(domain),{headers:{Accept:'application/json'},signal:controller.signal,cache:'no-store'});
-   if(!response.ok)throw new Error('HTTP '+response.status);
-   const json=await response.json();
-   if(json&&json.code===0&&json.data&&typeof json.data==='object')payload=json.data;
-   else if(json&&json.code===undefined&&typeof json==='object'&&(json.domain||json.registered!==undefined||json.isRegistered!==undefined||json.whoisData!==undefined||json.rdapData!==undefined))payload=json;
-   else throw new Error('API');
+   await new Promise(resolve=>requestAnimationFrame(resolve));
+   first=await Promise.any([whoisPromise,rdapPromise]);
+   queryCompletedAt=new Date();loading.hidden=true;error.hidden=true;error.replaceChildren();content.hidden=false;
+   try{render(first)}catch(e){console.error('Result rendering error',e);renderError(feedback('requestFailed'));return}
+   try{rememberDomain(domain)}catch(e){console.warn('Optional history unavailable',e)}
+   loadPriceModule();
+   // Enrich the visible result when the second source finishes; never put the page back into loading state.
+   const settled=await Promise.allSettled([whoisPromise,rdapPromise]);
+   const values=settled.filter(x=>x.status==='fulfilled').map(x=>x.value);
+   if(values.length>1){try{render(mergeLookupData(values[0],values[1]))}catch(e){console.warn('Result enrichment unavailable',e)}}
  }catch(err){
-   if(requestController===controller)renderError(err.name==='AbortError'?feedback('timeout'):feedback('requestFailed'));
-   return;
+   const reason=err?.name==='AbortError'||controller.signal.aborted?feedback('timeout'):feedback('requestFailed');
+   renderError(reason);
  }finally{
    clearTimeout(timeout);
    if(requestController===controller)requestController=null;
  }
- // API succeeded: auxiliary storage failures must never be reported as query failures.
- queryCompletedAt=new Date();loading.hidden=true;error.hidden=true;error.replaceChildren();content.hidden=false;
- try{render(payload)}catch(e){console.error('Result rendering error',e);content.hidden=false}
- try{rememberDomain(domain)}catch(e){console.warn('Optional history unavailable',e)}
- loadPriceModule();
 }
-document.getElementById('year').textContent=new Date().getFullYear();load();
+load();
 
 initThemePicker();
 
