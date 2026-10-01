@@ -29,12 +29,48 @@ function fmtDate(v){if(!v)return'';const d=new Date(v);if(Number.isNaN(d.getTime
  const vals=m.slice(1);
  const parts=vals.map((v,i)=>v!==undefined&&Number(v)!==0?`${Number(v)}${unit[i]}`:'').filter(Boolean);
  return parts.join(lang==='zh'||lang==='ja'?'':' ')||(vals.some(v=>v!==undefined)?`0${unit[2]}`:source);
-}function stateOf(d){if(d.reserved===true)return'reserved';if(d.unknown===true)return'unknown';if(d.registered===true)return'registered';if(d.registered===false)return'available';return'unknown'}function row(k,v,link=false){if(v===undefined||v===null||v==='')return'';const url=link?safeUrl(v):'';return `<div class="row"><div class="key">${esc(k)}</div><div class="value">${url?`<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(v)} ↗</a>`:esc(v)}</div></div>`}function registrarRow(label,name,url){if(!name)return '';const href=safeUrl(url);const value=href?`<a href="${esc(href)}" target="_blank" rel="noopener noreferrer" title="${esc(name)}">${esc(name)} <span aria-hidden="true">↗</span></a>`:esc(name);return `<div class="row"><div class="key">${esc(label)}</div><div class="value">${value}</div></div>`}function setPanel(id,html){const el=document.getElementById(id);el.hidden=!html;if(html)el.querySelector('.panel-body').innerHTML=html}function metric(label,value,note=''){if(!value)return'';return `<div class="metric"><div class="metric-label">${esc(label)}</div><div class="metric-value">${esc(value)}</div>${note?`<div class="metric-note">${esc(note)}</div>`:''}</div>`}function prettyRdap(v){if(!v)return'';try{return JSON.stringify(JSON.parse(v),null,2)}catch{return v}}
+}
+// Display elapsed/remaining CALENDAR duration to the day, rather than a cached API string.
+function dateOnlyUTC(value){
+ if(!value)return null;
+ const raw=String(value).trim();
+ let date;
+ if(/^\d{4}-\d{2}-\d{2}$/.test(raw))date=new Date(raw+'T00:00:00Z');
+ else if(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(raw))date=new Date(raw.replace(' ','T')+'Z');
+ else date=new Date(raw);
+ if(!Number.isFinite(date.getTime()))return null;
+ return new Date(Date.UTC(date.getUTCFullYear(),date.getUTCMonth(),date.getUTCDate()));
+}
+function plusCalendarMonths(date,n){
+ const y=date.getUTCFullYear(),m=date.getUTCMonth(),day=date.getUTCDate();
+ const first=new Date(Date.UTC(y,m+n,1));
+ const last=new Date(Date.UTC(first.getUTCFullYear(),first.getUTCMonth()+1,0)).getUTCDate();
+ return new Date(Date.UTC(first.getUTCFullYear(),first.getUTCMonth(),Math.min(day,last)));
+}
+function calendarDuration(startValue,endValue){
+ const start=dateOnlyUTC(startValue),end=dateOnlyUTC(endValue);
+ if(!start||!end||end<start)return '';
+ // Derive year/month boundary using the same calendar anchor; no fixed 30-day month approximation.
+ let years=0;
+ while(plusCalendarMonths(start,(years+1)*12)<=end&&years<1000)years++;
+ let months=0;
+ while(months<11&&plusCalendarMonths(start,years*12+months+1)<=end)months++;
+ const anchor=plusCalendarMonths(start,years*12+months);
+ const days=Math.round((end-anchor)/86400000);
+ const pieces=[];if(years)pieces.push(years+'Y');if(months)pieces.push(months+'Mo');
+ pieces.push(days+'D');return pieces.join(' ');
+}
+function exactRelative(iso,fallback,direction){
+ const today=new Date(),utcToday=new Date(Date.UTC(today.getUTCFullYear(),today.getUTCMonth(),today.getUTCDate()));
+ const exact=direction==='remaining'?calendarDuration(utcToday,iso):calendarDuration(iso,utcToday);
+ return humanDuration(exact||fallback);
+}
+function stateOf(d){if(d.reserved===true)return'reserved';if(d.unknown===true)return'unknown';if(d.registered===true)return'registered';if(d.registered===false)return'available';return'unknown'}function row(k,v,link=false){if(v===undefined||v===null||v==='')return'';const url=link?safeUrl(v):'';return `<div class="row"><div class="key">${esc(k)}</div><div class="value">${url?`<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(v)} ↗</a>`:esc(v)}</div></div>`}function registrarRow(label,name,url){if(!name)return '';const href=safeUrl(url);const value=href?`<a href="${esc(href)}" target="_blank" rel="noopener noreferrer" title="${esc(name)}">${esc(name)} <span aria-hidden="true">↗</span></a>`:esc(name);return `<div class="row"><div class="key">${esc(label)}</div><div class="value">${value}</div></div>`}function setPanel(id,html){const el=document.getElementById(id);el.hidden=!html;if(html)el.querySelector('.panel-body').innerHTML=html}function metric(label,value,note=''){if(!value)return'';return `<div class="metric"><div class="metric-label">${esc(label)}</div><div class="metric-value">${esc(value)}</div>${note?`<div class="metric-note">${esc(note)}</div>`:''}</div>`}function prettyRdap(v){if(!v)return'';try{return JSON.stringify(JSON.parse(v),null,2)}catch{return v}}
 const statusMap={'Client Transfer Prohibited':{zh:'禁止客户端转移',de:'Client-Transfer gesperrt',fr:'Transfert client interdit',ja:'クライアント転送禁止',es:'Transferencia de cliente prohibida'},'Client Update Prohibited':{zh:'禁止客户端更新',de:'Client-Update gesperrt',fr:'Mise à jour client interdite',ja:'クライアント更新禁止',es:'Actualización de cliente prohibida'},'Client Delete Prohibited':{zh:'禁止客户端删除',de:'Client-Löschung gesperrt',fr:'Suppression client interdite',ja:'クライアント削除禁止',es:'Eliminación de cliente prohibida'},'Active':{zh:'正常激活',de:'Aktiv',fr:'Actif',ja:'有効',es:'Activo'},'OK':{zh:'正常',de:'OK',fr:'OK',ja:'正常',es:'OK'}};const statusSub=txt=>lang==='en'?'':(statusMap[txt]?.[lang]||'');
 function render(d){currentData=d;const displayDomain=d.domain||domain;document.title=`${displayDomain} | ${({en:'Domain Lookup',zh:'域名查询',de:'Domain-Abfrage',fr:'Recherche de domaine',ja:'ドメイン検索',es:'Consulta de dominios'}[lang])}`;document.getElementById('domainTitle').textContent=displayDomain;const state=stateOf(d),badge=document.getElementById('stateBadge');badge.className='badge '+state;badge.querySelector('span').textContent=t(state);const notice=document.getElementById('stateNotice');const nk=state==='reserved'?'reservedNotice':state==='available'?'availableNotice':state==='unknown'?'unknownNotice':'';notice.hidden=!nk;notice.innerHTML=nk?`<strong>${esc(t(state))}.</strong> ${esc(t(nk))}`:'';
-let metrics='';metrics+=metric(t('domainAge'),humanDuration(d.createdAgo));metrics+=metric(t('expiresIn'),humanDuration(d.expiresIn));metrics+=metric(t('updatedAgo'),humanDuration(d.updatedAgo));if(!metrics)metrics+=metric(t('availableIn'),humanDuration(d.availableIn));const me=document.getElementById('metrics');me.innerHTML=metrics;me.hidden=!metrics;
+let metrics='';metrics+=metric(t('domainAge'),exactRelative(d.creationDateISO8601||d.creationDate,d.createdAgo,'elapsed'));metrics+=metric(t('expiresIn'),exactRelative(d.expirationDateISO8601||d.expirationDate,d.expiresIn,'remaining'));metrics+=metric(t('updatedAgo'),exactRelative(d.updatedDateISO8601||d.updatedDate,d.updatedAgo,'elapsed'));if(!metrics)metrics+=metric(t('availableIn'),exactRelative(d.availableDateISO8601||d.availableDate,d.availableIn,'remaining'));const me=document.getElementById('metrics');me.innerHTML=metrics;me.hidden=!metrics;
 let reg='';reg+=row(t('created'),fmtDate(d.creationDateISO8601||d.creationDate));reg+=row(t('expires'),fmtDate(d.expirationDateISO8601||d.expirationDate));reg+=row(t('updated'),fmtDate(d.updatedDateISO8601||d.updatedDate));reg+=row(t('availableDate'),fmtDate(d.availableDateISO8601||d.availableDate));setPanel('registrationPanel',reg);
-let rr='';rr+=registrarRow(t('registrar'),d.registrar,d.registrarURL);rr+=row(t('iana'),d.registrarIANAId);rr+=row(t('whoisServer'),d.registrarWHOISServer);rr+=row(t('rdapServer'),d.registrarRDAPServer,true);rr+=row(t('registryWebsite'),d.registryWebsite,true);rr+=row(t('registryWhois'),d.registryWHOISServer);rr+=row(t('registryRdap'),d.registryRDAPServer,true);setPanel('registrarPanel',rr);
+let rr='';rr+=registrarRow(t('registrar'),d.registrar,d.registrarURL);rr+=row(t('whoisServer'),d.registrarWHOISServer);rr+=row(t('rdapServer'),d.registrarRDAPServer,true);rr+=row(t('registryWebsite'),d.registryWebsite,true);rr+=row(t('registryWhois'),d.registryWHOISServer);rr+=row(t('registryRdap'),d.registryRDAPServer,true);setPanel('registrarPanel',rr);
 let dns='';if(Array.isArray(d.nameServers)&&d.nameServers.length){dns+=`<div class="row"><div class="key">${esc(t('nameServers'))}</div><div class="value nameserver-values">${d.nameServers.map(ns=>`<div class="dns-item">${esc(ns)}</div>`).join('')}</div></div>`}if(d.dnssecSigned!==null&&d.dnssecSigned!==undefined)dns+=row(t('dnssec'),d.dnssecSigned?t('signed'):t('unsigned'));setPanel('dnsPanel',dns);
 let statuses=Array.isArray(d.status)?d.status:[];if(!statuses.length&&state==='reserved')statuses=[{text:t('reserved'),url:''}];document.getElementById('statusList').innerHTML=statuses.map(s=>{const txt=typeof s==='string'?s:(s.text||'');const u=typeof s==='object'?safeUrl(s.url||''):'';return `<div class="item"><div><div class="item-title">${esc(txt)}</div>${statusSub(txt)?`<div class="item-sub">${esc(statusSub(txt))}</div>`:''}</div>${u?`<a href="${esc(u)}" target="_blank" rel="noopener noreferrer" aria-label="${esc(txt)}">↗</a>`:''}</div>`}).join('');document.getElementById('statusPanel').hidden=!statuses.length;
 const lifes=[];if(d.gracePeriod)lifes.push(t('grace'));if(d.redemptionPeriod)lifes.push(t('redemption'));if(d.pendingDelete)lifes.push(t('pendingDelete'));if(d.hold)lifes.push(t('hold'));if(d.inactive)lifes.push(t('inactive'));document.getElementById('lifecycleList').innerHTML=lifes.map(x=>`<div class="life"><span>${esc(x)}</span><span>${esc(t('yes'))}</span></div>`).join('');document.getElementById('lifecyclePanel').hidden=!lifes.length;document.getElementById('identityGroup').hidden=document.getElementById('registrationPanel').hidden&&document.getElementById('registrarPanel').hidden;document.getElementById('technicalGroup').hidden=document.getElementById('dnsPanel').hidden&&document.getElementById('statusPanel').hidden&&document.getElementById('lifecyclePanel').hidden;
@@ -45,20 +81,46 @@ async function load(){applyLang();if(!domain||!validDomain(domain)){document.get
 /* Theme selection persists across homepage and all domain paths */
 (function(){const allowed=['graphite','paper','sand','forest','ocean','plum','mono'];let picked='paper';try{picked=localStorage.getItem('whoisTheme')||'paper'}catch(e){}if(!allowed.includes(picked))picked='paper';const element=document.getElementById('themeSelect');function setTheme(theme){document.documentElement.dataset.theme=theme;element.value=theme;try{localStorage.setItem('whoisTheme',theme)}catch(e){}const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.content={graphite:'#101318',paper:'#f5f6f4',sand:'#f5f1e9',forest:'#111a18',ocean:'#edf3f6',plum:'#f8f5f9',mono:'#ffffff'}[theme]}element.addEventListener('change',()=>setTheme(element.value));setTheme(picked)})();
 
-/* One-year, browser-only WHOIS query history. Cookie is shared by index and 404 routes. */
+/* One-year localStorage query history; migrate the legacy cookie once. */
 const HISTORY_COOKIE='mrwang_whois_history';
+const HISTORY_KEY='mrwang_whois_history_v2';
+const HISTORY_TTL=365*24*60*60*1000;
 const HISTORY_TEXT={
- en:{history:'Recent searches',clear:'Clear all',remove:'Remove',empty:'No recent searches',saved:'Stored on this browser for up to one year',clearInput:'Clear input',searchIcon:'Search domain'},
- zh:{history:'查询历史',clear:'清空记录',remove:'删除',empty:'暂无查询记录',saved:'浏览器保存，最长一年',clearInput:'清空输入',searchIcon:'搜索域名'},
- de:{history:'Letzte Suchen',clear:'Alle löschen',remove:'Entfernen',empty:'Noch keine Suchanfragen',saved:'Bis zu einem Jahr in diesem Browser gespeichert',clearInput:'Eingabe löschen',searchIcon:'Domain suchen'},
- fr:{history:'Recherches récentes',clear:'Tout effacer',remove:'Supprimer',empty:'Aucune recherche récente',saved:'Conservé sur ce navigateur pendant un an maximum',clearInput:'Effacer la saisie',searchIcon:'Rechercher un domaine'},
- ja:{history:'検索履歴',clear:'すべて削除',remove:'削除',empty:'検索履歴はありません',saved:'このブラウザーに最長1年間保存',clearInput:'入力を消去',searchIcon:'ドメインを検索'},
- es:{history:'Búsquedas recientes',clear:'Borrar todo',remove:'Eliminar',empty:'No hay búsquedas recientes',saved:'Guardado en este navegador hasta un año',clearInput:'Borrar texto',searchIcon:'Buscar dominio'}
+ en:{history:'Recent searches',clear:'Clear all',remove:'Remove',empty:'No recent searches',saved:'Saved locally for one year',clearInput:'Clear input',searchIcon:'Search domain'},
+ zh:{history:'查询历史',clear:'清空记录',remove:'删除',empty:'暂无查询记录',saved:'本地保存，有效期一年',clearInput:'清空输入',searchIcon:'搜索域名'},
+ de:{history:'Letzte Suchen',clear:'Alle löschen',remove:'Entfernen',empty:'Noch keine Suchanfragen',saved:'Ein Jahr lokal gespeichert',clearInput:'Eingabe löschen',searchIcon:'Domain suchen'},
+ fr:{history:'Recherches récentes',clear:'Tout effacer',remove:'Supprimer',empty:'Aucune recherche récente',saved:'Enregistré localement pendant un an',clearInput:'Effacer la saisie',searchIcon:'Rechercher un domaine'},
+ ja:{history:'検索履歴',clear:'すべて削除',remove:'削除',empty:'検索履歴はありません',saved:'ローカルに1年間保存',clearInput:'入力を消去',searchIcon:'ドメインを検索'},
+ es:{history:'Búsquedas recientes',clear:'Borrar todo',remove:'Eliminar',empty:'No hay búsquedas recientes',saved:'Guardado localmente durante un año',clearInput:'Borrar texto',searchIcon:'Buscar dominio'}
 };
 function htxt(k){return (HISTORY_TEXT[lang]||HISTORY_TEXT.en)[k]}
-function readHistory(){try{const part=document.cookie.split('; ').find(c=>c.startsWith(HISTORY_COOKIE+'='));if(!part)return[];const obj=JSON.parse(decodeURIComponent(part.slice(HISTORY_COOKIE.length+1)));return Array.isArray(obj)?obj.filter(x=>typeof x==='string'&&x.length<254).slice(0,10):[]}catch{return[]}}
-function writeHistory(items){let list=items.slice(0,10);let val=encodeURIComponent(JSON.stringify(list));while(val.length>3000&&list.length){list.pop();val=encodeURIComponent(JSON.stringify(list))}document.cookie=HISTORY_COOKIE+'='+val+'; Max-Age=31536000; Path=/; SameSite=Lax'+(location.protocol==='https:'?'; Secure':'');renderHistory()}
-function rememberDomain(v){const d=cleanDomain(v);if(!d||d.length>253||!d.includes('.')||/\s/.test(d))return;writeHistory([d,...readHistory().filter(x=>x!==d)])}
+function validHistoryDomain(d){return typeof d==='string'&&d.length<=253&&d.includes('.')&&!/\s/.test(d)}
+function persistHistory(entries){try{localStorage.setItem(HISTORY_KEY,JSON.stringify({version:2,entries:entries.slice(0,10)}))}catch(e){}}
+function readHistoryEntries(){
+ const now=Date.now();let raw=null;
+ try{raw=localStorage.getItem(HISTORY_KEY)}catch(e){}
+ if(raw===null){
+  // One-time upgrade: preserve the older cookie records, then retire that cookie.
+  let old=[];try{const part=document.cookie.split('; ').find(c=>c.startsWith(HISTORY_COOKIE+'='));if(part){const parsed=JSON.parse(decodeURIComponent(part.slice(HISTORY_COOKIE.length+1)));if(Array.isArray(parsed))old=parsed}}catch(e){}
+  const entries=[...new Set(old.filter(validHistoryDomain))].slice(0,10).map(domain=>({domain,savedAt:now}));
+  persistHistory(entries);
+  document.cookie=HISTORY_COOKIE+'=; Max-Age=0; Path=/; SameSite=Lax'+(location.protocol==='https:'?'; Secure':'');
+  return entries;
+ }
+ try{
+  const parsed=JSON.parse(raw), entries=Array.isArray(parsed?.entries)?parsed.entries:[];
+  const valid=entries.filter(x=>x&&validHistoryDomain(x.domain)&&Number.isFinite(x.savedAt)&&x.savedAt<=now&&now-x.savedAt<HISTORY_TTL).slice(0,10);
+  if(valid.length!==entries.length)persistHistory(valid);
+  return valid;
+ }catch(e){persistHistory([]);return []}
+}
+function readHistory(){return readHistoryEntries().map(item=>item.domain)}
+function writeHistory(items){
+ const previous=new Map(readHistoryEntries().map(x=>[x.domain,x.savedAt]));
+ const entries=[...new Set(items.filter(validHistoryDomain))].slice(0,10).map(domain=>({domain,savedAt:previous.get(domain)||Date.now()}));
+ persistHistory(entries);renderHistory();
+}
+function rememberDomain(v){const d=cleanDomain(v);if(!d||d.length>253||!d.includes('.')||/\s/.test(d))return;persistHistory([{domain:d,savedAt:Date.now()},...readHistoryEntries().filter(x=>x.domain!==d)].slice(0,10));renderHistory()}
 function renderHistory(){const panel=document.getElementById('historyPanel');if(!panel)return;const arr=readHistory();const title=document.getElementById('historySummary');title.textContent=htxt('history')+' ('+arr.length+')';const list=document.getElementById('historyList');list.replaceChildren();if(!arr.length){const empty=document.createElement('div');empty.className='history-empty';empty.textContent=htxt('empty');list.append(empty)}else arr.forEach(d=>{const row=document.createElement('div');row.className='history-row';const a=document.createElement('a');a.className='history-link';a.textContent=d;a.href='/'+encodeURIComponent(d);const del=document.createElement('button');del.type='button';del.className='history-remove';del.textContent='×';del.title=htxt('remove');del.setAttribute('aria-label',htxt('remove')+' '+d);del.addEventListener('click',()=>writeHistory(readHistory().filter(x=>x!==d)));row.append(a,del);list.append(row)});document.getElementById('historyNote').textContent=htxt('saved');const all=document.getElementById('historyClear');all.textContent=htxt('clear');all.hidden=!arr.length}
 function updateSearchControls(){const input=document.getElementById('domainInput');const btn=document.getElementById('clearInput');btn.hidden=!input.value;btn.title=htxt('clearInput');btn.setAttribute('aria-label',htxt('clearInput'));const submit=document.getElementById('searchSubmit');submit.title=htxt('searchIcon');submit.setAttribute('aria-label',htxt('searchIcon'));renderHistory()}
 (function setupQueryTools(){const input=document.getElementById('domainInput');const clr=document.getElementById('clearInput');clr.onclick=()=>{input.value='';input.focus();updateSearchControls()};input.addEventListener('input',updateSearchControls);document.getElementById('historyClear').onclick=()=>writeHistory([]);document.getElementById('searchForm').onsubmit=e=>{e.preventDefault();const d=cleanDomain(input.value);if(!d)return;rememberDomain(d);location.href='/'+encodeURIComponent(d)};sel.addEventListener('change',updateSearchControls);updateSearchControls()})();

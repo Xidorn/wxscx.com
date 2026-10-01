@@ -93,3 +93,25 @@ html[data-theme="mono"]{color-scheme:light;--bg:#fff;--sheet:#fff;--inner:#f6f6f
 .history-clear{font-weight:650;border-radius:5px;padding:5px 7px}
 .history-empty{padding:16px 13px;color:var(--mute);font-size:12px}
 @media(max-width:600px){.lookup .search-icon,.search-strip .quick .search-icon{width:43px;min-width:43px;height:40px}.lookup .clear-input,.search-strip .quick .clear-input{width:28px;min-width:28px}.lookup input,.search-strip .quick input{padding-left:9px;padding-right:3px}}
+
+/* V23: Load/empty states share the result panel's grid, alignment and theme. */
+#loading{box-sizing:border-box;width:100%;min-height:196px;margin:0;background:var(--sheet);border:1px solid var(--line);border-radius:17px;box-shadow:var(--shadow);padding:36px 44px;display:flex;flex-direction:column;justify-content:center;gap:24px;color:var(--mute);position:relative;overflow:hidden}
+#loading::before{content:"";position:absolute;left:44px;right:44px;top:0;height:3px;background:var(--accent);border-radius:0 0 3px 3px}
+.loading-inner{display:flex;align-items:center;gap:14px;min-width:0;font-size:14px;line-height:1.6;font-weight:550}
+#loading .spinner{width:17px;height:17px;border-width:2px;flex:none;margin:0;vertical-align:initial}
+.loading-text{min-width:0;overflow-wrap:anywhere}
+.loading-placeholder{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:18px;max-width:600px}
+.loading-placeholder span{display:block;height:8px;border-radius:5px;background:var(--inner);border:1px solid var(--line);position:relative;overflow:hidden}
+.loading-placeholder span::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,var(--wash),transparent);transform:translateX(-100%);animation:loading-shimmer 1.7s ease-in-out infinite}
+@keyframes loading-shimmer{100%{transform:translateX(100%)}}
+#error{box-sizing:border-box;width:100%;margin:0;padding:26px 44px;border-radius:17px;box-shadow:var(--shadow);line-height:1.65;overflow-wrap:anywhere}
+#loading[hidden],#error[hidden],#content[hidden]{display:none!important}
+@media(max-width:600px){#loading{min-height:148px;padding:27px 22px;gap:21px}#loading::before{left:22px;right:22px}.loading-inner{font-size:13px;gap:11px}.loading-placeholder{gap:10px}#error{padding:23px 22px}}
+@media(prefers-reduced-motion:reduce){.spinner,.loading-placeholder span::after{animation:none!important}}
+
+/* V24: domain and registration status share one vertically centered identity row. */
+.domain-line{display:flex;align-items:center;justify-content:flex-start;flex-wrap:wrap;gap:10px 15px;min-width:0;}
+.domain-line>.domain{flex:0 1 auto;min-width:0;max-width:100%;margin:0;}
+.domain-line>.meta-line{display:flex;align-items:center;justify-content:center;flex:0 0 auto;min-height:32px;margin:0;padding:0;}
+.domain-line .badge{display:inline-flex;align-items:center;justify-content:center;min-height:29px;line-height:1.15;white-space:nowrap;}
+@media(max-width:750px){.domain-line{gap:8px 11px;align-items:center}.domain-line>.meta-line{min-height:28px}.domain-line .badge{min-height:26px;}}
