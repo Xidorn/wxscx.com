@@ -143,7 +143,8 @@ function translateLanguageGroups(select,code){
 
 /* Brand follows the selected interface language. */
 const BRAND_TITLES={"en": "Domain Lookup", "zh": "域名查询", "zh-Hant": "網域查詢", "ja": "ドメイン検索", "ko": "도메인 조회", "de": "Domain-Abfrage", "fr": "Recherche de domaine", "es": "Consulta de dominios", "pt": "Consulta de domínios", "it": "Ricerca domini", "ru": "Поиск доменов", "ar": "البحث عن النطاقات", "hi": "डोमेन खोज", "id": "Pencarian Domain"};
-function renderBrand(code){document.querySelectorAll("[data-brand-title]").forEach(el=>{el.textContent=BRAND_TITLES[code]||BRAND_TITLES.en});}
+const BATCH_LINK_TEXT={en:'Bulk lookup',zh:'批量查询','zh-Hant':'批次查詢',de:'Stapelsuche',fr:'Recherche groupée',ja:'一括検索',es:'Consulta masiva',pt:'Consulta em lote',it:'Ricerca multipla',ko:'일괄 조회',ru:'Пакетная проверка',ar:'بحث مجمّع',hi:'समूह जाँच',id:'Pencarian massal'};
+function renderBrand(code){document.querySelectorAll("[data-brand-title]").forEach(el=>{el.textContent=BRAND_TITLES[code]||BRAND_TITLES.en});document.querySelectorAll('[data-batch-link]').forEach(el=>{el.textContent=BATCH_LINK_TEXT[code]||BATCH_LINK_TEXT.en;el.title=el.textContent;el.setAttribute("aria-label",el.textContent)})}
 
 /* V37: live menu totals; same-page updates plus cross-tab localStorage sync. */
 function updateLibraryCounts(){

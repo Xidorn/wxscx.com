@@ -202,14 +202,31 @@ initThemePicker();
 
 function renderHistory(){const panel=document.getElementById('historyPanel');if(!panel)return;const arr=readHistory();const title=document.getElementById('historySummary');title.textContent=htxt('history')+' ('+arr.length+')';const list=document.getElementById('historyList');list.replaceChildren();if(!arr.length){const empty=document.createElement('div');empty.className='history-empty';empty.textContent=htxt('empty');list.append(empty)}else arr.forEach(d=>{const row=document.createElement('div');row.className='history-row';const a=document.createElement('a');a.className='history-link';a.textContent=d;a.href=searchUrl(d);const del=document.createElement('button');del.type='button';del.className='history-remove';del.textContent='×';del.title=htxt('remove');del.setAttribute('aria-label',htxt('remove')+' '+d);del.addEventListener('click',()=>writeHistory(readHistory().filter(x=>x!==d)));row.append(a,del);list.append(row)});document.getElementById('historyNote').textContent=htxt('saved');const all=document.getElementById('historyClear');all.textContent=htxt('clear');all.hidden=!arr.length}
 function updateSearchControls(){const input=document.getElementById('domainInput');const btn=document.getElementById('clearInput');btn.hidden=!input.value;btn.title=htxt('clearInput');btn.setAttribute('aria-label',htxt('clearInput'));const submit=document.getElementById('searchSubmit');submit.title=htxt('searchIcon');submit.setAttribute('aria-label',htxt('searchIcon'));renderHistory();renderFavorites()}
-(function setupQueryTools(){const input=document.getElementById('domainInput');const clr=document.getElementById('clearInput');clr.onclick=()=>{input.value='';input.focus();updateSearchControls()};input.addEventListener('input',()=>{input.setCustomValidity('');updateSearchControls()});
+(function setupQueryTools(){const input=document.getElementById('domainInput');const clr=document.getElementById('clearInput');let returningHome=false;
+// A cleared detail-page search is a navigation to the real homepage, not an empty WHOIS query.
+// replace() removes the stale /domain.tld entry from Back history. The homepage is prefetched.
+function returnHome(){
+ if(returningHome)return;
+ returningHome=true;
+ requestController?.abort();
+ document.getElementById('content').hidden=true;
+ document.getElementById('loading').hidden=true;
+ document.getElementById('error').hidden=true;
+ const price=document.getElementById('priceWidget');if(price)price.hidden=true;
+ const details=document.getElementById('priceDetails');if(details)details.hidden=true;
+ const mobile=document.getElementById('mobilePriceDialog');if(mobile)mobile.hidden=true;
+ location.replace('/');
+}
+clr.onclick=()=>{input.value='';returnHome()};
+input.addEventListener('input',e=>{input.setCustomValidity('');if(!input.value.trim()&&!e.isComposing){returnHome();return}updateSearchControls()});
+input.addEventListener('compositionend',()=>{if(!input.value.trim())returnHome()});
 // Enter and mobile Search submit the same validated form as the search icon.
 // Do not query while an IME is committing Chinese, Japanese or Korean text.
 input.addEventListener('keydown',e=>{
   if(e.key!=='Enter'||e.isComposing||e.keyCode===229)return;
   e.preventDefault();
   input.form.requestSubmit(document.getElementById('searchSubmit'));
-});document.getElementById('historyClear').onclick=()=>writeHistory([]);document.getElementById('searchForm').onsubmit=e=>{e.preventDefault();const d=cleanDomain(input.value);if(!d){input.setCustomValidity(t('invalid'));input.reportValidity();return}input.setCustomValidity('');location.href=searchUrl(d)};sel.addEventListener('change',updateSearchControls);updateSearchControls()})();
+});document.getElementById('historyClear').onclick=()=>writeHistory([]);document.getElementById('searchForm').onsubmit=e=>{e.preventDefault();if(returningHome)return;if(!input.value.trim()){returnHome();return}const d=cleanDomain(input.value);if(!d){input.setCustomValidity(t('invalid'));input.reportValidity();return}input.setCustomValidity('');location.href=searchUrl(d)};sel.addEventListener('change',updateSearchControls);updateSearchControls()})();
 
 const shareButton=document.getElementById('shareLink');
 shareButton.addEventListener('click',async()=>{
