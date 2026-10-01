@@ -127,3 +127,16 @@ THEME_NAMES["hi"].push(...["स्लेट", "मिंट", "रोज़"]);
 THEME_NAMES["id"].push(...["Batu tulis", "Mint", "Mawar"]);
 
 const FAVORITES_CLEAR={"en": "Clear saved", "zh": "清空收藏", "zh-Hant": "清空收藏", "de": "Favoriten löschen", "fr": "Effacer les favoris", "ja": "保存をすべて削除", "es": "Borrar favoritos", "pt": "Limpar salvos", "it": "Cancella preferiti", "ko": "즐겨찾기 모두 삭제", "ru": "Очистить избранное", "ar": "مسح المحفوظات", "hi": "सहेजे गए सभी हटाएँ", "id": "Hapus semua favorit"};
+
+/* Ordered, translated native language list shared by both pages. */
+const LANGUAGE_GROUPS = {"en":["Language","International","East Asia","Europe","Other regions"],"zh":["语言","国际","东亚语言","欧洲语言","其他地区"],"zh-Hant":["語言","國際","東亞語言","歐洲語言","其他地區"],"ja":["言語","国際","東アジア","ヨーロッパ","その他の地域"],"ko":["언어","국제","동아시아","유럽","기타 지역"],"de":["Sprache","International","Ostasien","Europa","Weitere Regionen"],"fr":["Langue","International","Asie de l’Est","Europe","Autres régions"],"es":["Idioma","Internacional","Asia oriental","Europa","Otras regiones"],"pt":["Idioma","Internacional","Leste Asiático","Europa","Outras regiões"],"it":["Lingua","Internazionale","Asia orientale","Europa","Altre regioni"],"ru":["Язык","Международный","Восточная Азия","Европа","Другие регионы"],"id":["Bahasa","Internasional","Asia Timur","Eropa","Wilayah lain"],"hi":["भाषा","अंतरराष्ट्रीय","पूर्वी एशिया","यूरोप","अन्य क्षेत्र"],"ar":["اللغة","دولي","شرق آسيا","أوروبا","مناطق أخرى"]};
+const LANGUAGE_ORDER=[['en'],['zh','zh-Hant','ja','ko'],['de','fr','es','pt','it','ru'],['id','hi','ar']];
+function populateLanguageSelect(select, dictionary){
+ if(!select)return;const chosen=select.value;select.replaceChildren();
+ LANGUAGE_ORDER.forEach((codes,idx)=>{const group=document.createElement('optgroup');group.dataset.group=String(idx);for(const code of codes){if(!dictionary[code])continue;group.append(new Option(dictionary[code].name,code))}if(group.children.length)select.append(group)});
+ if(chosen&&dictionary[chosen])select.value=chosen;
+}
+function translateLanguageGroups(select,code){
+ const names=LANGUAGE_GROUPS[code]||LANGUAGE_GROUPS.en;if(!select)return;select.setAttribute('aria-label',names[0]);select.title=names[0];select.querySelectorAll('optgroup[data-group]').forEach(g=>g.label=names[Number(g.dataset.group)+1]||'');
+ const box=select.closest('.picker');if(box){box.title=names[0]}
+}
