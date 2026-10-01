@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>WHOIS Lookup | Mr Wang</title>
-  <meta name="description" content="WHOIS lookup for domain registration, registrar, expiration, nameservers, DNSSEC and domain status.">
+  <title>Domain Intelligence | Mr Wang</title>
+  <meta name="description" content="Domain Intelligence for WHOIS, RDAP, registrar, DNS, expiration and lifecycle information.">
   <meta name="robots" content="index,follow">
   <link rel="canonical" href="https://whois.mrwang.com/">
   <meta name="theme-color" content="#ffffff">
@@ -15,12 +15,12 @@
 </head>
 <body>
 <div class="app">
-  <header class="top"><div class="brand">WHOIS · Mr Wang</div><div class="lang"><select id="langSelect" aria-label="Language"></select></div></header>
+  <header class="top"><div class="brand">Domain Intelligence · Mr Wang</div><div class="lang"><select id="langSelect" aria-label="Language"></select></div></header>
   <main class="hero">
     <div class="inner">
       <div class="kicker" data-i18n="kicker">Domain information</div>
-      <h1 data-i18n="title">WHOIS Lookup</h1>
-      <p class="desc" data-i18n="desc">Check registration, registrar, expiration, nameservers, DNSSEC and domain status from one clean result.</p>
+      <h1 data-i18n="title">Domain Intelligence</h1>
+      <p class="desc" data-i18n="desc">WHOIS, RDAP, registrar, DNS and lifecycle data in one focused view.</p>
       <form id="searchForm" class="search">
         <input id="domainInput" autocomplete="off" autocapitalize="none" spellcheck="false" inputmode="url" placeholder="example.com" aria-label="Domain name">
         <button type="submit" data-i18n="search">Search</button>
@@ -32,8 +32,8 @@
 </div>
 <script>
 const LANGS={
- en:{name:'English',kicker:'Domain information',title:'WHOIS Lookup',desc:'Check registration, registrar, expiration, nameservers, DNSSEC and domain status from one clean result.',search:'Search',hint:'Enter a domain name only — no protocol or path.'},
- zh:{name:'简体中文',kicker:'域名信息查询',title:'WHOIS 查询',desc:'集中查询域名注册信息、注册商、到期时间、域名服务器、DNSSEC 与当前状态。',search:'查询',hint:'仅输入域名，不要包含协议、端口或路径。'},
+ en:{name:'English',kicker:'Domain information',title:'Domain Intelligence',desc:'WHOIS, RDAP, registrar, DNS and lifecycle data in one focused view.',search:'Search',hint:'Enter a domain name only — no protocol or path.'},
+ zh:{name:'简体中文',kicker:'域名信息查询',title:'域名情报查询',desc:'集中查看 WHOIS、RDAP、注册商、DNS、到期时间与域名生命周期信息。',search:'查询',hint:'仅输入域名，不要包含协议、端口或路径。'},
  de:{name:'Deutsch',kicker:'Domaininformationen',title:'WHOIS-Abfrage',desc:'Registrierung, Registrar, Ablaufdatum, Nameserver, DNSSEC und Domainstatus übersichtlich prüfen.',search:'Suchen',hint:'Nur den Domainnamen eingeben – ohne Protokoll oder Pfad.'},
  fr:{name:'Français',kicker:'Informations du domaine',title:'Recherche WHOIS',desc:'Consultez l’enregistrement, le registrar, l’expiration, les serveurs de noms, DNSSEC et le statut du domaine.',search:'Rechercher',hint:'Saisissez uniquement le nom de domaine, sans protocole ni chemin.'},
  ja:{name:'日本語',kicker:'ドメイン情報',title:'WHOIS検索',desc:'登録情報、レジストラ、有効期限、ネームサーバー、DNSSEC、ドメイン状態をまとめて確認できます。',search:'検索',hint:'プロトコルやパスを含めず、ドメイン名のみ入力してください。'},
