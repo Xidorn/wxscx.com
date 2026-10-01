@@ -164,8 +164,6 @@ rawWhoisText=d.whoisData||'';rawRdapText=d.rdapData||'';const whoisRaw=document.
 document.getElementById('whoisRaw')?.addEventListener('toggle',e=>{if(e.currentTarget.open){const pre=document.getElementById('whoisText');if(!pre.textContent)pre.textContent=rawWhoisText}});document.getElementById('rdapRaw')?.addEventListener('toggle',e=>{if(e.currentTarget.open){const pre=document.getElementById('rdapText');if(!pre.textContent)pre.textContent=prettyRdap(rawRdapText)}});
 async function copyText(btn,text){try{await navigator.clipboard.writeText(text);const old=btn.textContent;btn.textContent=t('copied');setTimeout(()=>btn.textContent=old,1000)}catch{}}document.querySelectorAll('[data-rawcopy]').forEach(btn=>btn.onclick=e=>{e.preventDefault();e.stopPropagation();copyText(btn,btn.dataset.rawcopy==='rdap'?document.getElementById('rdapText').textContent:document.getElementById('whoisText').textContent)});
 let requestController=null;let queryCompletedAt=null;let rawWhoisText='';let rawRdapText='';
-let priceModuleRequested=false;
-function loadPriceModule(){if(priceModuleRequested||document.querySelector('script[data-price-module]'))return;priceModuleRequested=true;const run=()=>{const s=document.createElement('script');s.src='/assets/price.js?v=54';s.defer=true;s.dataset.priceModule='1';document.body.append(s)};if('requestIdleCallback'in window)requestIdleCallback(run,{timeout:1200});else setTimeout(run,120)}
 function renderError(message,canRetry=true){
  const loading=document.getElementById('loading'),error=document.getElementById('error');loading.hidden=true;error.hidden=false;error.replaceChildren();
  const p=document.createElement('p');p.textContent=message;error.append(p);
@@ -210,21 +208,47 @@ async function load(){
  const timeout=setTimeout(()=>controller.abort(),15000);
  const whoisPromise=querySource('whois',controller.signal);
  const rdapPromise=querySource('rdap',controller.signal);
- let first;
+ let apiSucceeded=false,renderSucceeded=false;
+ const showPayload=(payload,label='lookup')=>{
+   if(!payload||typeof payload!=='object')return false;
+   apiSucceeded=true;
+   queryCompletedAt=queryCompletedAt||new Date();
+   loading.hidden=true;error.hidden=true;error.replaceChildren();content.hidden=false;
+   try{render(payload);renderSucceeded=true;return true}
+   catch(e){
+     // A presentation/optional-widget failure must never be reported as a WHOIS API failure.
+     console.error('Result rendering error ('+label+')',e);
+     currentData=payload;
+     const title=document.getElementById('domainTitle');if(title)title.textContent=payload.domain||domain;
+     return false;
+   }
+ };
  try{
    await new Promise(resolve=>requestAnimationFrame(resolve));
-   first=await Promise.any([whoisPromise,rdapPromise]);
-   queryCompletedAt=new Date();loading.hidden=true;error.hidden=true;error.replaceChildren();content.hidden=false;
-   try{render(first)}catch(e){console.error('Result rendering error',e);renderError(feedback('requestFailed'));return}
-   try{rememberDomain(domain)}catch(e){console.warn('Optional history unavailable',e)}
-   loadPriceModule();
-   // Enrich the visible result when the second source finishes; never put the page back into loading state.
+   let first=null;
+   try{first=await Promise.any([whoisPromise,rdapPromise])}catch{}
+   if(first){showPayload(first,'first source');try{rememberDomain(domain)}catch(e){console.warn('Optional history unavailable',e)}}
+
+   // Always inspect both sources. A malformed/partial first source must not turn a successful lookup into an error.
    const settled=await Promise.allSettled([whoisPromise,rdapPromise]);
-   const values=settled.filter(x=>x.status==='fulfilled').map(x=>x.value);
-   if(values.length>1){try{render(mergeLookupData(values[0],values[1]))}catch(e){console.warn('Result enrichment unavailable',e)}}
+   const values=settled.filter(x=>x.status==='fulfilled'&&x.value&&typeof x.value==='object').map(x=>x.value);
+   if(values.length){
+     apiSucceeded=true;
+     const best=values.length>1?mergeLookupData(values[0],values[1]):values[0];
+     showPayload(best,values.length>1?'merged sources':'fallback source');
+     try{rememberDomain(domain)}catch(e){console.warn('Optional history unavailable',e)}
+   }
+   if(!apiSucceeded){
+     const aborted=controller.signal.aborted||settled.some(x=>x.status==='rejected'&&x.reason?.name==='AbortError');
+     renderError(aborted?feedback('timeout'):feedback('requestFailed'));
+   }else{
+     // API data exists: never overlay it with the generic request-failed message.
+     loading.hidden=true;error.hidden=true;error.replaceChildren();content.hidden=false;
+     if(!renderSucceeded)console.warn('Lookup data received, but one or more optional result sections could not be rendered.');
+   }
  }catch(err){
-   const reason=err?.name==='AbortError'||controller.signal.aborted?feedback('timeout'):feedback('requestFailed');
-   renderError(reason);
+   if(apiSucceeded){loading.hidden=true;error.hidden=true;error.replaceChildren();content.hidden=false;console.warn('Post-query UI error',err)}
+   else renderError(err?.name==='AbortError'||controller.signal.aborted?feedback('timeout'):feedback('requestFailed'));
  }finally{
    clearTimeout(timeout);
    if(requestController===controller)requestController=null;
