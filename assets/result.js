@@ -21,7 +21,7 @@ LANGS["ru"]={"name": "Русский", "search": "Поиск", "loading": "За�
 LANGS["ar"]={"name": "العربية", "search": "بحث", "loading": "جارٍ تحميل معلومات النطاق…", "failed": "فشل الاستعلام:", "invalid": "اسم النطاق غير صالح.", "registered": "مسجّل", "available": "قد يكون متاحًا", "reserved": "محجوز", "unknown": "غير معروف", "registration": "معلومات التسجيل", "registrarInfo": "المسجّل والسجل", "status": "حالة النطاق", "lifecycle": "دورة حياة النطاق", "domainAge": "عمر النطاق", "created": "تاريخ التسجيل", "expires": "تاريخ الانتهاء", "expiresIn": "الوقت حتى الانتهاء", "updated": "آخر تحديث", "updatedAgo": "منذ آخر تحديث", "availableDate": "تاريخ الإتاحة", "availableIn": "الوقت حتى الإتاحة", "registrar": "المسجّل", "iana": "معرّف IANA", "registrarUrl": "موقع المسجّل", "whoisServer": "خادم WHOIS", "rdapServer": "خادم RDAP", "registryWebsite": "موقع السجل", "registryWhois": "WHOIS للسجل", "registryRdap": "RDAP للسجل", "nameServers": "خوادم الأسماء", "dnssec": "DNSSEC", "signed": "موقّع", "unsigned": "غير موقّع", "grace": "فترة السماح", "redemption": "فترة الاسترداد", "pendingDelete": "بانتظار الحذف", "hold": "معلّق", "inactive": "غير نشط", "yes": "نعم", "copy": "نسخ", "copied": "تم النسخ", "reservedNotice": "هذا النطاق محجوز ولا يتاح عادةً للتسجيل.", "availableNotice": "يبدو أن هذا النطاق غير مسجّل. تأكد من إتاحته لدى مسجّل معتمد.", "unknownNotice": "لم يوفّر السجل بيانات تسجيل موحّدة كافية."};
 LANGS["hi"]={"name": "हिन्दी", "search": "खोजें", "loading": "डोमेन जानकारी प्राप्त की जा रही है…", "failed": "खोज विफल:", "invalid": "डोमेन नाम अमान्य है।", "registered": "पंजीकृत", "available": "संभवतः उपलब्ध", "reserved": "आरक्षित", "unknown": "अज्ञात", "registration": "पंजीकरण", "registrarInfo": "रजिस्ट्रार और रजिस्ट्री", "status": "डोमेन स्थिति", "lifecycle": "जीवनचक्र", "domainAge": "डोमेन आयु", "created": "पंजीकरण तिथि", "expires": "समाप्ति तिथि", "expiresIn": "समाप्ति तक", "updated": "अपडेट तिथि", "updatedAgo": "पिछले अपडेट से", "availableDate": "उपलब्धता तिथि", "availableIn": "उपलब्ध होने तक", "registrar": "रजिस्ट्रार", "iana": "IANA ID", "registrarUrl": "रजिस्ट्रार वेबसाइट", "whoisServer": "WHOIS सर्वर", "rdapServer": "RDAP सर्वर", "registryWebsite": "रजिस्ट्री वेबसाइट", "registryWhois": "रजिस्ट्री WHOIS", "registryRdap": "रजिस्ट्री RDAP", "nameServers": "नेम सर्वर", "dnssec": "DNSSEC", "signed": "हस्ताक्षरित", "unsigned": "अहस्ताक्षरित", "grace": "अनुग्रह अवधि", "redemption": "पुनर्प्राप्ति अवधि", "pendingDelete": "हटाने के लिए लंबित", "hold": "होल्ड", "inactive": "निष्क्रिय", "yes": "हाँ", "copy": "कॉपी करें", "copied": "कॉपी किया", "reservedNotice": "यह डोमेन आरक्षित है और सामान्यतः पंजीकरण के लिए उपलब्ध नहीं है।", "availableNotice": "यह डोमेन अपंजीकृत लगता है। रजिस्ट्रार से उपलब्धता की पुष्टि करें।", "unknownNotice": "रजिस्ट्री से पर्याप्त मानकीकृत पंजीकरण डेटा नहीं मिला।"};
 LANGS["id"]={"name": "Bahasa Indonesia", "search": "Cari", "loading": "Memuat informasi domain…", "failed": "Pencarian gagal:", "invalid": "Nama domain tidak valid.", "registered": "Terdaftar", "available": "Mungkin tersedia", "reserved": "Dicadangkan", "unknown": "Tidak diketahui", "registration": "Pendaftaran", "registrarInfo": "Registrar dan registri", "status": "Status domain", "lifecycle": "Siklus hidup", "domainAge": "Usia domain", "created": "Dibuat", "expires": "Kedaluwarsa", "expiresIn": "Sisa waktu", "updated": "Diperbarui", "updatedAgo": "Sejak pembaruan", "availableDate": "Tanggal tersedia", "availableIn": "Tersedia dalam", "registrar": "Registrar", "iana": "ID IANA", "registrarUrl": "Situs registrar", "whoisServer": "Server WHOIS", "rdapServer": "Server RDAP", "registryWebsite": "Situs registri", "registryWhois": "WHOIS registri", "registryRdap": "RDAP registri", "nameServers": "Name server", "dnssec": "DNSSEC", "signed": "Ditandatangani", "unsigned": "Tidak ditandatangani", "grace": "Masa tenggang", "redemption": "Masa pemulihan", "pendingDelete": "Menunggu penghapusan", "hold": "Ditahan", "inactive": "Tidak aktif", "yes": "Ya", "copy": "Salin", "copied": "Tersalin", "reservedNotice": "Domain ini dicadangkan dan umumnya tidak dapat didaftarkan.", "availableNotice": "Domain ini tampaknya belum terdaftar. Pastikan ketersediaannya melalui registrar.", "unknownNotice": "Registri tidak menyediakan data pendaftaran standar yang memadai."};
-function translateThemes(){const names=THEME_NAMES[lang]||THEME_NAMES.en;const s=document.getElementById("themeSelect");const selected=s.value;["graphite","paper","sand","forest","ocean","plum","mono"].forEach((id,i)=>{const o=s.querySelector(`option[value="${id}"]`);if(o)o.textContent=names[i+1]});s.setAttribute("aria-label",names[0]);s.value=selected;}
+function translateThemes(){const names=THEME_NAMES[lang]||THEME_NAMES.en;const s=document.getElementById("themeSelect");const selected=s.value;["graphite","paper","sand","forest","ocean","plum","mono","slate","mint","rose"].forEach((id,i)=>{const o=s.querySelector(`option[value="${id}"]`);if(o)o.textContent=names[i+1]});s.setAttribute("aria-label",names[0]);s.value=selected;}
 LANGS['zh-Hant']={"name": "繁體中文", "search": "搜尋", "loading": "正在查詢網域資訊…", "failed": "查詢失敗：", "invalid": "網域名稱格式無效。", "registered": "已註冊", "available": "可能可註冊", "reserved": "保留網域", "unknown": "未知", "registration": "註冊資訊", "registrarInfo": "註冊商與註冊局", "status": "網域狀態", "lifecycle": "生命週期", "domainAge": "網域年齡", "created": "註冊日期", "expires": "到期日期", "expiresIn": "距離到期", "updated": "最後更新", "updatedAgo": "距上次更新", "availableDate": "可用日期", "availableIn": "距離可用", "registrar": "註冊商", "iana": "IANA ID", "registrarUrl": "註冊商網站", "whoisServer": "WHOIS 伺服器", "rdapServer": "RDAP 伺服器", "registryWebsite": "註冊局網站", "registryWhois": "註冊局 WHOIS", "registryRdap": "註冊局 RDAP", "nameServers": "名稱伺服器", "dnssec": "DNSSEC", "signed": "已簽署", "unsigned": "未簽署", "grace": "寬限期", "redemption": "贖回期", "pendingDelete": "待刪除", "hold": "暫停解析", "inactive": "非使用中", "yes": "是", "copy": "複製", "copied": "已複製", "reservedNotice": "此網域屬於保留網域，通常無法公開註冊。", "availableNotice": "此網域目前看似未註冊，實際可註冊情況請向註冊商確認。", "unknownNotice": "註冊局未提供足夠的標準化註冊資訊。"};
 const EXT_INPUT_LABELS={'zh-Hant':'網域名稱',"pt": "Nome de domínio", "it": "Nome del dominio", "ko": "도메인 이름", "ru": "Доменное имя", "ar": "اسم النطاق", "hi": "डोमेन नाम", "id": "Nama domain"};
 function detectLang(){let saved='';try{saved=localStorage.getItem('whoisLang')||''}catch(e){}if(LANGS[saved])return saved;const n=(navigator.language||'en').toLowerCase();const code=n.split('-')[0];if(code==='zh'&&(/tw|hk|mo|hant/.test(n)))return 'zh-Hant';return LANGS[n]?n:(LANGS[code]?code:'en')}let lang=detectLang(),currentData=null;const t=k=>(EXT_INPUT_LABELS[lang]&&k==='domainInputLabel'?EXT_INPUT_LABELS[lang]:({en:{domainInputLabel:'Domain name',rawWhois:"Raw WHOIS",rawRdap:"Raw RDAP"},zh:{domainInputLabel:'域名',rawWhois:"原始 WHOIS",rawRdap:"原始 RDAP"},de:{domainInputLabel:'Domainname',rawWhois:"WHOIS-Rohdaten",rawRdap:"RDAP-Rohdaten"},fr:{domainInputLabel:'Nom de domaine',rawWhois:"WHOIS brut",rawRdap:"RDAP brut"},ja:{domainInputLabel:'ドメイン名',rawWhois:"WHOIS 生データ",rawRdap:"RDAP 生データ"},es:{domainInputLabel:'Nombre de dominio',rawWhois:"WHOIS sin procesar",rawRdap:"RDAP sin procesar"},'zh-Hant':{domainInputLabel:'網域名稱',rawWhois:'原始 WHOIS',rawRdap:'原始 RDAP'}}[lang]?.[k]||LANGS[lang][k]||LANGS.en[k]||k));const sel=document.getElementById('langSelect');Object.entries(LANGS).forEach(([k,v])=>sel.add(new Option(v.name,k)));const GROUP_TITLES={'zh-Hant':['註冊與註冊商','DNS 與網域狀態'],en:['Registration & Registrar','DNS & Domain Status'],zh:['注册与注册商','DNS 与域名状态'],de:['Registrierung & Registrar','DNS & Domainstatus'],fr:['Enregistrement & bureau','DNS & statut du domaine'],ja:['登録・レジストラ','DNS・ドメイン状態'],es:['Registro y registrador','DNS y estado del dominio']};Object.assign(GROUP_TITLES,{"pt": ["Registro e registrador", "DNS e estado do domínio"], "it": ["Registrazione e registrar", "DNS e stato del dominio"], "ko": ["등록 및 등록기관", "DNS 및 도메인 상태"], "ru": ["Регистрация и регистратор", "DNS и статус домена"], "ar": ["التسجيل والمسجّل", "DNS وحالة النطاق"], "hi": ["पंजीकरण और रजिस्ट्रार", "DNS और डोमेन स्थिति"], "id": ["Pendaftaran dan registrar", "DNS dan status domain"]});
@@ -160,19 +160,32 @@ function renderError(message,canRetry=true){
  if(canRetry){const retry=document.createElement('button');retry.type='button';retry.className='retry-button';retry.textContent=feedback('retry');retry.addEventListener('click',load);error.append(retry)}
 }
 async function load(){
- currentData=null;applyLang();const loading=document.getElementById('loading'),error=document.getElementById('error');
- error.hidden=true;error.replaceChildren();document.getElementById('content').hidden=true;loading.hidden=false;
+ const loading=document.getElementById('loading'),error=document.getElementById('error'),content=document.getElementById('content');
+ if(requestController)return;
+ currentData=null;
+ try{applyLang()}catch(e){console.warn('Locale rendering:',e)}
+ error.hidden=true;error.replaceChildren();content.hidden=true;loading.hidden=false;
  if(!domain||!validDomain(domain)){renderError(t('invalid'),false);return}
- if(requestController)return;const controller=new AbortController();requestController=controller;
+ const controller=new AbortController();requestController=controller;
  const timeout=setTimeout(()=>controller.abort(),12000);
+ let payload;
  try{
-  const response=await fetch(API+encodeURIComponent(domain),{headers:{Accept:'application/json'},signal:controller.signal,cache:'no-store'});
-  if(!response.ok)throw new Error('HTTP '+response.status);
-  const json=await response.json();if(!json||json.code!==0||!json.data)throw new Error('API');
-  if(controller!==requestController)return;
-  queryCompletedAt=new Date();loading.hidden=true;document.getElementById('content').hidden=false;render(json.data);rememberDomain(domain);
- }catch(err){if(controller!==requestController)return;renderError(err.name==='AbortError'?feedback('timeout'):feedback('requestFailed'))}
- finally{clearTimeout(timeout);if(requestController===controller)requestController=null}
+   const response=await fetch(API+encodeURIComponent(domain),{headers:{Accept:'application/json'},signal:controller.signal,cache:'no-store'});
+   if(!response.ok)throw new Error('HTTP '+response.status);
+   const json=await response.json();
+   if(!json||json.code!==0||!json.data||typeof json.data!=='object')throw new Error('API');
+   payload=json.data;
+ }catch(err){
+   if(requestController===controller)renderError(err.name==='AbortError'?feedback('timeout'):feedback('requestFailed'));
+   return;
+ }finally{
+   clearTimeout(timeout);
+   if(requestController===controller)requestController=null;
+ }
+ // API succeeded: auxiliary storage failures must never be reported as query failures.
+ queryCompletedAt=new Date();loading.hidden=true;error.hidden=true;error.replaceChildren();content.hidden=false;
+ try{render(payload)}catch(e){console.error('Result rendering error',e);content.hidden=false}
+ try{rememberDomain(domain)}catch(e){console.warn('Optional history unavailable',e)}
 }
 document.getElementById('year').textContent=new Date().getFullYear();load();
 
@@ -207,16 +220,26 @@ function updateResultTools(){
  const el=document.getElementById('sourceLine');el.hidden=false;el.replaceChildren();
  for(const [label,value] of [[xt(4),date],[xt(5),sources]]){const item=document.createElement('span');const name=document.createElement('span');name.textContent=label+': ';const val=document.createElement('b');val.textContent=value;item.append(name,val);el.append(item)}
 }
-function downloadResult(type){if(!currentData)return;
- const name=cleanDomain(currentData.domain||domain)||domain,blob=type==='json'?
- new Blob([JSON.stringify({domain:name,queriedAt:queryCompletedAt?.toISOString()||null,data:currentData},null,2)],{type:'application/json;charset=utf-8'}):
- new Blob([[
-  'Domain: '+name,'Query time (UTC): '+(queryCompletedAt?.toISOString()||''),'Status: '+stateOf(currentData),
-  'Registration: '+(currentData.creationDateISO8601||currentData.creationDate||''),'Expiration: '+(currentData.expirationDateISO8601||currentData.expirationDate||''),
-  'Updated: '+(currentData.updatedDateISO8601||currentData.updatedDate||''),'Registrar: '+(currentData.registrar||''),
-  'Name Servers: '+(currentData.nameServers||[]).join(', '),'','WHOIS',currentData.whoisData||'','',
-  'RDAP',prettyRdap(currentData.rdapData||'')].join('\n')],{type:'text/plain;charset=utf-8'});
- const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name+'.'+type;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)
+function downloadResult(type){
+ if(!currentData)return;
+ const d=currentData,name=cleanDomain(d.domain||domain)||domain;
+ let blob;
+ if(type==='json'){
+   blob=new Blob([JSON.stringify({domain:name,queriedAt:queryCompletedAt?.toISOString()||null,data:d},null,2)],{type:'application/json;charset=utf-8'});
+ }else{
+   // TXT is WHOIS, not a synthetic combination of WHOIS + JSON + localized page labels.
+   // Preserve registry-provided line breaks and non-Latin characters.
+   const raw=typeof d.whoisData==='string'?d.whoisData:'';
+   const text=raw.trim()?raw.replace(/\r?\n/g,'\r\n'):
+     ['WHOIS data unavailable for '+name,'','Domain: '+name,
+      'Registration status: '+stateOf(d),'Registrar: '+(d.registrar||'Not disclosed'),
+      'Registration date: '+(d.creationDateISO8601||d.creationDate||'Not disclosed'),
+      'Expiration date: '+(d.expirationDateISO8601||d.expirationDate||'Not disclosed'),
+      'Name servers: '+(Array.isArray(d.nameServers)?d.nameServers.join(', '):'Not disclosed'),
+      '','For structured information, export JSON.'].join('\r\n');
+   blob=new Blob(['\uFEFF',text],{type:'text/plain;charset=utf-8'});
+ }
+ const url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download=name+'.'+type;document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),4000);
 }
 document.getElementById('favoriteDomain').addEventListener('click',()=>{toggleFavorite(currentData?.domain||domain);updateResultTools();renderFavorites()});
 document.getElementById('exportTxt').addEventListener('click',()=>downloadResult('txt'));

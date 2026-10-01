@@ -45,8 +45,8 @@ function rememberDomain(v){const d=cleanDomain(v);if(!validHistoryDomain(d))retu
 }
 function initThemePicker(){
  const element=document.getElementById('themeSelect');if(!element)return;
- const allowed=['graphite','paper','sand','forest','ocean','plum','mono'];
- const colors={graphite:'#101318',paper:'#f5f6f4',sand:'#f5f1e9',forest:'#111a18',ocean:'#edf3f6',plum:'#f8f5f9',mono:'#ffffff'};
+ const allowed=['graphite','paper','sand','forest','ocean','plum','mono','slate','mint','rose'];
+ const colors={graphite:'#101318',paper:'#f5f6f4',sand:'#f5f1e9',forest:'#111a18',ocean:'#edf3f6',plum:'#f8f5f9',mono:'#ffffff',slate:'#171d26',mint:'#f0f7f5',rose:'#faf5f4'};
  const setTheme=(theme)=>{if(!allowed.includes(theme))theme='paper';document.documentElement.dataset.theme=theme;element.value=theme;try{localStorage.setItem('whoisTheme',theme)}catch(e){}const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.content=colors[theme]};
  element.addEventListener('change',()=>setTheme(element.value));setTheme(document.documentElement.dataset.theme||'paper');
 }
@@ -104,8 +104,26 @@ function xt(n){return (EXTRA_TEXT[lang]||EXTRA_TEXT.en)[n]}
 
 function renderFavorites(){const panel=document.getElementById('favoritesPanel');if(!panel)return;
  const domains=getFavorites(),title=document.getElementById('favoritesSummary'),list=document.getElementById('favoritesList');
- title.textContent=xt(6)+' ('+domains.length+')';list.replaceChildren();
+ title.textContent=xt(6)+' ('+domains.length+')';list.replaceChildren();const clearBtn=document.getElementById('favoritesClear');if(clearBtn){clearBtn.textContent=FAVORITES_CLEAR[lang]||FAVORITES_CLEAR.en;clearBtn.hidden=!domains.length;clearBtn.onclick=()=>{setFavorites([]);renderFavorites();if(typeof updateResultTools==='function'&&typeof currentData!=='undefined'&&currentData)updateResultTools()};}
  if(!domains.length){const empty=document.createElement('div');empty.className='history-empty';empty.textContent=xt(7);list.append(empty);return}
  domains.forEach(d=>{const row=document.createElement('div');row.className='history-row';const a=document.createElement('a');a.className='history-link';a.href=searchUrl(d);a.textContent=d;
- const remove=document.createElement('button');remove.type='button';remove.className='history-remove';remove.textContent='×';remove.setAttribute('aria-label',xt(8)+' '+d);remove.addEventListener('click',()=>{setFavorites(getFavorites().filter(x=>x!==d));renderFavorites()});row.append(a,remove);list.append(row)});
+ const remove=document.createElement('button');remove.type='button';remove.className='history-remove';remove.textContent='×';remove.setAttribute('aria-label',xt(8)+' '+d);remove.addEventListener('click',()=>{setFavorites(getFavorites().filter(x=>x!==d));renderFavorites();if(typeof updateResultTools==='function'&&typeof currentData!=='undefined'&&currentData)updateResultTools()});row.append(a,remove);list.append(row)});
 }
+
+/* Three additional themes, translated consistently. */
+THEME_NAMES["en"].push(...["Slate", "Mint", "Rose"]);
+THEME_NAMES["zh"].push(...["岩灰蓝", "薄荷绿", "玫瑰雾"]);
+THEME_NAMES["zh-Hant"].push(...["岩灰藍", "薄荷綠", "玫瑰霧"]);
+THEME_NAMES["de"].push(...["Schiefer", "Minze", "Rosé"]);
+THEME_NAMES["fr"].push(...["Ardoise", "Menthe", "Rosé"]);
+THEME_NAMES["ja"].push(...["スレート", "ミント", "ローズ"]);
+THEME_NAMES["es"].push(...["Pizarra", "Menta", "Rosa"]);
+THEME_NAMES["pt"].push(...["Ardósia", "Menta", "Rosa"]);
+THEME_NAMES["it"].push(...["Ardesia", "Menta", "Rosa"]);
+THEME_NAMES["ko"].push(...["슬레이트", "민트", "로즈"]);
+THEME_NAMES["ru"].push(...["Сланец", "Мята", "Роза"]);
+THEME_NAMES["ar"].push(...["أردوازي", "نعناعي", "وردي"]);
+THEME_NAMES["hi"].push(...["स्लेट", "मिंट", "रोज़"]);
+THEME_NAMES["id"].push(...["Batu tulis", "Mint", "Mawar"]);
+
+const FAVORITES_CLEAR={"en": "Clear saved", "zh": "清空收藏", "zh-Hant": "清空收藏", "de": "Favoriten löschen", "fr": "Effacer les favoris", "ja": "保存をすべて削除", "es": "Borrar favoritos", "pt": "Limpar salvos", "it": "Cancella preferiti", "ko": "즐겨찾기 모두 삭제", "ru": "Очистить избранное", "ar": "مسح المحفوظات", "hi": "सहेजे गए सभी हटाएँ", "id": "Hapus semua favorit"};
