@@ -12,5 +12,3 @@ html[dir=rtl] .library-popover,html[dir=rtl] .choice-panel{direction:rtl}html[di
 @media(max-width:480px){.library-popover .personal-panels{grid-template-columns:minmax(0,1fr)!important;gap:9px!important}.library-popover .personal-panels .history-box,.library-popover .personal-panels .favorites-list{max-height:180px}}
 @media(max-width:355px){.topbar .lang{gap:3px!important}.topbar .brand [data-brand-title]{max-width:74px}.topbar .library-toggle,.topbar .choice-trigger{width:33px!important;min-width:33px!important;max-width:33px!important;height:33px!important}}
 @media(prefers-reduced-motion:reduce){.library-toggle,.choice-trigger{transition:none}}
-
-.settings-toggle{height:38px;width:38px;border:1px solid transparent;border-radius:9px;background:transparent;color:var(--text);cursor:pointer;font-size:16px}.settings-toggle:hover{background:var(--inner);border-color:var(--line)}
