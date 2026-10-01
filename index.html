@@ -23,12 +23,25 @@ html[data-theme="mono"]{color-scheme:light;--bg:#fff;--sheet:#fff;--inner:#f6f6f
 @media(max-width:600px){.hero{padding:45px 18px 95px}.hero h1{font-size:40px}.sub{font-size:14px;margin:17px auto 27px}.lookup input{padding:0 10px;font-size:16px}.lookup button{min-width:83px;padding:0 12px}.proof{flex-wrap:wrap}}
 
 .hero-inner{width:min(610px,100%)}.hero h1{font-weight:730}.sub{margin-bottom:29px}.proof{opacity:.7}.top-inner{max-width:970px;min-height:68px}
+/* V17: Homepage and domain-result content share the same 880px reading column. */
+.hero{padding:42px 30px 70px}
+.hero-inner{width:min(880px,100%)}
+.hero .eyebrow{margin-bottom:17px}
+.hero h1{font-size:clamp(35px,4.7vw,54px);line-height:1.13}
+.hero .sub{max-width:540px;margin:17px auto 32px;line-height:1.65}
+.hero .lookup{width:100%;margin:0 auto}
+.hero .proof{margin-top:19px}
+.foot{padding:20px 16px 26px}
+.foot a{color:inherit;text-decoration:none;font-weight:650;text-underline-offset:3px;transition:color .15s ease}
+.foot a:hover,.foot a:focus-visible{color:var(--accent);text-decoration:underline}
+@media(max-width:750px){.hero{padding:34px 13px 54px}.hero-inner{width:100%}.hero h1{font-size:clamp(32px,8vw,42px)}.hero .sub{max-width:420px;margin:15px auto 27px}.hero .lookup input{height:48px}.hero .lookup button{height:44px}}
+@media(max-width:360px){.hero .lookup{padding:4px;gap:4px}.hero .lookup input{padding:0 9px}.hero .lookup button{min-width:78px;padding:0 9px}}
 </style>
 </head>
 <body><div class="page">
 <header class="topbar"><div class="top-inner"><div class="brand"><span class="brand-mark">W</span><span>WHOIS.MRWANG</span></div><div class="lang"><select id="themeSelect" class="theme-select" aria-label="Display theme"><option value="graphite">Graphite</option><option value="paper">Paper</option><option value="sand">Sand</option><option value="forest">Forest</option><option value="ocean">Ocean</option><option value="plum">Plum</option><option value="mono">Mono</option></select><select id="langSelect" aria-label="Language"></select></div></div></header>
 <main class="hero"><div class="hero-inner"><div class="eyebrow">WHOIS · RDAP</div><h1 data-i18n="title">WHOIS & RDAP Lookup</h1><p class="sub" data-i18n="desc">Search WHOIS, RDAP, registrar, DNS and lifecycle information for domains worldwide.</p><form id="searchForm" class="lookup"><input id="domainInput" autocomplete="off" autocapitalize="none" spellcheck="false" inputmode="url" placeholder="example.com" aria-label="Domain name"><button type="submit" data-i18n="search">Search</button></form><div class="proof"><span>WHOIS</span><span>RDAP</span><span>DNS</span></div></div></main>
-<footer class="foot"><span>© <span id="year"></span> Mr Wang</span><span>whois.mrwang.com</span></footer>
+<footer class="foot">© <span id="year"></span> <a href="https://www.mrwang.com/" target="_blank" rel="noopener noreferrer" title="Mr Wang">Mr Wang</a></footer>
 </div>
 <script>
 const LANGS={en:{name:'English',title:'Domain Lookup',desc:'Search WHOIS, RDAP, registrar, DNS and lifecycle information for domains worldwide.',search:'Search',worldwide:'Worldwide TLD support'},zh:{name:'简体中文',title:'域名 WHOIS 查询',desc:'查询全球域名的 WHOIS、RDAP、注册商、DNS 与生命周期信息。',search:'查询',worldwide:'支持全球域名后缀'},de:{name:'Deutsch',title:'Domain-Abfrage',desc:'WHOIS-, RDAP-, Registrar-, DNS- und Lifecycle-Daten weltweit durchsuchen.',search:'Suchen',worldwide:'Globale TLD-Unterstützung'},fr:{name:'Français',title:'Recherche de domaine',desc:'Recherchez les données WHOIS, RDAP, registrar, DNS et cycle de vie.',search:'Rechercher',worldwide:'Prise en charge mondiale des TLD'},ja:{name:'日本語',title:'ドメイン検索',desc:'世界中のドメインの WHOIS、RDAP、レジストラ、DNS、ライフサイクル情報を検索。',search:'検索',worldwide:'世界中のTLDに対応'},es:{name:'Español',title:'Consulta de dominios',desc:'Consulta WHOIS, RDAP, registrador, DNS y ciclo de vida de dominios.',search:'Buscar',worldwide:'Compatibilidad global con TLD'}};
