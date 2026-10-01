@@ -1,11 +1,4 @@
-:root,html[data-theme="paper"]{color-scheme:light;--bg:#f7f8fa;--sheet:#fff;--inner:#f5f7f9;--text:#202630;--mute:#73808f;--line:#e8ecf0;--accent:#315dc1;--accentText:#fff;--wash:#eff3fb;--status:#17805c;--shadow:0 16px 60px rgba(27,42,67,.045)}
-html[data-theme="graphite"]{color-scheme:dark;--bg:#11151b;--sheet:#1a2029;--inner:#202733;--text:#edf0f5;--mute:#a0adbd;--line:#343e4b;--accent:#9abafa;--accentText:#101824;--wash:#273548;--status:#7ed4aa;--shadow:0 16px 60px rgba(0,0,0,.16)}
-html[data-theme="sand"]{color-scheme:light;--bg:#f8f6f2;--sheet:#fffefa;--inner:#f7f3ed;--text:#302f31;--mute:#827b74;--line:#eae5dd;--accent:#975e40;--accentText:#fff;--wash:#f4ebe1;--status:#558057;--shadow:0 16px 60px rgba(60,44,22,.035)}
-html[data-theme="forest"]{color-scheme:dark;--bg:#111b18;--sheet:#1b2823;--inner:#23352d;--text:#edf2ec;--mute:#a3b8ac;--line:#364940;--accent:#b7d6ac;--accentText:#16231a;--wash:#283e32;--status:#b7d6ac;--shadow:0 16px 60px rgba(0,0,0,.14)}
 
-html[data-theme="ocean"]{color-scheme:light;--bg:#edf3f6;--sheet:#fff;--inner:#f2f7fa;--text:#193442;--mute:#647c89;--line:#dce8ed;--accent:#12647e;--accentText:#fff;--wash:#e6f2f6;--status:#167354;--shadow:0 14px 48px rgba(11,60,82,.045)}
-html[data-theme="plum"]{color-scheme:light;--bg:#f8f5f9;--sheet:#fff;--inner:#f9f5fa;--text:#35283c;--mute:#817286;--line:#eee5ef;--accent:#774d86;--accentText:#fff;--wash:#f3eaf6;--status:#327d65;--shadow:0 14px 48px rgba(58,32,68,.045)}
-html[data-theme="mono"]{color-scheme:light;--bg:#fff;--sheet:#fff;--inner:#f6f6f6;--text:#171717;--mute:#666;--line:#dedede;--accent:#171717;--accentText:#fff;--wash:#f0f0f0;--status:#247755;--shadow:none}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%}html{background:var(--bg)}body{background:var(--bg);color:var(--text);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,"Noto Sans SC",sans-serif;-webkit-font-smoothing:antialiased}a{color:var(--accent)}button,input,select{font:inherit}button,select{cursor:pointer}[hidden]{display:none!important}::selection{background:var(--wash);color:var(--text)}
 .topbar{background:var(--sheet);border-bottom:1px solid var(--line)}.top-inner{max-width:1120px;margin:auto;padding:0 32px;min-height:76px;display:flex;align-items:center;justify-content:space-between;gap:24px}.brand{display:inline-flex;align-items:center;gap:11px;color:var(--text);font-size:12px;font-weight:800;letter-spacing:.065em;text-decoration:none;white-space:nowrap}.brand-mark{width:31px;height:31px;border-radius:9px;background:var(--text);color:var(--sheet);display:grid;place-items:center;font-size:17px;letter-spacing:-.04em}.lang{display:flex;gap:8px;align-items:center}.lang select{height:36px;max-width:145px;padding:0 10px;border:1px solid var(--line);border-radius:8px;color:var(--text);background:var(--inner);font-size:12px}.lang select:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:3px}.foot{color:var(--mute);font-size:12px;text-align:center;padding:25px 16px}.foot span+span{margin-left:15px}
 @media(max-width:650px){.top-inner{min-height:68px;padding:0 19px;gap:10px}.brand{font-size:11px}.brand-mark{width:28px;height:28px}.lang{gap:5px}.lang select{font-size:11px;padding:0 6px;max-width:100px}}
@@ -47,3 +40,11 @@ html[data-theme="mono"]{color-scheme:light;--bg:#fff;--sheet:#fff;--inner:#f6f6f
 .history-clear{font-weight:650;border-radius:5px;padding:5px 7px}
 .history-empty{padding:16px 13px;color:var(--mute);font-size:12px}
 @media(max-width:600px){.lookup .search-icon,.search-strip .quick .search-icon{width:43px;min-width:43px;height:40px}.lookup .clear-input,.search-strip .quick .clear-input{width:28px;min-width:28px}.lookup input,.search-strip .quick input{padding-left:9px;padding-right:3px}}
+
+/* Global language support */
+html[dir="rtl"] .top-inner{direction:rtl}
+html[dir="rtl"] .brand,html[dir="rtl"] #domainInput,html[dir="rtl"] .domain,html[dir="rtl"] .dns-item,html[dir="rtl"] .metric-value,html[dir="rtl"] .code{direction:ltr;unicode-bidi:isolate}
+html[dir="rtl"] .history-link{direction:ltr;text-align:start;unicode-bidi:isolate}
+html[dir="rtl"] .lookup,html[dir="rtl"] .quick{direction:ltr}
+html[dir="rtl"] .lang{direction:ltr}
+html[dir="rtl"] .key{text-align:start}
