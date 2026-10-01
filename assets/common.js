@@ -13,7 +13,7 @@ const HISTORY_KEY='mrwang_whois_history_v2';
 const HISTORY_TTL=365*24*60*60*1000;
 function htxt(k){return (HISTORY_TEXT[lang]||HISTORY_TEXT.en)[k]}
 function validHistoryDomain(d){return typeof d==='string'&&validDomain(d)}
-function persistHistory(entries){try{localStorage.setItem(HISTORY_KEY,JSON.stringify({version:2,entries:entries.slice(0,10)}))}catch(e){};emitLibraryChange('history')}
+function persistHistory(entries){try{localStorage.setItem(HISTORY_KEY,JSON.stringify({version:2,entries:entries.slice(0,10)}))}catch(e){}}
 function readHistoryEntries(){
  const now=Date.now();let raw=null;
  try{raw=localStorage.getItem(HISTORY_KEY)}catch(e){}
@@ -38,17 +38,27 @@ function readHistory(){return readHistoryEntries().map(item=>item.domain)}
 function writeHistory(items){
  const previous=new Map(readHistoryEntries().map(x=>[x.domain,x.savedAt]));
  const entries=[...new Set(items.filter(validHistoryDomain))].slice(0,10).map(domain=>({domain,savedAt:previous.get(domain)||Date.now()}));
- persistHistory(entries);renderHistory();notifyLocalLibraryChange();
+ persistHistory(entries);emitLibraryChange('history');
 }
 function rememberDomain(v){const d=cleanDomain(v);if(!validHistoryDomain(d))return;
- persistHistory([{domain:d,savedAt:Date.now()},...readHistoryEntries().filter(x=>x.domain!==d)].slice(0,10));renderHistory();notifyLocalLibraryChange()
+ persistHistory([{domain:d,savedAt:Date.now()},...readHistoryEntries().filter(x=>x.domain!==d)].slice(0,10));emitLibraryChange('history')
 }
+const WHOIS_THEMES=['graphite','paper','sand','forest','ocean','plum','mono','slate','mint','rose'];
+const WHOIS_THEME_COLORS={graphite:'#101318',paper:'#f5f6f4',sand:'#f5f1e9',forest:'#111a18',ocean:'#edf3f6',plum:'#f8f5f9',mono:'#ffffff',slate:'#171d26',mint:'#f0f7f5',rose:'#faf5f4'};
+function applyWhoisTheme(theme,{persist=true,notify=true}={}){
+ if(!WHOIS_THEMES.includes(theme))theme='paper';
+ if(document.documentElement.dataset.theme!==theme)document.documentElement.dataset.theme=theme;
+ const element=document.getElementById('themeSelect');if(element&&element.value!==theme)element.value=theme;
+ if(persist){try{localStorage.setItem('whoisTheme',theme)}catch(e){}}
+ const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.content=WHOIS_THEME_COLORS[theme];
+ if(notify){try{window.dispatchEvent(new CustomEvent('whois:themechange',{detail:{theme}}))}catch{}}
+ return theme;
+}
+window.applyWhoisTheme=applyWhoisTheme;
 function initThemePicker(){
  const element=document.getElementById('themeSelect');if(!element)return;
- const allowed=['graphite','paper','sand','forest','ocean','plum','mono','slate','mint','rose'];
- const colors={graphite:'#101318',paper:'#f5f6f4',sand:'#f5f1e9',forest:'#111a18',ocean:'#edf3f6',plum:'#f8f5f9',mono:'#ffffff',slate:'#171d26',mint:'#f0f7f5',rose:'#faf5f4'};
- const setTheme=(theme)=>{if(!allowed.includes(theme))theme='paper';document.documentElement.dataset.theme=theme;element.value=theme;try{localStorage.setItem('whoisTheme',theme)}catch(e){}const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.content=colors[theme]};
- element.addEventListener('change',()=>setTheme(element.value));setTheme(document.documentElement.dataset.theme||'paper');
+ if(!element.dataset.themeBound){element.dataset.themeBound='1';element.addEventListener('change',()=>applyWhoisTheme(element.value));}
+ applyWhoisTheme(document.documentElement.dataset.theme||'paper',{persist:false,notify:false});
 }
 
 THEME_NAMES["pt"]=["Tema", "Grafite", "Nuvem", "Linho", "Musgo", "Oceano", "Ameixa", "Monocromático"];

@@ -160,9 +160,15 @@ let rr='';rr+=registrarRow(t('registrar'),d.registrar,d.registrarURL);rr+=row(t(
 let dns='';if(Array.isArray(d.nameServers)&&d.nameServers.length){dns+=`<div class="row"><div class="key">${esc(t('nameServers'))}</div><div class="value nameserver-values">${d.nameServers.map(ns=>`<div class="dns-item">${esc(ns)}</div>`).join('')}</div></div>`}if(d.dnssecSigned!==null&&d.dnssecSigned!==undefined)dns+=row(t('dnssec'),d.dnssecSigned?t('signed'):t('unsigned'));setPanel('dnsPanel',dns);
 let statuses=Array.isArray(d.status)?d.status:[];if(!statuses.length&&state==='reserved')statuses=[{text:t('reserved'),url:''}];document.getElementById('statusList').innerHTML=statuses.map(s=>{const txt=typeof s==='string'?s:(s&&s.text||'');const u=typeof s==='object'?safeUrl(s.url||''):'';const title=u?`<a class="status-direct-link" href="${esc(u)}" target="_blank" rel="noopener noreferrer" title="${esc(txt)}">${esc(txt)}</a>`:esc(txt);return `<div class="item"><div><div class="item-title">${title}</div>${statusSub(txt)?`<div class="item-sub">${esc(statusSub(txt))}</div>`:''}</div></div>`}).join('');document.getElementById('statusPanel').hidden=!statuses.length;
 const lifes=[];if(d.gracePeriod)lifes.push(t('grace'));if(d.redemptionPeriod)lifes.push(t('redemption'));if(d.pendingDelete)lifes.push(t('pendingDelete'));if(d.hold)lifes.push(t('hold'));if(d.inactive)lifes.push(t('inactive'));document.getElementById('lifecycleList').innerHTML=lifes.map(x=>`<div class="life"><span>${esc(x)}</span><span>${esc(t('yes'))}</span></div>`).join('');document.getElementById('lifecyclePanel').hidden=!lifes.length;document.getElementById('identityGroup').hidden=document.getElementById('registrationPanel').hidden&&document.getElementById('registrarPanel').hidden;document.getElementById('technicalGroup').hidden=document.getElementById('dnsPanel').hidden&&document.getElementById('statusPanel').hidden&&document.getElementById('lifecyclePanel').hidden;
-const whois=d.whoisData||'',rdap=prettyRdap(d.rdapData||'');document.getElementById('whoisText').textContent=whois;document.getElementById('whoisRaw').hidden=!whois;document.getElementById('rdapText').textContent=rdap;document.getElementById('rdapRaw').hidden=!rdap;updateResultTools()}
+rawWhoisText=d.whoisData||'';rawRdapText=d.rdapData||'';const whoisRaw=document.getElementById('whoisRaw'),rdapRaw=document.getElementById('rdapRaw');whoisRaw.hidden=!rawWhoisText;rdapRaw.hidden=!rawRdapText;if(whoisRaw.open)document.getElementById('whoisText').textContent=rawWhoisText;else document.getElementById('whoisText').textContent='';if(rdapRaw.open)document.getElementById('rdapText').textContent=prettyRdap(rawRdapText);else document.getElementById('rdapText').textContent='';updateResultTools()}
+document.getElementById('whoisRaw')?.addEventListener('toggle',e=>{if(e.currentTarget.open){const pre=document.getElementById('whoisText');if(!pre.textContent)pre.textContent=rawWhoisText}});document.getElementById('rdapRaw')?.addEventListener('toggle',e=>{if(e.currentTarget.open){const pre=document.getElementById('rdapText');if(!pre.textContent)pre.textContent=prettyRdap(rawRdapText)}});
 async function copyText(btn,text){try{await navigator.clipboard.writeText(text);const old=btn.textContent;btn.textContent=t('copied');setTimeout(()=>btn.textContent=old,1000)}catch{}}document.querySelectorAll('[data-rawcopy]').forEach(btn=>btn.onclick=e=>{e.preventDefault();e.stopPropagation();copyText(btn,btn.dataset.rawcopy==='rdap'?document.getElementById('rdapText').textContent:document.getElementById('whoisText').textContent)});
-let requestController=null;let queryCompletedAt=null;
+let requestController=null;let queryCompletedAt=null;let rawWhoisText='';let rawRdapText='';
+const QUERY_CACHE_PREFIX='whois_query_cache_v1:';const QUERY_CACHE_TTL=2*60*1000;
+function readQueryCache(name){try{const x=JSON.parse(sessionStorage.getItem(QUERY_CACHE_PREFIX+name)||'null');if(x&&x.data&&Date.now()-x.at<QUERY_CACHE_TTL)return x.data;if(x)sessionStorage.removeItem(QUERY_CACHE_PREFIX+name)}catch{}return null}
+function writeQueryCache(name,data){try{sessionStorage.setItem(QUERY_CACHE_PREFIX+name,JSON.stringify({at:Date.now(),data}))}catch{}}
+let priceModuleRequested=false;
+function loadPriceModule(){if(priceModuleRequested||document.querySelector('script[data-price-module]'))return;priceModuleRequested=true;const run=()=>{const s=document.createElement('script');s.src='/assets/price.js?v=52';s.defer=true;s.dataset.priceModule='1';document.body.append(s)};if('requestIdleCallback'in window)requestIdleCallback(run,{timeout:1200});else setTimeout(run,120)}
 function renderError(message,canRetry=true){
  const loading=document.getElementById('loading'),error=document.getElementById('error');loading.hidden=true;error.hidden=false;error.replaceChildren();
  const p=document.createElement('p');p.textContent=message;error.append(p);
@@ -177,13 +183,16 @@ async function load(){
  if(!domain||!validDomain(domain)){renderError(t('invalid'),false);return}
  const controller=new AbortController();requestController=controller;
  const timeout=setTimeout(()=>controller.abort(),12000);
- let payload;
+ let payload=readQueryCache(domain);
  try{
-   const response=await fetch(API+encodeURIComponent(domain),{headers:{Accept:'application/json'},signal:controller.signal,cache:'no-store'});
-   if(!response.ok)throw new Error('HTTP '+response.status);
-   const json=await response.json();
-   if(!json||json.code!==0||!json.data||typeof json.data!=='object')throw new Error('API');
-   payload=json.data;
+   if(!payload){
+     await new Promise(resolve=>requestAnimationFrame(()=>resolve()));
+     const response=await fetch(API+encodeURIComponent(domain),{headers:{Accept:'application/json'},signal:controller.signal,cache:'default'});
+     if(!response.ok)throw new Error('HTTP '+response.status);
+     const json=await response.json();
+     if(!json||json.code!==0||!json.data||typeof json.data!=='object')throw new Error('API');
+     payload=json.data;writeQueryCache(domain,payload);
+   }
  }catch(err){
    if(requestController===controller)renderError(err.name==='AbortError'?feedback('timeout'):feedback('requestFailed'));
    return;
@@ -195,6 +204,7 @@ async function load(){
  queryCompletedAt=new Date();loading.hidden=true;error.hidden=true;error.replaceChildren();content.hidden=false;
  try{render(payload)}catch(e){console.error('Result rendering error',e);content.hidden=false}
  try{rememberDomain(domain)}catch(e){console.warn('Optional history unavailable',e)}
+ loadPriceModule();
 }
 document.getElementById('year').textContent=new Date().getFullYear();load();
 
