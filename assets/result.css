@@ -189,3 +189,30 @@ html[data-theme="graphite"] .metric.age-1,html[data-theme="forest"] .metric.age-
 .personal-panels .history-remove:focus-visible,.personal-panels summary:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
 @media(max-width:580px){.personal-panels{grid-template-columns:minmax(0,1fr);gap:9px;margin-top:11px}.personal-panels>details>summary{min-height:38px;padding:8px 12px!important}.personal-panels .history-box,.personal-panels .favorites-list{max-height:200px}}
 @media(prefers-reduced-motion:reduce){.personal-panels>details>summary::after{transition:none}}
+
+/* V33: TLD registration reference, attached to domain identity (not domain sale price). */
+.domain-line{display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;min-width:0}
+.domain-line .domain{flex:0 1 auto;min-width:0}
+.domain-line .meta-line{display:flex;align-items:center;flex:0 0 auto}
+.price-widget{margin-inline-start:auto;max-width:100%;flex:0 0 auto}
+.price-trigger{cursor:pointer;display:flex;align-items:center;gap:9px;min-height:42px;padding:7px 12px;border:1px solid var(--line);border-radius:9px;background:var(--inner);color:var(--text);max-width:100%;transition:border-color .15s ease,background .15s ease}
+.price-trigger:hover,.price-trigger[aria-expanded=true]{border-color:var(--accent)}
+.price-caption{font-size:11px;color:var(--mute);white-space:nowrap}
+.price-value{font-variant-numeric:tabular-nums;white-space:nowrap;font-size:15px;letter-spacing:-.02em}
+.price-caret{color:var(--mute);font-size:17px;line-height:1;transition:transform .15s ease}
+.price-trigger[aria-expanded=true] .price-caret{transform:rotate(180deg)}
+.price-details{margin-top:17px;padding:16px;background:var(--inner);border:1px solid var(--line);border-radius:10px}
+.price-details-title{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.price-details-title strong{font-size:13px}.price-details-desc{font-size:11px;color:var(--mute);line-height:1.65;margin:0 0 14px}
+.price-table-wrap{width:100%;overflow-x:auto;overscroll-behavior-x:contain}
+.price-table{width:100%;min-width:480px;border-collapse:collapse;font-size:12px;text-align:start}
+.price-table th{text-align:start;color:var(--mute);font-size:10px;font-weight:600;padding:9px 6px;border-bottom:1px solid var(--line)}
+.price-table td{padding:12px 6px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+.price-table th:not(:first-child),.price-table td:not(:first-child){text-align:end}
+.price-table td a{color:var(--text);text-decoration:none;font-weight:650}
+.price-table td a:hover{color:var(--accent);text-decoration:underline}
+.price-details-foot{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:11px;font-size:10px;color:var(--mute)}
+.price-details-foot a{color:var(--accent)}
+@media(max-width:750px){.price-widget{margin-inline-start:0}.price-trigger{min-height:34px;padding:6px 9px;gap:6px}.price-value{font-size:13px}.price-caption{font-size:10px}.price-details{padding:12px}.price-table{min-width:420px}}
+@media(max-width:420px){.domain-line{gap:8px}.price-widget{flex:0 0 auto;margin-inline-start:0}.price-trigger{min-height:32px}.price-caption{font-size:10px}.price-value{font-size:12px}}
+@media(prefers-reduced-motion:reduce){.price-caret,.price-trigger{transition:none}}
