@@ -28,6 +28,19 @@ html[data-theme="mono"]{color-scheme:light;--bg:#fff;--sheet:#fff;--inner:#f6f6f
 .metrics{margin-bottom:26px}.metric{padding:18px 20px}.metric-value{font-size:20px}.record-group{padding:24px 0 18px}.record-subgroup{padding:11px 0 7px}.row{grid-template-columns:minmax(145px,30%) minmax(0,1fr);padding:12px 0;gap:22px}.value{font-weight:510;font-size:13px}.nameserver-values{display:flex;flex-direction:column;gap:5px}.dns-item{font:550 13px/1.65 ui-monospace,SFMono-Regular,Consolas,monospace;padding:0}.record-subgroup h3{margin-bottom:10px}
 @media(max-width:750px){.top-inner{display:flex;min-height:62px}.lang{grid-column:auto;grid-row:auto}.wrap{padding:19px 13px 30px}.search-strip{margin-bottom:14px}.search-strip .quick input{height:41px}.search-strip .quick button{height:40px;min-width:83px}.row{grid-template-columns:minmax(110px,36%) minmax(0,1fr);gap:12px}}
 @media(max-width:410px){.top-inner{padding:0 13px}.brand span:last-child{font-size:10px;letter-spacing:0}.lang select{max-width:91px}.row{grid-template-columns:minmax(94px,35%) minmax(0,1fr)}}
+
+/* V15 — mobile metrics: aligned label/value rows, no cramped two-column cards. */
+@media(max-width:750px){
+ .metrics{grid-template-columns:minmax(0,1fr);margin:0 18px 24px;border-radius:10px;overflow:hidden}
+ .metric{display:grid;grid-template-columns:minmax(85px,31%) minmax(0,1fr);column-gap:14px;row-gap:5px;align-items:start;padding:15px 16px}
+ .metric:nth-child(n){border-left:0;border-top:0}
+ .metric+.metric{border-top:1px solid var(--line)}
+ .metric-label{margin:3px 0 0;grid-column:1;grid-row:1 / span 2;font-size:12px;line-height:1.45}
+ .metric-value{grid-column:2;font-size:clamp(16px,4.1vw,20px);line-height:1.35;letter-spacing:-.025em;overflow-wrap:break-word}
+ .metric-note{grid-column:2;margin:0;font-size:11px;line-height:1.5;overflow-wrap:break-word}
+ .foot{margin:0 18px}
+}
+@media(max-width:360px){.metrics{margin-left:14px;margin-right:14px}.metric{padding:14px 12px;column-gap:9px;grid-template-columns:76px minmax(0,1fr)}.metric-value{font-size:16px}}
 </style></head><body>
 <header class="topbar"><div class="top-inner"><a class="brand" href="/"><span class="brand-mark">W</span><span>WHOIS.MRWANG</span></a><div class="lang"><select id="themeSelect" class="theme-select" aria-label="Display theme"><option value="graphite">Graphite</option><option value="paper">Paper</option><option value="sand">Sand</option><option value="forest">Forest</option><option value="ocean">Ocean</option><option value="plum">Plum</option><option value="mono">Mono</option></select><select id="langSelect" aria-label="Language"></select></div></div></header>
 <main class="wrap"><div class="search-strip"><form id="searchForm" class="quick"><input id="domainInput" placeholder="example.com" autocomplete="off" autocapitalize="none" spellcheck="false"><button data-i18n="search">Search</button></form></div><div id="loading" class="loading"><span class="spinner"></span><span data-i18n="loading">Looking up domain information…</span></div><div id="error" class="error" hidden></div><div id="content" hidden>
@@ -41,13 +54,13 @@ html[data-theme="mono"]{color-scheme:light;--bg:#fff;--sheet:#fff;--inner:#f6f6f
 </section>
 <section id="technicalGroup" class="record-group" hidden>
   <div class="record-group-head"><h2 data-i18n="technicalGroup">DNS & Domain Status</h2><span>DNS / EPP</span></div>
-  <div id="dnsPanel" class="record-subgroup" hidden><h3>DNS</h3><div class="panel-body"></div></div>
+  <div id="dnsPanel" class="record-subgroup" hidden><div class="panel-body"></div></div>
   <div id="statusPanel" class="record-subgroup" hidden><h3 data-i18n="status">Domain Status</h3><div id="statusList" class="items"></div></div>
   <div id="lifecyclePanel" class="record-subgroup lifecycle-subgroup" hidden><h3 data-i18n="lifecycle">Lifecycle</h3><div id="lifecycleList"></div></div>
 </section>
 </div>
 <div class="raw"><details id="whoisRaw" hidden><summary data-i18n="rawWhois">Raw WHOIS</summary><div class="raw-tools"><button class="copy" data-rawcopy="whois" data-i18n="copy">Copy</button></div><pre id="whoisText" class="code"></pre></details><details id="rdapRaw" hidden><summary data-i18n="rawRdap">Raw RDAP</summary><div class="raw-tools"><button class="copy" data-rawcopy="rdap" data-i18n="copy">Copy</button></div><pre id="rdapText" class="code"></pre></details></div>
-<footer class="foot"><span>© <span id="year"></span> Mr Wang</span><span>WHOIS · RDAP · DNS</span></footer>
+<footer class="foot">© <span id="year"></span> Mr Wang</footer>
 </div></main>
 <script>
 const API='https://api.mrwang.com/whois.php?domain=';
