@@ -169,12 +169,11 @@ function refreshLocalLibraryUI(){
  if(typeof updateResultTools==='function'&&typeof currentData!=='undefined'&&currentData)updateResultTools();
 }
 function emitLibraryChange(kind){
- try{window.dispatchEvent(new CustomEvent('whois:librarychange',{detail:{kind}}))}catch{}
  if(typeof queueMicrotask==='function')queueMicrotask(refreshLocalLibraryUI);else refreshLocalLibraryUI();
+ try{window.dispatchEvent(new CustomEvent('whois:librarychange',{detail:{kind}}))}catch{}
 }
 function notifyLocalLibraryChange(){emitLibraryChange('all')}
 window.updateLibraryCounts=updateLibraryCounts;
 window.refreshLocalLibraryUI=refreshLocalLibraryUI;
-window.addEventListener('whois:librarychange',()=>queueMicrotask(refreshLocalLibraryUI));
 window.addEventListener('storage',event=>{if(event.key===HISTORY_KEY||event.key===FAVORITES_KEY||event.key===null)refreshLocalLibraryUI()});
 document.addEventListener('DOMContentLoaded',updateLibraryCounts);

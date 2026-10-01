@@ -164,11 +164,8 @@ rawWhoisText=d.whoisData||'';rawRdapText=d.rdapData||'';const whoisRaw=document.
 document.getElementById('whoisRaw')?.addEventListener('toggle',e=>{if(e.currentTarget.open){const pre=document.getElementById('whoisText');if(!pre.textContent)pre.textContent=rawWhoisText}});document.getElementById('rdapRaw')?.addEventListener('toggle',e=>{if(e.currentTarget.open){const pre=document.getElementById('rdapText');if(!pre.textContent)pre.textContent=prettyRdap(rawRdapText)}});
 async function copyText(btn,text){try{await navigator.clipboard.writeText(text);const old=btn.textContent;btn.textContent=t('copied');setTimeout(()=>btn.textContent=old,1000)}catch{}}document.querySelectorAll('[data-rawcopy]').forEach(btn=>btn.onclick=e=>{e.preventDefault();e.stopPropagation();copyText(btn,btn.dataset.rawcopy==='rdap'?document.getElementById('rdapText').textContent:document.getElementById('whoisText').textContent)});
 let requestController=null;let queryCompletedAt=null;let rawWhoisText='';let rawRdapText='';
-const QUERY_CACHE_PREFIX='whois_query_cache_v1:';const QUERY_CACHE_TTL=2*60*1000;
-function readQueryCache(name){try{const x=JSON.parse(sessionStorage.getItem(QUERY_CACHE_PREFIX+name)||'null');if(x&&x.data&&Date.now()-x.at<QUERY_CACHE_TTL)return x.data;if(x)sessionStorage.removeItem(QUERY_CACHE_PREFIX+name)}catch{}return null}
-function writeQueryCache(name,data){try{sessionStorage.setItem(QUERY_CACHE_PREFIX+name,JSON.stringify({at:Date.now(),data}))}catch{}}
 let priceModuleRequested=false;
-function loadPriceModule(){if(priceModuleRequested||document.querySelector('script[data-price-module]'))return;priceModuleRequested=true;const run=()=>{const s=document.createElement('script');s.src='/assets/price.js?v=52';s.defer=true;s.dataset.priceModule='1';document.body.append(s)};if('requestIdleCallback'in window)requestIdleCallback(run,{timeout:1200});else setTimeout(run,120)}
+function loadPriceModule(){if(priceModuleRequested||document.querySelector('script[data-price-module]'))return;priceModuleRequested=true;const run=()=>{const s=document.createElement('script');s.src='/assets/price.js?v=53';s.defer=true;s.dataset.priceModule='1';document.body.append(s)};if('requestIdleCallback'in window)requestIdleCallback(run,{timeout:1200});else setTimeout(run,120)}
 function renderError(message,canRetry=true){
  const loading=document.getElementById('loading'),error=document.getElementById('error');loading.hidden=true;error.hidden=false;error.replaceChildren();
  const p=document.createElement('p');p.textContent=message;error.append(p);
@@ -183,16 +180,15 @@ async function load(){
  if(!domain||!validDomain(domain)){renderError(t('invalid'),false);return}
  const controller=new AbortController();requestController=controller;
  const timeout=setTimeout(()=>controller.abort(),12000);
- let payload=readQueryCache(domain);
+ let payload;
  try{
-   if(!payload){
-     await new Promise(resolve=>requestAnimationFrame(()=>resolve()));
-     const response=await fetch(API+encodeURIComponent(domain),{headers:{Accept:'application/json'},signal:controller.signal,cache:'default'});
-     if(!response.ok)throw new Error('HTTP '+response.status);
-     const json=await response.json();
-     if(!json||json.code!==0||!json.data||typeof json.data!=='object')throw new Error('API');
-     payload=json.data;writeQueryCache(domain,payload);
-   }
+   await new Promise(resolve=>requestAnimationFrame(()=>resolve()));
+   const response=await fetch(API+encodeURIComponent(domain),{headers:{Accept:'application/json'},signal:controller.signal,cache:'no-store'});
+   if(!response.ok)throw new Error('HTTP '+response.status);
+   const json=await response.json();
+   if(json&&json.code===0&&json.data&&typeof json.data==='object')payload=json.data;
+   else if(json&&json.code===undefined&&typeof json==='object'&&(json.domain||json.registered!==undefined||json.isRegistered!==undefined||json.whoisData!==undefined||json.rdapData!==undefined))payload=json;
+   else throw new Error('API');
  }catch(err){
    if(requestController===controller)renderError(err.name==='AbortError'?feedback('timeout'):feedback('requestFailed'));
    return;
