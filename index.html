@@ -36,11 +36,31 @@ html[data-theme="mono"]{color-scheme:light;--bg:#fff;--sheet:#fff;--inner:#f6f6f
 .foot a:hover,.foot a:focus-visible{color:var(--accent);text-decoration:underline}
 @media(max-width:750px){.hero{padding:34px 13px 54px}.hero-inner{width:100%}.hero h1{font-size:clamp(32px,8vw,42px)}.hero .sub{max-width:420px;margin:15px auto 27px}.hero .lookup input{height:48px}.hero .lookup button{height:44px}}
 @media(max-width:360px){.hero .lookup{padding:4px;gap:4px}.hero .lookup input{padding:0 9px}.hero .lookup button{min-width:78px;padding:0 9px}}
+
+/* V18 unified search field & history */
+.lookup,.search-strip .quick{display:flex;align-items:center;min-height:56px;gap:5px;position:relative}
+.lookup input,.search-strip .quick input{align-self:center;min-width:0;line-height:normal;vertical-align:middle}
+.lookup .search-icon,.search-strip .quick .search-icon{min-width:48px;width:48px;height:46px;padding:0;display:grid;place-items:center;flex:none;line-height:1}
+.lookup .clear-input,.search-strip .quick .clear-input{flex:none;width:30px;min-width:30px;height:34px;padding:0;border:0;border-radius:7px;background:transparent;color:var(--mute);display:grid;place-items:center;box-shadow:none}
+.lookup .clear-input:hover,.search-strip .quick .clear-input:hover{color:var(--text);background:var(--inner)}
+.history-panel{width:100%;margin:12px 0 0;text-align:left;font-size:12px;color:var(--mute)}
+.history-panel summary{cursor:pointer;display:inline-flex;align-items:center;gap:6px;padding:5px 2px;list-style:none;user-select:none;font-weight:600}
+.history-panel summary::-webkit-details-marker{display:none}.history-panel summary:before{content:'↺';font-size:16px;font-weight:400;color:var(--accent)}
+.history-panel[open] summary{margin-bottom:7px}
+.history-box{background:var(--sheet);border:1px solid var(--line);border-radius:10px;overflow:hidden;box-shadow:var(--shadow)}
+.history-row{display:flex;align-items:center;gap:8px;min-width:0;padding:0 10px}.history-row+.history-row{border-top:1px solid var(--line)}
+.history-link{min-width:0;flex:1;display:block;text-decoration:none;color:var(--text);font-size:13px;font-weight:550;padding:12px 4px;overflow-wrap:anywhere}
+.history-link:hover{color:var(--accent)}.history-remove,.history-clear{border:0;background:transparent;color:var(--mute);font:inherit;cursor:pointer}
+.history-remove{padding:8px;flex:none;border-radius:6px}.history-remove:hover,.history-clear:hover{color:var(--text);background:var(--inner)}
+.history-foot{display:flex;align-items:center;justify-content:space-between;padding:10px 13px;border-top:1px solid var(--line);font-size:11px;gap:10px}
+.history-clear{font-weight:650;border-radius:5px;padding:5px 7px}
+.history-empty{padding:16px 13px;color:var(--mute);font-size:12px}
+@media(max-width:600px){.lookup .search-icon,.search-strip .quick .search-icon{width:43px;min-width:43px;height:40px}.lookup .clear-input,.search-strip .quick .clear-input{width:28px;min-width:28px}.lookup input,.search-strip .quick input{padding-left:9px;padding-right:3px}}
 </style>
 </head>
 <body><div class="page">
 <header class="topbar"><div class="top-inner"><div class="brand"><span class="brand-mark">W</span><span>WHOIS.MRWANG</span></div><div class="lang"><select id="themeSelect" class="theme-select" aria-label="Display theme"><option value="graphite">Graphite</option><option value="paper">Paper</option><option value="sand">Sand</option><option value="forest">Forest</option><option value="ocean">Ocean</option><option value="plum">Plum</option><option value="mono">Mono</option></select><select id="langSelect" aria-label="Language"></select></div></div></header>
-<main class="hero"><div class="hero-inner"><div class="eyebrow">WHOIS · RDAP</div><h1 data-i18n="title">WHOIS & RDAP Lookup</h1><p class="sub" data-i18n="desc">Search WHOIS, RDAP, registrar, DNS and lifecycle information for domains worldwide.</p><form id="searchForm" class="lookup"><input id="domainInput" autocomplete="off" autocapitalize="none" spellcheck="false" inputmode="url" placeholder="example.com" aria-label="Domain name"><button type="submit" data-i18n="search">Search</button></form><div class="proof"><span>WHOIS</span><span>RDAP</span><span>DNS</span></div></div></main>
+<main class="hero"><div class="hero-inner"><div class="eyebrow">WHOIS · RDAP</div><h1 data-i18n="title">WHOIS & RDAP Lookup</h1><p class="sub" data-i18n="desc">Search WHOIS, RDAP, registrar, DNS and lifecycle information for domains worldwide.</p><form id="searchForm" class="lookup"><input id="domainInput" autocomplete="off" autocapitalize="none" spellcheck="false" inputmode="url" placeholder="example.com" aria-label="Domain name"><button type="button" id="clearInput" class="clear-input" aria-label="Clear input" hidden><svg aria-hidden="true" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button><button type="submit" id="searchSubmit" class="search-icon" aria-label="Search domain" title="Search"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></button></form><details id="historyPanel" class="history-panel"><summary id="historySummary">Recent searches (0)</summary><div class="history-box"><div id="historyList"></div><div class="history-foot"><span id="historyNote"></span><button type="button" id="historyClear" class="history-clear">Clear all</button></div></div></details><div class="proof"><span>WHOIS</span><span>RDAP</span><span>DNS</span></div></div></main>
 <footer class="foot">© <span id="year"></span> <a href="https://www.mrwang.com/" target="_blank" rel="noopener noreferrer" title="Mr Wang">Mr Wang</a></footer>
 </div>
 <script>
@@ -51,4 +71,22 @@ function detectLang(){const s=localStorage.getItem('whoisLang');if(s&&LANGS[s])r
 
 /* Theme selection persists across homepage and all domain paths */
 (function(){const allowed=['graphite','paper','sand','forest','ocean','plum','mono'];let picked='paper';try{picked=localStorage.getItem('whoisTheme')||'paper'}catch(e){}if(!allowed.includes(picked))picked='paper';const element=document.getElementById('themeSelect');function setTheme(theme){document.documentElement.dataset.theme=theme;element.value=theme;try{localStorage.setItem('whoisTheme',theme)}catch(e){}const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.content={graphite:'#101318',paper:'#f5f6f4',sand:'#f5f1e9',forest:'#111a18',ocean:'#edf3f6',plum:'#f8f5f9',mono:'#ffffff'}[theme]}element.addEventListener('change',()=>setTheme(element.value));setTheme(picked)})();
+
+/* One-year, browser-only WHOIS query history. Cookie is shared by index and 404 routes. */
+const HISTORY_COOKIE='mrwang_whois_history';
+const HISTORY_TEXT={
+ en:{history:'Recent searches',clear:'Clear all',remove:'Remove',empty:'No recent searches',saved:'Stored on this browser for up to one year',clearInput:'Clear input',searchIcon:'Search domain'},
+ zh:{history:'查询历史',clear:'清空记录',remove:'删除',empty:'暂无查询记录',saved:'浏览器保存，最长一年',clearInput:'清空输入',searchIcon:'搜索域名'},
+ de:{history:'Letzte Suchen',clear:'Alle löschen',remove:'Entfernen',empty:'Noch keine Suchanfragen',saved:'Bis zu einem Jahr in diesem Browser gespeichert',clearInput:'Eingabe löschen',searchIcon:'Domain suchen'},
+ fr:{history:'Recherches récentes',clear:'Tout effacer',remove:'Supprimer',empty:'Aucune recherche récente',saved:'Conservé sur ce navigateur pendant un an maximum',clearInput:'Effacer la saisie',searchIcon:'Rechercher un domaine'},
+ ja:{history:'検索履歴',clear:'すべて削除',remove:'削除',empty:'検索履歴はありません',saved:'このブラウザーに最長1年間保存',clearInput:'入力を消去',searchIcon:'ドメインを検索'},
+ es:{history:'Búsquedas recientes',clear:'Borrar todo',remove:'Eliminar',empty:'No hay búsquedas recientes',saved:'Guardado en este navegador hasta un año',clearInput:'Borrar texto',searchIcon:'Buscar dominio'}
+};
+function htxt(k){return (HISTORY_TEXT[lang]||HISTORY_TEXT.en)[k]}
+function readHistory(){try{const part=document.cookie.split('; ').find(c=>c.startsWith(HISTORY_COOKIE+'='));if(!part)return[];const obj=JSON.parse(decodeURIComponent(part.slice(HISTORY_COOKIE.length+1)));return Array.isArray(obj)?obj.filter(x=>typeof x==='string'&&x.length<254).slice(0,10):[]}catch{return[]}}
+function writeHistory(items){let list=items.slice(0,10);let val=encodeURIComponent(JSON.stringify(list));while(val.length>3000&&list.length){list.pop();val=encodeURIComponent(JSON.stringify(list))}document.cookie=HISTORY_COOKIE+'='+val+'; Max-Age=31536000; Path=/; SameSite=Lax'+(location.protocol==='https:'?'; Secure':'');renderHistory()}
+function rememberDomain(v){const d=cleanDomain(v);if(!d||d.length>253||!d.includes('.')||/\s/.test(d))return;writeHistory([d,...readHistory().filter(x=>x!==d)])}
+function renderHistory(){const panel=document.getElementById('historyPanel');if(!panel)return;const arr=readHistory();const title=document.getElementById('historySummary');title.textContent=htxt('history')+' ('+arr.length+')';const list=document.getElementById('historyList');list.replaceChildren();if(!arr.length){const empty=document.createElement('div');empty.className='history-empty';empty.textContent=htxt('empty');list.append(empty)}else arr.forEach(d=>{const row=document.createElement('div');row.className='history-row';const a=document.createElement('a');a.className='history-link';a.textContent=d;a.href='/'+encodeURIComponent(d);const del=document.createElement('button');del.type='button';del.className='history-remove';del.textContent='×';del.title=htxt('remove');del.setAttribute('aria-label',htxt('remove')+' '+d);del.addEventListener('click',()=>writeHistory(readHistory().filter(x=>x!==d)));row.append(a,del);list.append(row)});document.getElementById('historyNote').textContent=htxt('saved');const all=document.getElementById('historyClear');all.textContent=htxt('clear');all.hidden=!arr.length}
+function updateSearchControls(){const input=document.getElementById('domainInput');const btn=document.getElementById('clearInput');btn.hidden=!input.value;btn.title=htxt('clearInput');btn.setAttribute('aria-label',htxt('clearInput'));const submit=document.getElementById('searchSubmit');submit.title=htxt('searchIcon');submit.setAttribute('aria-label',htxt('searchIcon'));renderHistory()}
+(function setupQueryTools(){const input=document.getElementById('domainInput');const clr=document.getElementById('clearInput');clr.onclick=()=>{input.value='';input.focus();updateSearchControls()};input.addEventListener('input',updateSearchControls);document.getElementById('historyClear').onclick=()=>writeHistory([]);document.getElementById('searchForm').onsubmit=e=>{e.preventDefault();const d=cleanDomain(input.value);if(!d)return;rememberDomain(d);location.href='/'+encodeURIComponent(d)};sel.addEventListener('change',updateSearchControls);updateSearchControls()})();
 </script></body></html>
