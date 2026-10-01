@@ -21,7 +21,7 @@ function readHistoryEntries(){
   let old=[];try{const part=document.cookie.split('; ').find(c=>c.startsWith(HISTORY_COOKIE+'='));if(part){const parsed=JSON.parse(decodeURIComponent(part.slice(HISTORY_COOKIE.length+1)));if(Array.isArray(parsed))old=parsed}}catch(e){}
   const entries=[...new Set(old.map(cleanDomain).filter(validHistoryDomain))].slice(0,10).map(domain=>({domain,savedAt:now}));
   persistHistory(entries);
-  document.cookie=HISTORY_COOKIE+'=; Max-Age=0; Path=/; SameSite=Lax'+(location.protocol==='https:'?'; Secure':'');
+  try{document.cookie=HISTORY_COOKIE+'=; Max-Age=0; Path=/; SameSite=Lax'+(location.protocol==='https:'?'; Secure':'')}catch(e){}
   return entries;
  }
  try{
@@ -145,14 +145,15 @@ function translateLanguageGroups(select,code){
 const BRAND_TITLES={"en": "Domain Lookup", "zh": "域名查询", "zh-Hant": "網域查詢", "ja": "ドメイン検索", "ko": "도메인 조회", "de": "Domain-Abfrage", "fr": "Recherche de domaine", "es": "Consulta de dominios", "pt": "Consulta de domínios", "it": "Ricerca domini", "ru": "Поиск доменов", "ar": "البحث عن النطاقات", "hi": "डोमेन खोज", "id": "Pencarian Domain"};
 function renderBrand(code){document.querySelectorAll("[data-brand-title]").forEach(el=>{el.textContent=BRAND_TITLES[code]||BRAND_TITLES.en});}
 
-/* V37: live menu totals; same-page updates plus cross-tab localStorage sync. */
+/* V49: independent History and Saved counters. */
 function updateLibraryCounts(){
- const badge=document.getElementById('libraryCount');if(!badge)return;
- const history=readHistory().length,favorites=getFavorites().length,total=history+favorites;
- badge.hidden=total===0;badge.textContent=total>99?'99+':String(total);
- const button=document.getElementById('libraryToggle');if(button)button.dataset.total=String(total);
+ const history=readHistory().length,favorites=getFavorites().length;
+ const hb=document.getElementById('historyCount'),fb=document.getElementById('favoritesCount');
+ if(hb){hb.hidden=!history;hb.textContent=history>99?'99+':String(history)}
+ if(fb){fb.hidden=!favorites;fb.textContent=favorites>99?'99+':String(favorites)}
 }
 function notifyLocalLibraryChange(){if(typeof queueMicrotask==='function')queueMicrotask(updateLibraryCounts);else updateLibraryCounts()}
+window.updateLibraryCounts=updateLibraryCounts;
 window.addEventListener('storage',event=>{
  if(event.key===HISTORY_KEY||event.key===FAVORITES_KEY||event.key===null){
   if(typeof renderHistory==='function')renderHistory();
