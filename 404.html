@@ -3,127 +3,106 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>WHOIS Lookup</title>
-  <meta name="description" content="WHOIS domain lookup result including registration dates, domain age, registrar, nameservers and domain status.">
-  <meta name="robots" content="noindex,follow" id="robots-meta">
+  <title>WHOIS Lookup | Mr Wang</title>
+  <meta name="robots" content="noindex,follow">
   <meta name="theme-color" content="#ffffff">
-  <link rel="stylesheet" href="/assets/style.css">
+  <style>
+    :root{--bg:#f6f7f9;--surface:#fff;--text:#12151b;--muted:#6d7480;--muted2:#969da8;--line:#e3e6ea;--line2:#eff1f4;--blue:#245eea;--green:#167553;--green-bg:#edf8f3;--amber:#8a6200;--amber-bg:#fff7dc;--red:#a83a32;--red-bg:#fff0ee;--gray-bg:#f0f2f5;--shadow:0 14px 42px rgba(15,23,42,.045)}
+    *{box-sizing:border-box}html,body{margin:0;min-height:100%}body{font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}a{color:inherit;text-decoration:none}button,input,select{font:inherit}
+    .top{position:sticky;top:0;z-index:20;min-height:66px;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:18px;padding:10px max(20px,calc((100vw - 1180px)/2))}.brand{font-size:16px;font-weight:800;letter-spacing:-.025em;white-space:nowrap}.top-spacer{flex:1}.quick-search{display:flex;width:min(390px,42vw);height:40px;border:1px solid var(--line);border-radius:9px;background:#fff;overflow:hidden}.quick-search input{min-width:0;flex:1;border:0;outline:0;padding:0 12px;color:var(--text)}.quick-search button{border:0;border-left:1px solid var(--line);background:#fff;padding:0 14px;cursor:pointer;font-weight:700}.lang{border:1px solid var(--line);border-radius:9px;background:#fff;padding:0 8px}.lang select{height:38px;border:0;outline:0;background:transparent;color:var(--text);font-size:13px}
+    .wrap{width:min(1180px,calc(100% - 40px));margin:0 auto;padding:38px 0 64px}.loading,.error-box{background:#fff;border:1px solid var(--line);border-radius:13px;padding:28px;box-shadow:var(--shadow);color:var(--muted)}.spinner{display:inline-block;width:18px;height:18px;border:2px solid #d8dce2;border-top-color:#15181d;border-radius:50%;vertical-align:-4px;margin-right:10px;animation:spin .75s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+    .hero{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:22px}.hero h1{margin:0;font-size:clamp(38px,5.2vw,58px);line-height:1;letter-spacing:-.052em;word-break:break-all}.headline-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:13px}.badge{display:inline-flex;align-items:center;gap:7px;padding:7px 10px;border-radius:999px;font-size:12px;font-weight:780}.badge i{width:7px;height:7px;border-radius:50%;background:currentColor}.badge.registered{background:var(--green-bg);color:var(--green)}.badge.available{background:#edf5ff;color:#2563eb}.badge.reserved{background:var(--amber-bg);color:var(--amber)}.badge.unknown{background:var(--gray-bg);color:#616975}.registrar-quick{font-size:13px;color:var(--muted)}
+    .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:22px}.metric{padding:22px 24px;min-height:112px}.metric+.metric{border-left:1px solid var(--line)}.metric-label{font-size:11px;line-height:1.2;color:var(--muted2);text-transform:uppercase;letter-spacing:.095em;font-weight:800}.metric-value{font-size:24px;font-weight:790;letter-spacing:-.035em;margin-top:11px}.metric-note{font-size:12px;color:var(--muted);margin-top:6px}
+    .layout{display:grid;grid-template-columns:minmax(0,1.42fr) minmax(310px,.78fr);gap:22px;align-items:start}.stack{display:grid;gap:22px}.panel,details.raw{background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);overflow:hidden}.panel-head{display:flex;justify-content:space-between;align-items:center;padding:17px 20px;border-bottom:1px solid var(--line2)}.panel-title{font-size:14px;font-weight:800;letter-spacing:-.01em}.panel-body{padding:2px 20px 6px}.row{display:grid;grid-template-columns:180px minmax(0,1fr);gap:20px;padding:14px 0;border-bottom:1px solid var(--line2)}.row:last-child{border-bottom:0}.key{font-size:12.5px;color:var(--muted)}.value{font-size:13.5px;font-weight:620;word-break:break-word}.value a{color:var(--blue)}
+    .list{display:grid;gap:8px;padding:14px 0}.item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 11px;border:1px solid var(--line);background:#fafbfc;border-radius:9px;font-size:13px}.item-main{min-width:0}.item-title{font-weight:680;word-break:break-word}.item-sub{font-size:11.5px;color:var(--muted);margin-top:3px}.copy{border:0;background:transparent;color:#8e95a0;cursor:pointer;font-size:12px;padding:3px}.copy:hover{color:var(--text)}
+    .lifecycle{display:grid;gap:8px;padding:14px 0}.life{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 11px;border-radius:9px;background:var(--red-bg);color:var(--red);font-size:13px;font-weight:700}.life.warning{background:var(--amber-bg);color:var(--amber)}
+    details.raw summary{cursor:pointer;list-style:none;padding:17px 20px;font-size:14px;font-weight:800;display:flex;justify-content:space-between;align-items:center}details.raw summary::-webkit-details-marker{display:none}.raw-body{border-top:1px solid var(--line2);background:#111827;color:#dbe4f0;max-height:520px;overflow:auto;padding:18px}.raw-body pre{margin:0;white-space:pre-wrap;word-break:break-word;font:12px/1.65 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}.raw-actions{display:flex;gap:8px;align-items:center}.raw-copy{border:0;background:#1f2937;color:#cbd5e1;border-radius:7px;padding:5px 8px;font-size:11px;cursor:pointer}
+    .notice{padding:14px 16px;border:1px solid var(--line);background:#fff;border-radius:11px;color:var(--muted);font-size:13px;line-height:1.6;margin-bottom:22px}.notice strong{color:var(--text)}.footer{text-align:center;color:#a0a6b0;font-size:12px;padding-top:30px}
+    [hidden]{display:none!important}
+    @media(max-width:900px){.top{flex-wrap:wrap;padding:10px 14px}.top-spacer{display:none}.quick-search{order:3;width:100%}.lang{margin-left:auto}.wrap{width:min(100% - 24px,1180px);padding-top:26px}.hero{align-items:flex-start;flex-direction:column}.metrics{grid-template-columns:1fr}.metric+.metric{border-left:0;border-top:1px solid var(--line)}.layout{grid-template-columns:1fr}.row{grid-template-columns:1fr;gap:5px}.hero h1{font-size:40px}}
+  </style>
 </head>
-<body class="result-page">
-  <header class="site-header">
-    <div class="header-inner">
-      <a class="brand brand-small" href="/" aria-label="WHOIS Home">WHOIS<span>.</span></a>
-      <form class="header-search" id="lookup-form" novalidate>
-        <label class="sr-only" for="domain-input">Domain name</label>
-        <input id="domain-input" name="domain" type="text" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Search another domain">
-        <button type="submit">Lookup</button>
-      </form>
-    </div>
-  </header>
-
-  <main class="page-wrap">
-    <div class="loading-state" id="loading-state">
-      <div class="spinner" aria-hidden="true"></div>
-      <p>Looking up domain registration data…</p>
-    </div>
-
-    <section id="result-view" hidden>
-      <div class="domain-hero">
-        <div>
-          <div class="eyebrow">WHOIS RESULT</div>
-          <h1 id="domain-title">—</h1>
-          <div class="hero-meta">
-            <span class="status-pill" id="registration-status">—</span>
-            <span id="domain-age-summary">—</span>
-          </div>
-        </div>
-        <button class="copy-link" type="button" id="copy-link">Copy link</button>
-      </div>
-
-      <section class="summary-grid" aria-label="Domain summary">
-        <article class="summary-card featured">
-          <span class="summary-label">Domain Age</span>
-          <strong id="domain-age">—</strong>
-          <small id="created-date-small">—</small>
-        </article>
-        <article class="summary-card">
-          <span class="summary-label">Registered</span>
-          <strong id="creation-date">—</strong>
-          <small id="creation-relative">—</small>
-        </article>
-        <article class="summary-card">
-          <span class="summary-label">Expires</span>
-          <strong id="expiration-date">—</strong>
-          <small id="expiration-relative">—</small>
-        </article>
-        <article class="summary-card">
-          <span class="summary-label">Last Updated</span>
-          <strong id="updated-date">—</strong>
-          <small id="updated-relative">—</small>
-        </article>
-      </section>
-
-      <div class="content-grid">
-        <section class="panel">
-          <div class="panel-head">
-            <div>
-              <span class="section-kicker">Registration</span>
-              <h2>Domain details</h2>
-            </div>
-          </div>
-          <dl class="detail-list">
-            <div><dt>Domain</dt><dd id="detail-domain">—</dd></div>
-            <div><dt>Registrar</dt><dd id="registrar">—</dd></div>
-            <div><dt>Registrar IANA ID</dt><dd id="registrar-iana">—</dd></div>
-            <div><dt>WHOIS Server</dt><dd id="whois-server">—</dd></div>
-            <div><dt>Registrar Website</dt><dd id="registrar-url">—</dd></div>
-            <div><dt>DNSSEC</dt><dd id="dnssec">—</dd></div>
-          </dl>
-        </section>
-
-        <section class="panel">
-          <div class="panel-head">
-            <div>
-              <span class="section-kicker">DNS</span>
-              <h2>Nameservers</h2>
-            </div>
-          </div>
-          <div class="chip-list" id="nameservers"></div>
-        </section>
-      </div>
-
-      <section class="panel status-panel">
-        <div class="panel-head">
-          <div>
-            <span class="section-kicker">Registry</span>
-            <h2>Domain status</h2>
-          </div>
-        </div>
-        <div class="status-list" id="status-list"></div>
-      </section>
-
-      <section class="panel raw-panel">
-        <div class="panel-head raw-head">
-          <div>
-            <span class="section-kicker">Raw Data</span>
-            <h2>WHOIS record</h2>
-          </div>
-          <button type="button" class="secondary-button" id="copy-whois">Copy WHOIS</button>
-        </div>
-        <pre id="raw-whois">—</pre>
-      </section>
-
-      <p class="data-note">WHOIS data is provided for informational purposes and may vary by registry or registrar.</p>
+<body>
+<header class="top">
+  <a href="/" class="brand">WHOIS · Mr Wang</a><div class="top-spacer"></div>
+  <form class="quick-search" id="searchForm"><input id="domainInput" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="example.com"><button type="submit" data-i18n="search">Search</button></form>
+  <div class="lang"><select id="langSelect" aria-label="Language"></select></div>
+</header>
+<main class="wrap">
+  <div id="loading" class="loading"><span class="spinner"></span><span data-i18n="loading">Loading domain information…</span></div>
+  <div id="error" class="error-box" hidden></div>
+  <div id="content" hidden>
+    <section class="hero">
+      <div><h1 id="domainTitle">—</h1><div class="headline-meta"><span id="stateBadge" class="badge unknown"><i></i><span>—</span></span><span id="registrarQuick" class="registrar-quick"></span></div></div>
     </section>
-
-    <section class="error-state panel" id="error-view" hidden>
-      <div class="error-code">WHOIS</div>
-      <h1 id="error-title">Domain lookup failed</h1>
-      <p id="error-message">Please check the domain and try again.</p>
-      <a class="primary-link" href="/">Search another domain</a>
+    <div id="stateNotice" class="notice" hidden></div>
+    <section id="metrics" class="metrics"></section>
+    <section class="layout">
+      <div class="stack">
+        <article class="panel" id="registrationPanel"><div class="panel-head"><div class="panel-title" data-i18n="registration">Registration</div></div><div class="panel-body" id="registrationBody"></div></article>
+        <article class="panel" id="registrarPanel"><div class="panel-head"><div class="panel-title" data-i18n="registrarInfo">Registrar & Registry</div></div><div class="panel-body" id="registrarBody"></div></article>
+        <details class="raw" id="whoisRaw"><summary><span data-i18n="rawWhois">Raw WHOIS</span><span class="raw-actions"><button type="button" class="raw-copy" data-rawcopy="whois" data-i18n="copy">Copy</button><span>＋</span></span></summary><div class="raw-body"><pre id="whoisText"></pre></div></details>
+        <details class="raw" id="rdapRaw"><summary><span data-i18n="rawRdap">Raw RDAP</span><span class="raw-actions"><button type="button" class="raw-copy" data-rawcopy="rdap" data-i18n="copy">Copy</button><span>＋</span></span></summary><div class="raw-body"><pre id="rdapText"></pre></div></details>
+      </div>
+      <aside class="stack">
+        <article class="panel" id="dnsPanel"><div class="panel-head"><div class="panel-title" data-i18n="dns">DNS</div></div><div class="panel-body" id="dnsBody"></div></article>
+        <article class="panel" id="statusPanel"><div class="panel-head"><div class="panel-title" data-i18n="status">Domain Status</div></div><div class="panel-body"><div class="list" id="statusList"></div></div></article>
+        <article class="panel" id="lifecyclePanel" hidden><div class="panel-head"><div class="panel-title" data-i18n="lifecycle">Lifecycle</div></div><div class="panel-body"><div class="lifecycle" id="lifecycleList"></div></div></article>
+      </aside>
     </section>
-  </main>
-
-  <script src="/assets/app.js" defer></script>
+  </div>
+  <footer class="footer">© <span id="year"></span> Mr Wang</footer>
+</main>
+<script>
+const API='https://api.mrwang.com/whois.php?domain=';
+const LANGS={
+ en:{name:'English',search:'Search',loading:'Loading domain information…',registered:'Registered',available:'Available',reserved:'Reserved',unknown:'Unknown',registration:'Registration',registrarInfo:'Registrar & Registry',dns:'DNS',status:'Domain Status',lifecycle:'Lifecycle',rawWhois:'Raw WHOIS',rawRdap:'Raw RDAP',copy:'Copy',copied:'Copied',domainAge:'Domain Age',created:'Creation Date',expires:'Expiration Date',expiresIn:'Expires In',updated:'Last Updated',updatedAgo:'Updated',availableDate:'Available Date',availableIn:'Available In',registrar:'Registrar',registrarUrl:'Registrar URL',iana:'IANA ID',whoisServer:'Registrar WHOIS',rdapServer:'Registrar RDAP',registryWebsite:'Registry Website',registryWhois:'Registry WHOIS',registryRdap:'Registry RDAP',nameServers:'Name Servers',dnssec:'DNSSEC',signed:'Signed',unsigned:'Unsigned',grace:'Grace Period',redemption:'Redemption Period',pendingDelete:'Pending Delete',hold:'Hold',inactive:'Inactive',yes:'Yes',invalid:'Invalid domain name.',failed:'Unable to retrieve WHOIS data.',reservedNotice:'This name is reserved by the registry and is not available for normal registration.',availableNotice:'No active registration record was found. Availability can change and should be confirmed with a registrar.',unknownNotice:'The registry returned insufficient standardized registration information for this domain.'},
+ zh:{name:'简体中文',search:'查询',loading:'正在查询域名信息…',registered:'已注册',available:'可注册',reserved:'保留域名',unknown:'未知',registration:'注册信息',registrarInfo:'注册商与注册局',dns:'DNS 信息',status:'域名状态',lifecycle:'域名生命周期',rawWhois:'原始 WHOIS',rawRdap:'原始 RDAP',copy:'复制',copied:'已复制',domainAge:'域名年龄',created:'注册时间',expires:'到期时间',expiresIn:'距离到期',updated:'最后更新',updatedAgo:'距今更新',availableDate:'可注册时间',availableIn:'距离可注册',registrar:'注册商',registrarUrl:'注册商网站',iana:'IANA ID',whoisServer:'注册商 WHOIS',rdapServer:'注册商 RDAP',registryWebsite:'注册局网站',registryWhois:'注册局 WHOIS',registryRdap:'注册局 RDAP',nameServers:'域名服务器',dnssec:'DNSSEC',signed:'已签名',unsigned:'未签名',grace:'宽限期',redemption:'赎回期',pendingDelete:'待删除',hold:'暂停解析',inactive:'未激活',yes:'是',invalid:'域名格式不正确。',failed:'WHOIS 查询失败，请稍后重试。',reservedNotice:'该名称已被注册局保留，通常不能作为普通域名注册。',availableNotice:'当前未发现有效注册记录；实际可注册状态仍应以注册商实时查询为准。',unknownNotice:'注册局返回的信息不足，暂时无法确定完整的标准化注册信息。'},
+ de:{name:'Deutsch',search:'Suchen',loading:'Domaininformationen werden geladen…',registered:'Registriert',available:'Verfügbar',reserved:'Reserviert',unknown:'Unbekannt',registration:'Registrierung',registrarInfo:'Registrar & Registry',dns:'DNS',status:'Domainstatus',lifecycle:'Lebenszyklus',rawWhois:'WHOIS-Rohdaten',rawRdap:'RDAP-Rohdaten',copy:'Kopieren',copied:'Kopiert',domainAge:'Domainalter',created:'Registriert am',expires:'Ablaufdatum',expiresIn:'Läuft ab in',updated:'Zuletzt aktualisiert',updatedAgo:'Aktualisiert vor',availableDate:'Verfügbar ab',availableIn:'Verfügbar in',registrar:'Registrar',registrarUrl:'Registrar-URL',iana:'IANA-ID',whoisServer:'Registrar WHOIS',rdapServer:'Registrar RDAP',registryWebsite:'Registry-Website',registryWhois:'Registry WHOIS',registryRdap:'Registry RDAP',nameServers:'Nameserver',dnssec:'DNSSEC',signed:'Signiert',unsigned:'Nicht signiert',grace:'Grace Period',redemption:'Redemption Period',pendingDelete:'Pending Delete',hold:'Hold',inactive:'Inaktiv',yes:'Ja',invalid:'Ungültiger Domainname.',failed:'WHOIS-Daten konnten nicht geladen werden.',reservedNotice:'Dieser Name ist von der Registry reserviert und normalerweise nicht registrierbar.',availableNotice:'Es wurde kein aktiver Registrierungsdatensatz gefunden. Die Verfügbarkeit sollte beim Registrar bestätigt werden.',unknownNotice:'Die Registry lieferte nicht genügend standardisierte Registrierungsinformationen.'},
+ fr:{name:'Français',search:'Rechercher',loading:'Chargement des informations du domaine…',registered:'Enregistré',available:'Disponible',reserved:'Réservé',unknown:'Inconnu',registration:'Enregistrement',registrarInfo:'Registrar & registre',dns:'DNS',status:'Statut du domaine',lifecycle:'Cycle de vie',rawWhois:'WHOIS brut',rawRdap:'RDAP brut',copy:'Copier',copied:'Copié',domainAge:'Âge du domaine',created:'Date de création',expires:'Date d’expiration',expiresIn:'Expire dans',updated:'Dernière mise à jour',updatedAgo:'Mis à jour il y a',availableDate:'Disponible le',availableIn:'Disponible dans',registrar:'Registrar',registrarUrl:'URL du registrar',iana:'ID IANA',whoisServer:'WHOIS du registrar',rdapServer:'RDAP du registrar',registryWebsite:'Site du registre',registryWhois:'WHOIS du registre',registryRdap:'RDAP du registre',nameServers:'Serveurs de noms',dnssec:'DNSSEC',signed:'Signé',unsigned:'Non signé',grace:'Période de grâce',redemption:'Période de rédemption',pendingDelete:'Suppression en attente',hold:'Suspendu',inactive:'Inactif',yes:'Oui',invalid:'Nom de domaine invalide.',failed:'Impossible de récupérer les données WHOIS.',reservedNotice:'Ce nom est réservé par le registre et n’est normalement pas disponible à l’enregistrement.',availableNotice:'Aucun enregistrement actif n’a été trouvé. La disponibilité doit être confirmée auprès d’un registrar.',unknownNotice:'Le registre n’a pas fourni suffisamment d’informations standardisées.'},
+ ja:{name:'日本語',search:'検索',loading:'ドメイン情報を読み込んでいます…',registered:'登録済み',available:'取得可能',reserved:'予約済み',unknown:'不明',registration:'登録情報',registrarInfo:'レジストラ / レジストリ',dns:'DNS',status:'ドメイン状態',lifecycle:'ライフサイクル',rawWhois:'Raw WHOIS',rawRdap:'Raw RDAP',copy:'コピー',copied:'コピー済み',domainAge:'ドメイン年齢',created:'登録日',expires:'有効期限',expiresIn:'有効期限まで',updated:'最終更新',updatedAgo:'更新から',availableDate:'取得可能日',availableIn:'取得可能まで',registrar:'レジストラ',registrarUrl:'レジストラURL',iana:'IANA ID',whoisServer:'レジストラWHOIS',rdapServer:'レジストラRDAP',registryWebsite:'レジストリWeb',registryWhois:'レジストリWHOIS',registryRdap:'レジストリRDAP',nameServers:'ネームサーバー',dnssec:'DNSSEC',signed:'署名あり',unsigned:'未署名',grace:'猶予期間',redemption:'償還期間',pendingDelete:'削除待ち',hold:'保留',inactive:'無効',yes:'はい',invalid:'無効なドメイン名です。',failed:'WHOIS情報を取得できませんでした。',reservedNotice:'この名前はレジストリによって予約されており、通常は登録できません。',availableNotice:'有効な登録情報は見つかりませんでした。実際の取得可否はレジストラで確認してください。',unknownNotice:'レジストリから十分な標準化登録情報を取得できませんでした。'},
+ es:{name:'Español',search:'Buscar',loading:'Cargando información del dominio…',registered:'Registrado',available:'Disponible',reserved:'Reservado',unknown:'Desconocido',registration:'Registro',registrarInfo:'Registrador y registro',dns:'DNS',status:'Estado del dominio',lifecycle:'Ciclo de vida',rawWhois:'WHOIS sin procesar',rawRdap:'RDAP sin procesar',copy:'Copiar',copied:'Copiado',domainAge:'Antigüedad del dominio',created:'Fecha de registro',expires:'Fecha de vencimiento',expiresIn:'Vence en',updated:'Última actualización',updatedAgo:'Actualizado hace',availableDate:'Disponible el',availableIn:'Disponible en',registrar:'Registrador',registrarUrl:'URL del registrador',iana:'ID IANA',whoisServer:'WHOIS del registrador',rdapServer:'RDAP del registrador',registryWebsite:'Sitio del registro',registryWhois:'WHOIS del registro',registryRdap:'RDAP del registro',nameServers:'Servidores DNS',dnssec:'DNSSEC',signed:'Firmado',unsigned:'Sin firmar',grace:'Período de gracia',redemption:'Período de redención',pendingDelete:'Pendiente de eliminación',hold:'Retenido',inactive:'Inactivo',yes:'Sí',invalid:'Nombre de dominio no válido.',failed:'No se pudieron obtener los datos WHOIS.',reservedNotice:'Este nombre está reservado por el registro y normalmente no puede registrarse.',availableNotice:'No se encontró un registro activo. Confirma la disponibilidad con un registrador.',unknownNotice:'El registro no proporcionó suficiente información estandarizada.'}
+};
+function detectLang(){const s=localStorage.getItem('whoisLang');if(s&&LANGS[s])return s;const n=(navigator.language||'en').toLowerCase();if(n.startsWith('zh'))return'zh';if(n.startsWith('de'))return'de';if(n.startsWith('fr'))return'fr';if(n.startsWith('ja'))return'ja';if(n.startsWith('es'))return'es';return'en'}
+let lang=detectLang(),currentData=null;const t=k=>LANGS[lang][k]||LANGS.en[k]||k;
+const sel=document.getElementById('langSelect');Object.entries(LANGS).forEach(([k,v])=>sel.add(new Option(v.name,k)));
+function applyLang(){document.documentElement.lang=lang==='zh'?'zh-CN':lang;sel.value=lang;document.querySelectorAll('[data-i18n]').forEach(el=>{const v=t(el.dataset.i18n);if(v)el.textContent=v});if(currentData)render(currentData)}
+sel.addEventListener('change',()=>{lang=sel.value;localStorage.setItem('whoisLang',lang);applyLang()});
+function esc(v){return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+function safeUrl(v){try{const u=new URL(v);return /^https?:$/.test(u.protocol)?u.href:''}catch{return''}}
+function cleanDomain(v){v=(v||'').trim().toLowerCase();v=v.replace(/^https?:\/\//i,'').replace(/^\/\//,'').split('/')[0].split('?')[0].split('#')[0].replace(/:\d+$/,'').replace(/\.$/,'');return v}
+function validDomain(d){return d.length>2&&d.length<=253&&!/\s/.test(d)&&d.includes('.')&&!d.startsWith('.')&&!d.endsWith('.')}
+const rawPath=decodeURIComponent(location.pathname.replace(/^\/+|\/+$/g,''));const domain=cleanDomain(rawPath);document.getElementById('domainInput').value=domain;
+document.getElementById('searchForm').addEventListener('submit',e=>{e.preventDefault();const d=cleanDomain(document.getElementById('domainInput').value);if(d)location.href='/'+encodeURIComponent(d)});
+function fmtDate(v){if(!v)return'';const d=new Date(v);if(Number.isNaN(d.getTime()))return String(v).replace('T',' ').replace(/Z$/,'');try{return new Intl.DateTimeFormat(lang==='zh'?'zh-CN':lang,{year:'numeric',month:'2-digit',day:'2-digit'}).format(d)}catch{return d.toISOString().slice(0,10)}}
+function humanDuration(s){if(!s)return'';const m=String(s).match(/(?:(-?\d+)Y)?\s*(?:(-?\d+)Mo)?\s*(?:(-?\d+)D)?/i);if(!m)return s;const nums=[+m[1]||0,+m[2]||0,+m[3]||0];const units={en:[['year','years'],['month','months'],['day','days']],zh:[['年','年'],['个月','个月'],['天','天']],de:[['Jahr','Jahre'],['Monat','Monate'],['Tag','Tage']],fr:[['an','ans'],['mois','mois'],['jour','jours']],ja:[['年','年'],['か月','か月'],['日','日']],es:[['año','años'],['mes','meses'],['día','días']]}[lang]||[['year','years'],['month','months'],['day','days']];const out=[];nums.forEach((n,i)=>{if(!n)return;if(lang==='zh'||lang==='ja')out.push(`${n}${units[i][0]}`);else out.push(`${n} ${Math.abs(n)===1?units[i][0]:units[i][1]}`)});return out.join(' ')||s}
+function stateOf(d){if(d.reserved===true)return'reserved';if(d.unknown===true)return'unknown';if(d.registered===true)return'registered';if(d.registered===false)return'available';return'unknown'}
+function row(k,v,link=false){if(v===undefined||v===null||v==='')return'';const url=link?safeUrl(v):'';return `<div class="row"><div class="key">${esc(k)}</div><div class="value">${url?`<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(v)} ↗</a>`:esc(v)}</div></div>`}
+function setPanel(id,html){const el=document.getElementById(id);el.hidden=!html;if(html){const body=el.querySelector('.panel-body');if(body)body.innerHTML=html}}
+const statusMap={
+ 'Client Transfer Prohibited':{zh:'禁止客户端转移',de:'Client-Transfer gesperrt',fr:'Transfert client interdit',ja:'クライアント転送禁止',es:'Transferencia de cliente prohibida'},
+ 'Client Update Prohibited':{zh:'禁止客户端更新',de:'Client-Update gesperrt',fr:'Mise à jour client interdite',ja:'クライアント更新禁止',es:'Actualización de cliente prohibida'},
+ 'Client Delete Prohibited':{zh:'禁止客户端删除',de:'Client-Löschung gesperrt',fr:'Suppression client interdite',ja:'クライアント削除禁止',es:'Eliminación de cliente prohibida'},
+ 'Active':{zh:'正常激活',de:'Aktiv',fr:'Actif',ja:'有効',es:'Activo'},'OK':{zh:'正常',de:'OK',fr:'OK',ja:'正常',es:'OK'},'Registered':{zh:'已注册',de:'Registriert',fr:'Enregistré',ja:'登録済み',es:'Registrado'}
+};
+function statusSub(txt){if(lang==='en')return'';return statusMap[txt]?.[lang]||''}
+function metric(label,value,note=''){if(!value)return'';return `<div class="metric"><div class="metric-label">${esc(label)}</div><div class="metric-value">${esc(value)}</div>${note?`<div class="metric-note">${esc(note)}</div>`:''}</div>`}
+function prettyRdap(v){if(!v)return'';try{return JSON.stringify(JSON.parse(v),null,2)}catch{return v}}
+function render(d){currentData=d;const displayDomain=d.domain||domain;document.title=`${displayDomain} WHOIS | Mr Wang`;document.getElementById('domainTitle').textContent=displayDomain;const state=stateOf(d),badge=document.getElementById('stateBadge');badge.className='badge '+state;badge.querySelector('span').textContent=t(state);const rq=document.getElementById('registrarQuick');rq.textContent=d.registrar||'';rq.hidden=!d.registrar;
+ const notice=document.getElementById('stateNotice');const noticeKey=state==='reserved'?'reservedNotice':state==='available'?'availableNotice':state==='unknown'?'unknownNotice':'';notice.hidden=!noticeKey;notice.innerHTML=noticeKey?`<strong>${esc(t(state))}.</strong> ${esc(t(noticeKey))}`:'';
+ let metrics='';metrics+=metric(t('domainAge'),humanDuration(d.createdAgo),d.creationDateISO8601||d.creationDate?`${t('created')}: ${fmtDate(d.creationDateISO8601||d.creationDate)}`:'');metrics+=metric(t('expires'),fmtDate(d.expirationDateISO8601||d.expirationDate),d.expiresIn?`${t('expiresIn')}: ${humanDuration(d.expiresIn)}`:'');metrics+=metric(t('updated'),fmtDate(d.updatedDateISO8601||d.updatedDate),d.updatedAgo?`${t('updatedAgo')}: ${humanDuration(d.updatedAgo)}`:'');metrics+=metric(t('availableDate'),fmtDate(d.availableDateISO8601||d.availableDate),d.availableIn?`${t('availableIn')}: ${humanDuration(d.availableIn)}`:'');document.getElementById('metrics').innerHTML=metrics;document.getElementById('metrics').hidden=!metrics;
+ let reg='';reg+=row(t('created'),fmtDate(d.creationDateISO8601||d.creationDate));reg+=row(t('expires'),fmtDate(d.expirationDateISO8601||d.expirationDate));reg+=row(t('updated'),fmtDate(d.updatedDateISO8601||d.updatedDate));reg+=row(t('availableDate'),fmtDate(d.availableDateISO8601||d.availableDate));setPanel('registrationPanel',reg);
+ let rr='';rr+=row(t('registrar'),d.registrar);rr+=row(t('iana'),d.registrarIANAId);rr+=row(t('registrarUrl'),d.registrarURL,true);rr+=row(t('whoisServer'),d.registrarWHOISServer);rr+=row(t('rdapServer'),d.registrarRDAPServer,true);rr+=row(t('registryWebsite'),d.registryWebsite,true);rr+=row(t('registryWhois'),d.registryWHOISServer);rr+=row(t('registryRdap'),d.registryRDAPServer,true);setPanel('registrarPanel',rr);
+ let dns='';if(Array.isArray(d.nameServers)&&d.nameServers.length){dns+=`<div class="row"><div class="key">${esc(t('nameServers'))}</div><div class="value"><div class="list">${d.nameServers.map(ns=>`<div class="item"><div class="item-main"><div class="item-title">${esc(ns)}</div></div><button type="button" class="copy" data-copy="${esc(ns)}">${esc(t('copy'))}</button></div>`).join('')}</div></div></div>`}if(d.dnssecSigned!==null&&d.dnssecSigned!==undefined)dns+=row(t('dnssec'),d.dnssecSigned?t('signed'):t('unsigned'));setPanel('dnsPanel',dns);
+ let statuses=Array.isArray(d.status)?d.status:[];if(!statuses.length&&state==='reserved')statuses=[{text:t('reserved'),url:''}];const sl=document.getElementById('statusList');sl.innerHTML=statuses.map(s=>{const txt=typeof s==='string'?s:(s.text||'');const u=typeof s==='object'?safeUrl(s.url||''):'';return `<div class="item"><div class="item-main"><div class="item-title">${esc(txt)}</div>${statusSub(txt)?`<div class="item-sub">${esc(statusSub(txt))}</div>`:''}</div>${u?`<a href="${esc(u)}" target="_blank" rel="noopener noreferrer">↗</a>`:''}</div>`}).join('');document.getElementById('statusPanel').hidden=!statuses.length;
+ const lifes=[];if(d.gracePeriod)lifes.push([t('grace'),'warning']);if(d.redemptionPeriod)lifes.push([t('redemption'),'warning']);if(d.pendingDelete)lifes.push([t('pendingDelete'),'']);if(d.hold)lifes.push([t('hold'),'']);if(d.inactive)lifes.push([t('inactive'),'warning']);document.getElementById('lifecycleList').innerHTML=lifes.map(([x,c])=>`<div class="life ${c}"><span>${esc(x)}</span><span>${esc(t('yes'))}</span></div>`).join('');document.getElementById('lifecyclePanel').hidden=!lifes.length;
+ const whois=d.whoisData||'',rdap=prettyRdap(d.rdapData||'');document.getElementById('whoisText').textContent=whois;document.getElementById('whoisRaw').hidden=!whois;document.getElementById('rdapText').textContent=rdap;document.getElementById('rdapRaw').hidden=!rdap;
+ document.querySelectorAll('[data-copy]').forEach(btn=>btn.onclick=()=>copyText(btn,btn.dataset.copy));
+}
+async function copyText(btn,text){try{await navigator.clipboard.writeText(text);const old=btn.textContent;btn.textContent=t('copied');setTimeout(()=>btn.textContent=old,1100)}catch{}}
+document.querySelectorAll('[data-rawcopy]').forEach(btn=>btn.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();const txt=btn.dataset.rawcopy==='rdap'?document.getElementById('rdapText').textContent:document.getElementById('whoisText').textContent;copyText(btn,txt)}));
+async function load(){applyLang();if(!domain||!validDomain(domain)){document.getElementById('loading').hidden=true;const e=document.getElementById('error');e.hidden=false;e.textContent=t('invalid');return}try{const r=await fetch(API+encodeURIComponent(domain),{headers:{Accept:'application/json'}});if(!r.ok)throw new Error(`HTTP ${r.status}`);const j=await r.json();if(!j||j.code!==0||!j.data)throw new Error(j?.msg||'Query failed');document.getElementById('loading').hidden=true;document.getElementById('content').hidden=false;render(j.data)}catch(err){document.getElementById('loading').hidden=true;const e=document.getElementById('error');e.hidden=false;e.textContent=`${t('failed')} ${err?.message||''}`}}
+document.getElementById('year').textContent=new Date().getFullYear();load();
+</script>
 </body>
 </html>
