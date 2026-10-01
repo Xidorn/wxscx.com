@@ -267,11 +267,7 @@ html[data-theme="graphite"] .metric.age-1,html[data-theme="forest"] .metric.age-
 .quote-column{width:100%;max-width:100%}.quote-head{border-block-end:1px solid var(--line);padding:0 0 8px;font-size:10px;color:var(--mute)}
 .quote-row{padding:12px 0;border-block-end:1px solid var(--line);min-width:0}
 .quote-name{min-width:0;font-size:12px;overflow-wrap:anywhere}.quote-name a{font-weight:650;color:var(--text);text-decoration:none}.quote-name a:hover{color:var(--accent);text-decoration:underline}
-.quote-data{min-width:0;width:min(48%,310px);display:flex;align-items:center;justify-content:flex-end;gap:16px}.quote-data strong{min-width:85px;text-align:end;font-size:13px;font-variant-numeric:tabular-nums;white-space:nowrap}
-.quote-bar{height:3px;flex:1 1 auto;min-width:12px;background:var(--line);overflow:hidden}.quote-bar i{display:block;background:var(--accent);height:100%;width:var(--quote-fill)}
 .quote-footer{padding-top:12px;font-size:10px;color:var(--mute);flex-wrap:wrap}.quote-footer a{color:var(--accent)}
-@media(max-width:760px){.domain-line>.price-widget{flex-basis:100%;width:100%;min-width:0;margin-inline-start:0}.price-rail{width:100%}.price-kind{padding:10px 8px}.price-kind-value{font-size:clamp(11px,3.5vw,16px)}.quote-data{width:min(53%,220px);gap:8px}.quote-data strong{min-width:75px;font-size:12px}}
-@media(max-width:360px){.price-kind{padding-inline:5px}.price-kind-label{font-size:9px}.price-kind-value{font-size:11px}.quote-bar{display:none}}
 
 /* V35 remove visual nesting: one continuous record surface. */
 .metrics{background:transparent!important;border-inline:0!important;border-radius:0!important;box-shadow:none!important;border-block:1px solid var(--line)!important;}
@@ -320,12 +316,29 @@ html[dir="rtl"] .domain-identity>.domain{direction:ltr;unicode-bidi:isolate;}
 .mobile-price-rail button small{color:var(--mute);font-size:10px}
 .mobile-price-rail button.is-active{color:var(--accent)}
 .mobile-price-rail button:disabled{opacity:.45;cursor:default}
-.mobile-price-details{padding-top:12px}.mobile-price-details .quote-data{width:min(56%,260px)}
 @media(max-width:760px){.domain-line>.price-widget,.domain-head>.price-details{display:none!important}.mobile-price-toggle:not([hidden]){display:inline-flex;}.domain-head .mobile-price-toggle{margin-top:9px;}}
 @media(min-width:761px){.mobile-price-backdrop{display:none!important}}
-@media(max-width:350px){.mobile-price-rail button strong{font-size:10px}.mobile-price-details .quote-bar{display:none}}
 
 /* V39: status text itself carries the official EPP reference link. */
 .item-title .status-direct-link{color:inherit;text-decoration:none;text-underline-offset:3px;text-decoration-thickness:1px;transition:color .15s ease}
 .item-title .status-direct-link:hover,.item-title .status-direct-link:focus-visible{color:var(--accent);text-decoration:underline}
 .item-title .status-direct-link:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:2px}
+/* V40: streamlined registrar rows; no quote-data wrapper or comparison bars. */
+.quote-row{align-items:flex-start;gap:12px;padding:12px 0}
+.quote-name{flex:1 1 34%;min-width:0;padding-top:3px;font-size:12px}
+.quote-values{flex:1 1 66%;display:flex;min-width:0;flex-direction:column;align-items:flex-end;text-align:end;gap:5px}
+.quote-price{font-size:14px;font-weight:750;font-variant-numeric:tabular-nums;white-space:nowrap}
+.quote-price-suppressed{display:none}
+.promo-block{display:flex;flex-direction:column;align-items:flex-end;gap:6px;max-width:100%;min-width:0}
+.promo-price-line{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:5px 9px}
+.promo-tag{font-size:10px;font-weight:700;color:var(--accent)}
+.promo-price-line del{font-size:11px;color:var(--mute);font-variant-numeric:tabular-nums}
+.promo-price{font-size:15px;color:var(--accent);font-variant-numeric:tabular-nums}
+.promo-code-line{display:flex;flex-wrap:wrap;gap:5px;justify-content:flex-end;max-width:100%}
+.promo-copy{display:inline-flex;align-items:center;gap:6px;max-width:100%;padding:4px 7px;border:1px dashed var(--accent);border-radius:5px;background:transparent;color:var(--text);cursor:pointer;font:inherit;font-size:11px}
+.promo-copy b{font-weight:650;overflow-wrap:anywhere}.promo-copy:hover,.promo-copy:focus-visible{color:var(--accent);background:var(--line)}
+.promo-copy.is-copied{border-style:solid;color:var(--accent)}
+.promo-terms,.promo-auto,.promo-wait{font-size:10px;color:var(--mute);line-height:1.5;overflow-wrap:anywhere}
+@media(max-width:760px){.quote-values{flex-basis:61%}.quote-name{flex-basis:39%}.promo-price{font-size:14px}.promo-copy{padding:5px 7px}}
+
+.promo-feedback:empty{display:none}.promo-feedback:not(:empty){font-size:10px;color:var(--accent)}
