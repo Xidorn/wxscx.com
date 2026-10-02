@@ -18,3 +18,6 @@ body{font-size:var(--fs16,16px)}
 .brand [data-brand-title],.batch-toolbar>span{font-size:var(--fs11,11px)!important}
 .hero h1{font-size:clamp(var(--heroMin,35px),4.7vw,var(--heroMax,54px))!important}.domain{font-size:clamp(var(--domainMin,29px),4.3vw,var(--domainMax,46px))!important}.batch-heading h1{font-size:clamp(var(--batchMin,28px),4vw,var(--batchMax,42px))!important}
 .metric-value{font-size:var(--fs20,20px)!important}.record-group-head h2{font-size:var(--fs18,18px)!important}
+
+/* V57 unified copy/action feedback. */
+.site-toast{position:fixed;left:50%;bottom:max(24px,env(safe-area-inset-bottom));z-index:10000;max-width:min(88vw,420px);transform:translate(-50%,14px);opacity:0;pointer-events:none;padding:9px 14px;border:1px solid var(--line);border-radius:9px;background:var(--sheet);color:var(--text);box-shadow:var(--shadow);font-size:12px;font-weight:650;line-height:1.4;text-align:center;transition:opacity .16s ease,transform .16s ease}.site-toast.is-visible{opacity:1;transform:translate(-50%,0)}.site-toast[data-type="error"]{border-color:color-mix(in srgb,#c74b4b 45%,var(--line));color:#b53f3f}@media(max-width:580px){.site-toast{bottom:max(18px,env(safe-area-inset-bottom));font-size:12px}}

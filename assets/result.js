@@ -162,7 +162,7 @@ let statuses=Array.isArray(d.status)?d.status:[];if(!statuses.length&&state==='r
 const lifes=[];if(d.gracePeriod)lifes.push(t('grace'));if(d.redemptionPeriod)lifes.push(t('redemption'));if(d.pendingDelete)lifes.push(t('pendingDelete'));if(d.hold)lifes.push(t('hold'));if(d.inactive)lifes.push(t('inactive'));document.getElementById('lifecycleList').innerHTML=lifes.map(x=>`<div class="life"><span>${esc(x)}</span><span>${esc(t('yes'))}</span></div>`).join('');document.getElementById('lifecyclePanel').hidden=!lifes.length;document.getElementById('identityGroup').hidden=document.getElementById('registrationPanel').hidden&&document.getElementById('registrarPanel').hidden;document.getElementById('technicalGroup').hidden=document.getElementById('dnsPanel').hidden&&document.getElementById('statusPanel').hidden&&document.getElementById('lifecyclePanel').hidden;
 rawWhoisText=d.whoisData||'';rawRdapText=d.rdapData||'';const whoisRaw=document.getElementById('whoisRaw'),rdapRaw=document.getElementById('rdapRaw');whoisRaw.hidden=!rawWhoisText;rdapRaw.hidden=!rawRdapText;if(whoisRaw.open)document.getElementById('whoisText').textContent=rawWhoisText;else document.getElementById('whoisText').textContent='';if(rdapRaw.open)document.getElementById('rdapText').textContent=prettyRdap(rawRdapText);else document.getElementById('rdapText').textContent='';updateResultTools()}
 document.getElementById('whoisRaw')?.addEventListener('toggle',e=>{if(e.currentTarget.open){const pre=document.getElementById('whoisText');if(!pre.textContent)pre.textContent=rawWhoisText}});document.getElementById('rdapRaw')?.addEventListener('toggle',e=>{if(e.currentTarget.open){const pre=document.getElementById('rdapText');if(!pre.textContent)pre.textContent=prettyRdap(rawRdapText)}});
-async function copyText(btn,text){try{await navigator.clipboard.writeText(text);const old=btn.textContent;btn.textContent=t('copied');setTimeout(()=>btn.textContent=old,1000)}catch{}}document.querySelectorAll('[data-rawcopy]').forEach(btn=>btn.onclick=e=>{e.preventDefault();e.stopPropagation();copyText(btn,btn.dataset.rawcopy==='rdap'?document.getElementById('rdapText').textContent:document.getElementById('whoisText').textContent)});
+async function copyText(btn,text){const old=btn.textContent;try{await window.copyToClipboard(text);btn.textContent=t('copied');window.showToast?.(t('copied'),'success');setTimeout(()=>{if(btn.isConnected)btn.textContent=old},1000);return true}catch(e){window.showToast?.(window.toastText?.('copyFailed')||'Copy failed','error');return false}}document.querySelectorAll('[data-rawcopy]').forEach(btn=>btn.onclick=e=>{e.preventDefault();e.stopPropagation();copyText(btn,btn.dataset.rawcopy==='rdap'?document.getElementById('rdapText').textContent:document.getElementById('whoisText').textContent)});
 let requestController=null;let queryCompletedAt=null;let rawWhoisText='';let rawRdapText='';
 function renderError(message,canRetry=true){
  const loading=document.getElementById('loading'),error=document.getElementById('error');loading.hidden=true;error.hidden=false;error.replaceChildren();
@@ -174,28 +174,13 @@ function apiPayload(json){
  if(json&&json.code===undefined&&typeof json==='object'&&(json.domain||json.registered!==undefined||json.unknown!==undefined||json.whoisData!==undefined||json.rdapData!==undefined))return json;
  throw new Error((json&&json.msg)||'API');
 }
-async function querySource(name,signal){
- const url=API+encodeURIComponent(domain)+'&json=1&'+name+'=1';
+async function queryDomain(signal){
+ const url=API+encodeURIComponent(domain)+'&json=1';
  const response=await fetch(url,{headers:{Accept:'application/json'},signal,cache:'no-store'});
  if(!response.ok)throw new Error('HTTP '+response.status);
  const text=await response.text();
  let json;try{json=JSON.parse(text)}catch{throw new Error('Invalid JSON response')}
  return apiPayload(json);
-}
-function meaningful(v){return v!==undefined&&v!==null&&v!==''&&(!Array.isArray(v)||v.length>0)}
-function mergeLookupData(a,b){
- if(!a)return b;if(!b)return a;
- const whois=a.whoisData? a : (b.whoisData?b:null);
- const rdap=a.rdapData? a : (b.rdapData?b:null);
- const base={...(whois||a)};
- const extra=rdap||b;
- for(const [k,v] of Object.entries(extra)){if(meaningful(v))base[k]=v}
- if(whois?.whoisData)base.whoisData=whois.whoisData;
- if(rdap?.rdapData)base.rdapData=rdap.rdapData;
- // RDAP registration state is authoritative only when RDAP itself is not unknown.
- if(rdap&&rdap.unknown!==true){base.registered=rdap.registered;base.reserved=!!rdap.reserved;base.unknown=!!rdap.unknown}
- else if(whois){base.registered=whois.registered;base.reserved=!!whois.reserved;base.unknown=!!whois.unknown}
- return base;
 }
 async function load(){
  const loading=document.getElementById('loading'),error=document.getElementById('error'),content=document.getElementById('content');
@@ -205,60 +190,32 @@ async function load(){
  error.hidden=true;error.replaceChildren();content.hidden=true;loading.hidden=false;
  if(!domain||!validDomain(domain)){renderError(t('invalid'),false);return}
  const controller=new AbortController();requestController=controller;
- const timeout=setTimeout(()=>controller.abort(),15000);
- const whoisPromise=querySource('whois',controller.signal);
- const rdapPromise=querySource('rdap',controller.signal);
- let apiSucceeded=false,renderSucceeded=false;
- const showPayload=(payload,label='lookup')=>{
-   if(!payload||typeof payload!=='object')return false;
-   apiSucceeded=true;
-   queryCompletedAt=queryCompletedAt||new Date();
-   loading.hidden=true;error.hidden=true;error.replaceChildren();content.hidden=false;
-   try{render(payload);renderSucceeded=true;return true}
-   catch(e){
-     // A presentation/optional-widget failure must never be reported as a WHOIS API failure.
-     console.error('Result rendering error ('+label+')',e);
-     currentData=payload;
-     const title=document.getElementById('domainTitle');if(title)title.textContent=payload.domain||domain;
-     return false;
-   }
- };
+ const timeout=setTimeout(()=>controller.abort(),20000);
  try{
-   await new Promise(resolve=>requestAnimationFrame(resolve));
-   let first=null;
-   try{first=await Promise.any([whoisPromise,rdapPromise])}catch{}
-   if(first){showPayload(first,'first source');try{rememberDomain(domain)}catch(e){console.warn('Optional history unavailable',e)}}
-
-   // Always inspect both sources. A malformed/partial first source must not turn a successful lookup into an error.
-   const settled=await Promise.allSettled([whoisPromise,rdapPromise]);
-   const values=settled.filter(x=>x.status==='fulfilled'&&x.value&&typeof x.value==='object').map(x=>x.value);
-   if(values.length){
-     apiSucceeded=true;
-     const best=values.length>1?mergeLookupData(values[0],values[1]):values[0];
-     showPayload(best,values.length>1?'merged sources':'fallback source');
-     try{rememberDomain(domain)}catch(e){console.warn('Optional history unavailable',e)}
-   }
-   if(!apiSucceeded){
-     const aborted=controller.signal.aborted||settled.some(x=>x.status==='rejected'&&x.reason?.name==='AbortError');
-     renderError(aborted?feedback('timeout'):feedback('requestFailed'));
-   }else{
-     // API data exists: never overlay it with the generic request-failed message.
-     loading.hidden=true;error.hidden=true;error.replaceChildren();content.hidden=false;
-     if(!renderSucceeded)console.warn('Lookup data received, but one or more optional result sections could not be rendered.');
-   }
+  await new Promise(resolve=>requestAnimationFrame(resolve));
+  // One merged API request keeps status interpretation identical to the backend for every TLD.
+  const payload=await queryDomain(controller.signal);
+  queryCompletedAt=new Date();
+  loading.hidden=true;error.hidden=true;error.replaceChildren();content.hidden=false;
+  try{render(payload)}catch(err){
+   console.error('Result rendering error',err);
+   currentData=payload;
+   const title=document.getElementById('domainTitle');if(title)title.textContent=payload.domain||domain;
+  }
+  try{rememberDomain(domain)}catch(e){console.warn('Optional history unavailable',e)}
  }catch(err){
-   if(apiSucceeded){loading.hidden=true;error.hidden=true;error.replaceChildren();content.hidden=false;console.warn('Post-query UI error',err)}
-   else renderError(err?.name==='AbortError'||controller.signal.aborted?feedback('timeout'):feedback('requestFailed'));
+  if(controller.signal.aborted||err?.name==='AbortError')renderError(feedback('timeout'));
+  else{console.error('Lookup failed',err);renderError(feedback('requestFailed'))}
  }finally{
-   clearTimeout(timeout);
-   if(requestController===controller)requestController=null;
+  clearTimeout(timeout);
+  if(requestController===controller)requestController=null;
  }
 }
 load();
 
 initThemePicker();
 
-function renderHistory(){const panel=document.getElementById('historyPanel');if(!panel)return;const arr=readHistory();const title=document.getElementById('historySummary');title.textContent=htxt('history')+' ('+arr.length+')';const list=document.getElementById('historyList');list.replaceChildren();if(!arr.length){const empty=document.createElement('div');empty.className='history-empty';empty.textContent=htxt('empty');list.append(empty)}else arr.forEach(d=>{const row=document.createElement('div');row.className='history-row';const a=document.createElement('a');a.className='history-link';a.textContent=d;a.href=searchUrl(d);const del=document.createElement('button');del.type='button';del.className='history-remove';del.textContent='×';del.title=htxt('remove');del.setAttribute('aria-label',htxt('remove')+' '+d);del.addEventListener('click',()=>writeHistory(readHistory().filter(x=>x!==d)));row.append(a,del);list.append(row)});document.getElementById('historyNote').textContent=htxt('saved');const all=document.getElementById('historyClear');all.textContent=htxt('clear');all.hidden=!arr.length}
+function renderHistory(){const panel=document.getElementById('historyPanel'),title=document.getElementById('historySummary'),list=document.getElementById('historyList');if(!panel||!title||!list)return;const arr=readHistory();title.textContent=htxt('history')+' ('+arr.length+')';list.replaceChildren();if(!arr.length){const empty=document.createElement('div');empty.className='history-empty';empty.textContent=htxt('empty');list.append(empty)}else arr.forEach(d=>{const row=document.createElement('div');row.className='history-row';const a=document.createElement('a');a.className='history-link';a.textContent=d;a.href=searchUrl(d);const del=document.createElement('button');del.type='button';del.className='history-remove';del.textContent='×';del.title=htxt('remove');del.setAttribute('aria-label',htxt('remove')+' '+d);del.addEventListener('click',()=>writeHistory(readHistory().filter(x=>x!==d)));row.append(a,del);list.append(row)});const note=document.getElementById('historyNote');if(note)note.textContent=htxt('saved');const all=document.getElementById('historyClear');if(all){all.textContent=htxt('clear');all.hidden=!arr.length}}
 function updateSearchControls(){const input=document.getElementById('domainInput');const btn=document.getElementById('clearInput');btn.hidden=!input.value;btn.title=htxt('clearInput');btn.setAttribute('aria-label',htxt('clearInput'));const submit=document.getElementById('searchSubmit');submit.title=htxt('searchIcon');submit.setAttribute('aria-label',htxt('searchIcon'));renderHistory();renderFavorites()}
 (function setupQueryTools(){const input=document.getElementById('domainInput');const clr=document.getElementById('clearInput');let returningHome=false;
 // A cleared detail-page search is a navigation to the real homepage, not an empty WHOIS query.
@@ -289,8 +246,8 @@ input.addEventListener('keydown',e=>{
 const shareButton=document.getElementById('shareLink');
 shareButton.addEventListener('click',async()=>{
  const link=location.origin+searchUrl(domain);
- try{await navigator.clipboard.writeText(link);shareButton.title=shareLabel(1);shareButton.setAttribute('aria-label',shareLabel(1));}
- catch{window.prompt(shareLabel(2),link)}
+ try{await window.copyToClipboard(link);shareButton.title=shareLabel(1);shareButton.setAttribute('aria-label',shareLabel(1));window.showToast?.(shareLabel(1),'success')}
+ catch{window.showToast?.(window.toastText?.('copyFailed')||'Copy failed','error');window.prompt(shareLabel(2),link)}
 });
 
 

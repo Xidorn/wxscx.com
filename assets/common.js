@@ -13,35 +13,52 @@ const HISTORY_KEY='mrwang_whois_history_v2';
 const HISTORY_TTL=365*24*60*60*1000;
 function htxt(k){return (HISTORY_TEXT[lang]||HISTORY_TEXT.en)[k]}
 function validHistoryDomain(d){return typeof d==='string'&&validDomain(d)}
-function persistHistory(entries){try{localStorage.setItem(HISTORY_KEY,JSON.stringify({version:2,entries:entries.slice(0,10)}))}catch(e){}}
+function persistHistory(entries){
+ const clean=entries;
+ try{localStorage.setItem(HISTORY_KEY,JSON.stringify({version:2,entries:clean}));return true}catch(e){console.warn('History storage unavailable',e);return false}
+}
+function normalizeHistoryPayload(parsed,now=Date.now()){
+ let source=[];
+ if(Array.isArray(parsed))source=parsed;
+ else if(Array.isArray(parsed?.entries))source=parsed.entries;
+ else if(Array.isArray(parsed?.history))source=parsed.history;
+ const seen=new Set(),out=[];
+ for(const item of source){
+  const raw=typeof item==='string'?item:item?.domain;
+  const domain=cleanDomain(raw||'');
+  let savedAt=typeof item==='object'&&Number.isFinite(Number(item?.savedAt))?Number(item.savedAt):now;
+  if(savedAt>now)savedAt=now;
+  if(!validHistoryDomain(domain)||now-savedAt>=HISTORY_TTL||seen.has(domain))continue;
+  seen.add(domain);out.push({domain,savedAt});
+ }
+ return out;
+}
 function readHistoryEntries(){
  const now=Date.now();let raw=null;
  try{raw=localStorage.getItem(HISTORY_KEY)}catch(e){}
- if(raw===null){
-  let old=[];try{const part=document.cookie.split('; ').find(c=>c.startsWith(HISTORY_COOKIE+'='));if(part){const parsed=JSON.parse(decodeURIComponent(part.slice(HISTORY_COOKIE.length+1)));if(Array.isArray(parsed))old=parsed}}catch(e){}
-  const entries=[...new Set(old.map(cleanDomain).filter(validHistoryDomain))].slice(0,10).map(domain=>({domain,savedAt:now}));
-  persistHistory(entries);
-  try{document.cookie=HISTORY_COOKIE+'=; Max-Age=0; Path=/; SameSite=Lax'+(location.protocol==='https:'?'; Secure':'')}catch(e){}
-  return entries;
+ if(raw!==null){
+  try{const parsed=JSON.parse(raw),entries=normalizeHistoryPayload(parsed,now);const canonical=JSON.stringify({version:2,entries});if(raw!==canonical)persistHistory(entries);return entries}
+  catch(e){console.warn('Invalid history data, rebuilding it',e)}
  }
- try{
-  const parsed=JSON.parse(raw),entries=Array.isArray(parsed?.entries)?parsed.entries:[];
-  const seen=new Set();const valid=entries.filter(x=>{
-   if(!x||!validHistoryDomain(x.domain)||!Number.isFinite(x.savedAt)||x.savedAt>now||now-x.savedAt>=HISTORY_TTL||seen.has(x.domain))return false;
-   seen.add(x.domain);return true
-  }).slice(0,10);
-  if(valid.length!==entries.length)persistHistory(valid);
-  return valid;
- }catch(e){persistHistory([]);return []}
+ // Migrate legacy cookie / localStorage shapes without discarding a user's existing history.
+ let legacy=[];
+ try{for(const key of ['mrwang_whois_history','mrwang_whois_history_v1']){const v=localStorage.getItem(key);if(v){const parsed=JSON.parse(v);legacy.push(...(Array.isArray(parsed)?parsed:(parsed?.entries||[])))}}}catch(e){}
+ try{const part=document.cookie.split('; ').find(c=>c.startsWith(HISTORY_COOKIE+'='));if(part){const parsed=JSON.parse(decodeURIComponent(part.slice(HISTORY_COOKIE.length+1)));legacy.push(...(Array.isArray(parsed)?parsed:(parsed?.entries||[])))}}catch(e){}
+ const entries=normalizeHistoryPayload(legacy,now);persistHistory(entries);
+ try{document.cookie=HISTORY_COOKIE+'=; Max-Age=0; Path=/; SameSite=Lax'+(location.protocol==='https:'?'; Secure':'')}catch(e){}
+ return entries;
 }
 function readHistory(){return readHistoryEntries().map(item=>item.domain)}
 function writeHistory(items){
  const previous=new Map(readHistoryEntries().map(x=>[x.domain,x.savedAt]));
- const entries=[...new Set(items.filter(validHistoryDomain))].slice(0,10).map(domain=>({domain,savedAt:previous.get(domain)||Date.now()}));
- persistHistory(entries);emitLibraryChange('history');
+ const now=Date.now(),entries=[];
+ for(const raw of items){const domain=cleanDomain(raw);if(!validHistoryDomain(domain)||entries.some(x=>x.domain===domain))continue;entries.push({domain,savedAt:previous.get(domain)||now})}
+ persistHistory(entries);emitLibraryChange('history');return entries.map(x=>x.domain);
 }
-function rememberDomain(v){const d=cleanDomain(v);if(!validHistoryDomain(d))return;
- persistHistory([{domain:d,savedAt:Date.now()},...readHistoryEntries().filter(x=>x.domain!==d)].slice(0,10));emitLibraryChange('history')
+function rememberDomain(v){
+ const d=cleanDomain(v);if(!validHistoryDomain(d))return false;
+ const now=Date.now(),entries=[{domain:d,savedAt:now},...readHistoryEntries().filter(x=>x.domain!==d)];
+ persistHistory(entries);emitLibraryChange('history');return true;
 }
 const WHOIS_THEMES=['graphite','paper','sand','forest','ocean','plum','mono','slate','mint','rose'];
 const WHOIS_THEME_COLORS={graphite:'#101318',paper:'#f5f6f4',sand:'#f5f1e9',forest:'#111a18',ocean:'#edf3f6',plum:'#f8f5f9',mono:'#ffffff',slate:'#171d26',mint:'#f0f7f5',rose:'#faf5f4'};
@@ -155,6 +172,27 @@ function translateLanguageGroups(select,code){
 const BRAND_TITLES={"en": "Domain Lookup", "zh": "域名查询", "zh-Hant": "網域查詢", "ja": "ドメイン検索", "ko": "도메인 조회", "de": "Domain-Abfrage", "fr": "Recherche de domaine", "es": "Consulta de dominios", "pt": "Consulta de domínios", "it": "Ricerca domini", "ru": "Поиск доменов", "ar": "البحث عن النطاقات", "hi": "डोमेन खोज", "id": "Pencarian Domain"};
 function renderBrand(code){document.querySelectorAll("[data-brand-title]").forEach(el=>{el.textContent=BRAND_TITLES[code]||BRAND_TITLES.en});}
 
+/* V57: shared lightweight feedback and clipboard fallback. */
+const TOAST_TEXT={
+ en:{copied:'Copied',copyFailed:'Copy failed. Please copy manually.'},zh:{copied:'已复制',copyFailed:'复制失败，请手动复制。'},'zh-Hant':{copied:'已複製',copyFailed:'複製失敗，請手動複製。'},
+ de:{copied:'Kopiert',copyFailed:'Kopieren fehlgeschlagen. Bitte manuell kopieren.'},fr:{copied:'Copié',copyFailed:'Échec de la copie. Copiez manuellement.'},ja:{copied:'コピーしました',copyFailed:'コピーできませんでした。手動でコピーしてください。'},
+ es:{copied:'Copiado',copyFailed:'No se pudo copiar. Copia manualmente.'},pt:{copied:'Copiado',copyFailed:'Falha ao copiar. Copie manualmente.'},it:{copied:'Copiato',copyFailed:'Copia non riuscita. Copia manualmente.'},ko:{copied:'복사됨',copyFailed:'복사하지 못했습니다. 직접 복사해 주세요.'},ru:{copied:'Скопировано',copyFailed:'Не удалось скопировать. Скопируйте вручную.'},ar:{copied:'تم النسخ',copyFailed:'تعذر النسخ. انسخ يدويًا.'},hi:{copied:'कॉपी किया गया',copyFailed:'कॉपी नहीं हो सका। कृपया मैन्युअल रूप से कॉपी करें।'},id:{copied:'Tersalin',copyFailed:'Gagal menyalin. Silakan salin secara manual.'}
+};
+function currentUiLang(){const v=document.getElementById('langSelect')?.value||document.documentElement.lang||'en';return v==='zh-CN'?'zh':v==='zh-TW'?'zh-Hant':String(v).split('-')[0]}
+function toastText(key){const code=currentUiLang();return (TOAST_TEXT[code]||TOAST_TEXT.en)[key]||TOAST_TEXT.en[key]}
+let toastTimer=0;
+function showToast(message,type='success'){
+ let el=document.getElementById('siteToast');
+ if(!el){el=document.createElement('div');el.id='siteToast';el.className='site-toast';el.setAttribute('role','status');el.setAttribute('aria-live','polite');el.setAttribute('aria-atomic','true');document.body.append(el)}
+ el.textContent=message;el.dataset.type=type;el.classList.add('is-visible');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('is-visible'),1800);
+}
+async function copyToClipboard(text){
+ const value=String(text??'');if(!value)throw new Error('Nothing to copy');
+ if(navigator.clipboard?.writeText&&window.isSecureContext){await navigator.clipboard.writeText(value);return true}
+ const el=document.createElement('textarea');el.value=value;el.setAttribute('readonly','');el.style.cssText='position:fixed;inset:auto auto 0 -9999px;opacity:0';document.body.append(el);el.select();el.setSelectionRange(0,value.length);let ok=false;try{ok=document.execCommand('copy')}finally{el.remove()}if(!ok)throw new Error('Clipboard unavailable');return true;
+}
+window.showToast=showToast;window.copyToClipboard=copyToClipboard;window.toastText=toastText;
+
 /* V49: independent History and Saved counters. */
 function updateLibraryCounts(){
  const history=readHistory().length,favorites=getFavorites().length;
@@ -163,13 +201,14 @@ function updateLibraryCounts(){
  if(fb){fb.hidden=!favorites;fb.textContent=favorites>99?'99+':String(favorites)}
 }
 function refreshLocalLibraryUI(){
- if(typeof renderHistory==='function')renderHistory();
- if(typeof renderFavorites==='function')renderFavorites();
- updateLibraryCounts();
- if(typeof updateResultTools==='function'&&typeof currentData!=='undefined'&&currentData)updateResultTools();
+ try{if(typeof renderHistory==='function')renderHistory()}catch(e){console.warn('History UI refresh failed',e)}
+ try{if(typeof renderFavorites==='function')renderFavorites()}catch(e){console.warn('Favorites UI refresh failed',e)}
+ try{updateLibraryCounts()}catch(e){console.warn('Library counter refresh failed',e)}
+ try{if(typeof updateResultTools==='function'&&typeof currentData!=='undefined'&&currentData)updateResultTools()}catch(e){console.warn('Result tool refresh failed',e)}
 }
 function emitLibraryChange(kind){
- if(typeof queueMicrotask==='function')queueMicrotask(refreshLocalLibraryUI);else refreshLocalLibraryUI();
+ // Same-tab localStorage changes do not fire the browser storage event. Refresh synchronously first.
+ refreshLocalLibraryUI();
  try{window.dispatchEvent(new CustomEvent('whois:librarychange',{detail:{kind}}))}catch{}
 }
 function notifyLocalLibraryChange(){emitLibraryChange('all')}
