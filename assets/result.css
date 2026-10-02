@@ -346,3 +346,15 @@ html[dir="rtl"] .domain-identity>.domain{direction:ltr;unicode-bidi:isolate;}
 /* V51: detail footer is outside the result panel and is always visible in document flow. */
 .detail-foot{width:min(940px,100%);box-sizing:border-box;margin:0 auto!important;border-top:0!important;padding:0 16px 30px;text-align:center;color:var(--mute)}
 @media(max-width:750px){.detail-foot{padding:0 13px 24px}}
+
+
+/* V59 layout unified */
+:root{--content-width:1200px}
+.page-wrap,.site-wrap,.main-wrap,.container,main{width:100%;max-width:var(--content-width);margin-left:auto;margin-right:auto}
+main{padding-left:20px;padding-right:20px}
+.batch-page .batch-shell,.batch-shell,.batch-container{width:100%;max-width:1200px;margin:0 auto;padding-left:20px;padding-right:20px}
+.batch-shell .panel,.batch-results,.batch-toolbar,.batch-box{border-radius:16px}
+.batch-results,.batch-toolbar,.batch-shell section{box-sizing:border-box}
+@media(max-width:768px){
+ main,.batch-page .batch-shell,.batch-shell,.batch-container{padding-left:14px;padding-right:14px}
+}

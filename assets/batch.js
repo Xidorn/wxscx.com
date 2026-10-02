@@ -1,5 +1,5 @@
 const API='https://api.mrwang.com/whois.php?domain=';
-const SUFFIX_CATALOG='/assets/domain-suffixes.json?v=58';
+const SUFFIX_CATALOG='/assets/domain-suffixes.json?v=59';
 const LANGS={en:{name:'English'},zh:{name:'简体中文'},'zh-Hant':{name:'繁體中文'},de:{name:'Deutsch'},fr:{name:'Français'},ja:{name:'日本語'},es:{name:'Español'},pt:{name:'Português'},it:{name:'Italiano'},ko:{name:'한국어'},ru:{name:'Русский'},ar:{name:'العربية'},hi:{name:'हिन्दी'},id:{name:'Bahasa Indonesia'}};
 const COPY={
  en:['BATCH LOOKUP','Batch domain lookup','Enter complete domains, or enter names and combine them with selected suffixes.','Domains or names','Up to 50 queries · duplicates are removed automatically','Clear','Start lookup','Results','Registered','Available','Unknown','Invalid domain','Failed','Suffix catalog','Loading suffix catalog…','suffixes ready','Common','Clear','Search suffix, e.g. com / ai / de','For lines without a dot, selected suffixes are appended automatically. Complete domains are queried as entered.','Select at least one suffix for names without a dot.','Using built-in suffix catalog','Reserved'],
